@@ -40,7 +40,8 @@
     "webpack-cli": "3.3.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.3.4"
+    "@babel/runtime": "7.3.4",
+    "escape-html": "1.0.3"
   },
   "lint-staged": {
     "*.js": [

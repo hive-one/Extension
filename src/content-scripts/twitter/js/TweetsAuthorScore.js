@@ -1,4 +1,5 @@
 import { ProfilePopup } from './ProfilePopup';
+import escapeHTML from 'escape-html';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension-Twitter_tweet-author-score';
 const TWEET_INDIVIDUAL_SCORE_CLASS = 'HiveExtension-Twitter_tweet-individual-score';
@@ -34,7 +35,9 @@ export class TwitterTweetsAuthorScoreExtension {
       const userScoreDisplay = document.createElement('div');
       userScoreDisplay.classList.add(TWEET_INDIVIDUAL_SCORE_CLASS);
       userScoreDisplay.classList.add('ProfileTweet-action');
-      userScoreDisplay.innerHTML = `<button class="${TWEET_INDIVIDUAL_SCORE_CLASS}_display ProfileTweet-actionButton js-tooltip" data-original-title="${clusterName} Score">
+      userScoreDisplay.innerHTML = `<button class="${TWEET_INDIVIDUAL_SCORE_CLASS}_display ProfileTweet-actionButton js-tooltip" data-original-title="${escapeHTML(
+        clusterName
+      )} Score">
 
       <div class="IconContainer">
           <span class="Icon Icon--medium">
@@ -141,11 +144,11 @@ export class TwitterTweetsAuthorScoreExtension {
       userScoreDisplay.innerHTML = `
         <b class="${TWEET_AUTHOR_SCORE_CLASS}_display ${
         tweetIsThread ? threadClass : ''
-      } js-tooltip" data-original-title="${tooltip}">
+      } js-tooltip" data-original-title="${escapeHTML(tooltip)}">
           <svg viewBox="0 0 36 36" class="${TWEET_AUTHOR_SCORE_CLASS}_icon">
             <use xlink:href="#hive-icon-small" />
           </svg>
-          <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${value}</span>
+          <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${escapeHTML(value)}</span>
         </b>`;
 
       if (accountIndexed) {

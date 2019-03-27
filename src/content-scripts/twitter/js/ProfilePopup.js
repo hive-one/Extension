@@ -1,4 +1,5 @@
 import { CONFIG, MESSAGES } from '../../../config';
+import escapeHTML from 'escape-html';
 
 let openPopupsCloseHandlers = [];
 
@@ -75,7 +76,7 @@ export class ProfilePopup {
         clustersHTML += `
               <div class="HiveExtension-Twitter_popup-profile_cluster-score">
                   <div class="HiveExtension-Twitter_popup-profile_cluster-score_left">
-                      ${cluster.display}
+                      ${escapeHTML(cluster.display)}
                   </div>
                   <div class="HiveExtension-Twitter_popup-profile_cluster-score_right">
                       <span class="HiveExtension-Twitter_popup-profile_cluster-score_right_bold">${roundedScore}</span>
@@ -93,10 +94,12 @@ export class ProfilePopup {
 
       if (followers) {
         followers.forEach(({ screenName }) => {
+          const safeScreenName = escapeHTML(screenName);
+
           FOLLOWERS_HTML += `
                         <div class="${POPUP_CLASS}_followers_follower">
-                            <img class="${POPUP_CLASS}_followers_follower_image" src="https://twitter.com/${screenName}/profile_image?size=mini" />
-                            <div class="${POPUP_CLASS}_followers_follower_name">${screenName}</div>
+                            <img class="${POPUP_CLASS}_followers_follower_image" src="https://twitter.com/${safeScreenName}/profile_image?size=mini" />
+                            <div class="${POPUP_CLASS}_followers_follower_name">${safeScreenName}</div>
                         </div>
                     `;
         });
@@ -112,9 +115,9 @@ export class ProfilePopup {
                     ${FOLLOWERS_HTML}
                 </div>
                 <br/>
-                <a href="https://hive.one/profile/${
+                <a href="https://hive.one/profile/${escapeHTML(
                   this.userTwitterId
-                }" class="${POPUP_CLASS}_credit">
+                )}" class="${POPUP_CLASS}_credit">
                   Learn more about this profile at hive.one
                   <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
                     <use xlink:href="#hive-icon" />
