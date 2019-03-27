@@ -18,7 +18,7 @@ These are the same scores as available on [Hive.one](https://hive.one). You can 
 
 ## Install
 
-- [Chrome extension]()
+- [Chrome extension](https://chrome.google.com/webstore/detail/dibbclmoocoenjjdjgdmgdbedcjeafjl/)
 
 ## Build from source
 
