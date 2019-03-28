@@ -9,7 +9,8 @@ export const CONFIG = {
     topFollowersCluster: 'Crypto'
   },
   MAX_SCORE: 1000,
-  GOOGLE_ANALYTICS_ID: 'UA-39572645-2'
+  GOOGLE_ANALYTICS_ID: 'UA-39572645-2',
+  USER_DATA_CACHE_LIFETIME: 86400 // 24 hours
 };
 
 export const MESSAGES = {

@@ -85,15 +85,19 @@ export class TwitterProfileScoreExtension {
     displayElement.classList.add('ProfileNav-item');
     displayElement.classList.add(PROFILE_SCORE_EXTENSION_CLASS_NAME);
 
-    displayElement.innerHTML = `
+    if (!value || !label) {
+      displayElement.style.display = 'none';
+    } else {
+      displayElement.innerHTML = `
             <div class="ProfileNav-stat ProfileNav-stat--link u-borderUserColor u-textCenter js-tooltip js-nav u-textUserColor" href="#" data-original-title="${tooltip}">
                   <span class="ProfileNav-label">${label}</span>
                   <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">${value}</span>
             </div>
         `;
 
-    const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
-    popup.showOnClick(displayElement);
+      const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
+      popup.showOnClick(displayElement);
+    }
 
     document
       .querySelector('.ProfileNav-item:nth-of-type(4)')

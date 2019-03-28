@@ -76,7 +76,7 @@ export class ProfilePopup {
         clustersHTML += `
               <div class="HiveExtension-Twitter_popup-profile_cluster-score">
                   <div class="HiveExtension-Twitter_popup-profile_cluster-score_left">
-                      ${escapeHTML(cluster.display)}
+                      ${escapeHTML(cluster.name)}
                   </div>
                   <div class="HiveExtension-Twitter_popup-profile_cluster-score_right">
                       <span class="HiveExtension-Twitter_popup-profile_cluster-score_right_bold">${roundedScore}</span>
@@ -93,6 +93,11 @@ export class ProfilePopup {
       let FOLLOWERS_HTML = '';
 
       if (followers) {
+        FOLLOWERS_HTML += `
+        <br/>
+        <h3 class="${POPUP_CLASS}_title">Top Followers</h3>
+        <div class="${POPUP_CLASS}_followers">`;
+
         followers.forEach(({ screenName }) => {
           const safeScreenName = escapeHTML(screenName);
 
@@ -103,17 +108,15 @@ export class ProfilePopup {
                         </div>
                     `;
         });
+
+        FOLLOWERS_HTML += `</div>`;
       }
 
       const CUSTOM_HTML = `
                 <div class="${POPUP_CLASS}_content">
                     ${clustersHTML}
                 </div>
-                <br/>
-                <h3 class="${POPUP_CLASS}_title">Top Followers</h3>
-                <div class="${POPUP_CLASS}_followers">
-                    ${FOLLOWERS_HTML}
-                </div>
+                ${FOLLOWERS_HTML}
                 <br/>
                 <a href="https://hive.one/profile/${escapeHTML(
                   this.userTwitterId

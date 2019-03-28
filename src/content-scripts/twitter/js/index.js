@@ -1,5 +1,4 @@
 import '../styles/twitter.scss';
-import { CustomCache } from './CustomCache';
 import { HiveAPI } from './HiveAPI';
 import { TwitterProfileScoreExtension } from './ProfileScore';
 import { TwitterTweetsAuthorScoreExtension } from './TweetsAuthorScore';
@@ -7,6 +6,7 @@ import { CONFIG } from '../../../config';
 import { ExtensionIcons } from './Icons';
 import { ExtensionSettings } from './Settings';
 import { TwitterProfileHoverPopupScoreExtension } from './ProfileHoverPopupScore';
+import { TimedCache } from './TimedCache';
 
 const observeDOM = (() => {
   const MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
@@ -33,8 +33,10 @@ const observeDOM = (() => {
 
   const clusterToDisplay = await settings.getOptionValue('clusterToDisplay');
 
-  const cache = new CustomCache();
+  const cache = new TimedCache(CONFIG.USER_DATA_CACHE_LIFETIME);
   const api = new HiveAPI(CONFIG.API_HOST, clusterToDisplay, cache);
+
+  await api.initialize();
 
   const twitterProfileScore = new TwitterProfileScoreExtension(api, settings);
   const twitterTweetsAuthorScoreExtension = new TwitterTweetsAuthorScoreExtension(api, settings);

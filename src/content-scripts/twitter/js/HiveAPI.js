@@ -5,47 +5,83 @@ class HIVE_API_FETCH_DATA_STATUS {
   static ERROR = 'error';
 }
 
+const AVAILABLE_IDENTIFIERS_STORING_KEY = 'HiveAPI::AVAILABLE_IDENTIFIERS';
+
 export class HiveAPI {
   cache;
   host = '';
   defaultCluster = 'Crypto';
 
+  _availableIdentifiers;
+  _initializationPromise;
+
   constructor(_host, _defaultCluster, _cache) {
     this.host = _host;
     this.defaultCluster = _defaultCluster;
     this.cache = _cache;
+    this._availableIdentifiers = [];
+
+    this.initialize();
+  }
+
+  async initialize() {
+    if (!this._initializationPromise) {
+      this._initializationPromise = new Promise(async resolve => {
+        await this._initializeAvailableIdentifiers();
+
+        resolve();
+      });
+    }
+
+    return this._initializationPromise;
+  }
+
+  async _initializeAvailableIdentifiers() {
+    const cachedIdentifiers = await this.cache.get(AVAILABLE_IDENTIFIERS_STORING_KEY);
+
+    if (cachedIdentifiers) {
+      this._availableIdentifiers = cachedIdentifiers.available;
+    } else {
+      const response = await this.fetchInBackgroundContext(
+        `${this.host}/api/influencers/scores/people/available/`
+      );
+
+      if (response && response.data && response.data.available) {
+        this._availableIdentifiers = response.data.available;
+        this.cache.save(AVAILABLE_IDENTIFIERS_STORING_KEY, {
+          available: this._availableIdentifiers
+        });
+      }
+    }
   }
 
   async getTwitterUserScore(id, clusterName = this.defaultCluster) {
-    if (!id) {
-      console.error('HiveExtension::HiveAPI::getTwitterUserScore::User ID is undefined');
-      return {};
-    }
-
-    const { data, status } = await this.getTwitterUserData(id);
-
     let score = 0;
     let name = clusterName;
     let indexed = false;
     let rank = null;
     let followers = [];
 
-    if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
-      if (clusterName === 'Highest') {
-        const highestScoreCluster = data.clusters.slice().sort((a, b) => b.score - a.score)[0];
+    if (id && this.isIdentifierIndexed(id)) {
+      const { data, status } = await this.getTwitterUserData(id);
 
-        name = highestScoreCluster.abbr;
-        score = highestScoreCluster.score;
-        rank = highestScoreCluster.rank;
-        followers = highestScoreCluster.followers;
-      } else {
-        const cluster = data.clusters.find(item => item.abbr === clusterName);
-        score = cluster.score;
-        rank = cluster.rank;
-        followers = cluster.followers;
+      if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
+        if (clusterName === 'Highest') {
+          const highestScoreCluster = data.clusters.slice().sort((a, b) => b.score - a.score)[0];
+
+          name = highestScoreCluster.abbr;
+          score = highestScoreCluster.score;
+          rank = highestScoreCluster.rank;
+          followers = highestScoreCluster.followers;
+        } else {
+          const cluster = data.clusters.find(item => item.abbr === clusterName);
+          score = cluster.score;
+          rank = cluster.rank;
+          followers = cluster.followers;
+        }
+
+        indexed = true;
       }
-
-      indexed = true;
     }
 
     return { name, score, rank, indexed, followers };
@@ -74,7 +110,10 @@ export class HiveAPI {
     let status, data;
 
     try {
-      data = await this.fetchInBackgroundContext(`${this.host}/api/top-people/${id}`);
+      const response = await this.fetchInBackgroundContext(
+        `${this.host}/api/influencers/scores/person/id/${id}/`
+      );
+      data = this.processScoreResponse(response);
       status = HIVE_API_FETCH_DATA_STATUS.SUCCESS;
     } catch (error) {
       status = HIVE_API_FETCH_DATA_STATUS.ERROR;
@@ -110,5 +149,25 @@ export class HiveAPI {
         }
       );
     });
+  }
+
+  processScoreResponse(response) {
+    response = response.data;
+    response.clusters = response.scores.map(item => item.node);
+    delete response.scores;
+
+    return response;
+  }
+
+  getAvailableIdentifiers() {
+    return this._availableIdentifiers;
+  }
+
+  isIdentifierIndexed(id) {
+    if (id.toString) {
+      id = id.toString();
+    }
+
+    return this.getAvailableIdentifiers().includes(id);
   }
 }
