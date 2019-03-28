@@ -14,6 +14,7 @@ export class HiveAPI {
 
   _availableIdentifiers;
   _initializationPromise;
+  _userRequestsMap = {};
 
   constructor(_host, _defaultCluster, _cache) {
     this.host = _host;
@@ -110,9 +111,16 @@ export class HiveAPI {
     let status, data;
 
     try {
-      const response = await this.fetchInBackgroundContext(
-        `${this.host}/api/influencers/scores/person/id/${id}/`
-      );
+      let responsePromise = this._userRequestsMap[id];
+
+      if (!responsePromise) {
+        responsePromise = this.fetchInBackgroundContext(
+          `${this.host}/api/influencers/scores/person/id/${id}/`
+        );
+        this._userRequestsMap[id] = responsePromise;
+      }
+
+      const response = await responsePromise;
       data = this.processScoreResponse(response);
       status = HIVE_API_FETCH_DATA_STATUS.SUCCESS;
     } catch (error) {
@@ -152,8 +160,16 @@ export class HiveAPI {
   }
 
   processScoreResponse(response) {
-    response = response.data;
-    response.clusters = response.scores.map(item => item.node);
+    response = JSON.parse(JSON.stringify(response.data));
+
+    response.clusters = response.scores.map(item => {
+      if (item.node.followers && item.node.followers.edges) {
+        item.node.followers = item.node.followers.edges.map(followerNode => followerNode.node);
+      }
+
+      return item.node;
+    });
+
     delete response.scores;
 
     return response;
