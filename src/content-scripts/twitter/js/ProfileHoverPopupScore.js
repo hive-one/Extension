@@ -1,3 +1,5 @@
+import { ProfilePopup } from './ProfilePopup';
+
 const PROFILE_HOVER_CONTAINER = '#profile-hover-container';
 const ELEMENT_CLASS = 'HiveExtension-Twitter_profile-hover-popup';
 
@@ -92,7 +94,10 @@ export class TwitterProfileHoverPopupScoreExtension {
           </div>
         `;
 
-    if (!label) {
+    if (label) {
+      const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
+      popup.showOnClick(displayElement);
+    } else {
       displayElement.style.display = 'none';
     }
 

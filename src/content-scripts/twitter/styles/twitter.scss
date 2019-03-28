@@ -7,6 +7,10 @@
     cursor: pointer;
   }
 
+  &_profile-hover-popup {
+    cursor: pointer;
+  }
+
   &_tweet-author-score {
     $root: &;
 
@@ -295,4 +299,8 @@
 
 .ProfileTweet-action--dm {
   min-width: 60px;
+}
+
+.ProfileCardStats {
+  position: relative;
 }
