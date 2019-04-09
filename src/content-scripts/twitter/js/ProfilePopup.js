@@ -103,7 +103,7 @@ export class ProfilePopup {
 
           FOLLOWERS_HTML += `
                         <div class="${POPUP_CLASS}_followers_follower">
-                            <img class="${POPUP_CLASS}_followers_follower_image" src="https://twitter.com/${safeScreenName}/profile_image?size=mini" />
+                            <img class="${POPUP_CLASS}_followers_follower_image" src="https://twitter.com/${safeScreenName}/profile_image?size=bigger" />
                             <div class="${POPUP_CLASS}_followers_follower_name">${safeScreenName}</div>
                         </div>
                     `;
