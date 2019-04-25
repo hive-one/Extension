@@ -62,6 +62,7 @@ export class HiveAPI {
     let indexed = false;
     let rank = null;
     let followers = [];
+    let podcasts = [];
 
     if (id && this.isIdentifierIndexed(id)) {
       const { data, status } = await this.getTwitterUserData(id);
@@ -81,11 +82,15 @@ export class HiveAPI {
           followers = cluster.followers;
         }
 
+        podcasts =
+          data.podcasts &&
+          data.podcasts.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+
         indexed = true;
       }
     }
 
-    return { name, score, rank, indexed, followers };
+    return { name, score, rank, indexed, followers, podcasts };
   }
 
   async getTwitterUserClusters(id) {
@@ -115,7 +120,7 @@ export class HiveAPI {
 
       if (!responsePromise) {
         responsePromise = this.fetchInBackgroundContext(
-          `${this.host}/api/influencers/scores/person/id/${id}/`
+          `${this.host}/api/influencers/scores/people/id/${id}/`
         );
         this._userRequestsMap[id] = responsePromise;
       }
@@ -171,6 +176,8 @@ export class HiveAPI {
     });
 
     delete response.scores;
+
+    response.podcasts = response.podcasts.edges;
 
     return response;
   }

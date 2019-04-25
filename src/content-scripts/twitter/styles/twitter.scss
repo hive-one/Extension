@@ -243,6 +243,31 @@
         }
       }
 
+      &_podcasts {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        text-align: center;
+        overflow: scroll;
+        margin-top: 10px;
+
+        &_podcast {
+          font-weight: 600;
+          background-color: white;
+          padding: 5px;
+          border: 1px solid #eeedff;
+          color: var(--primary-color);
+          width: 100%;
+          text-align: left;
+          text-indent: 10px;
+          font-size: 10px;
+
+          &_meta {
+            color: black;
+          }
+        }
+      }
+
       &-hidden {
         visibility: hidden;
       }

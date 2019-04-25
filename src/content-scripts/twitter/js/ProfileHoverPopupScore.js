@@ -106,7 +106,7 @@ export class TwitterProfileHoverPopupScoreExtension {
     );
 
     if (statList && this.shouldRun()) {
-      statList.appendChild(displayElement);
+      statList.prepend(displayElement);
     }
   }
 }

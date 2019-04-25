@@ -1,5 +1,6 @@
 import { CONFIG, MESSAGES } from '../../../config';
 import escapeHTML from 'escape-html';
+import moment from 'moment';
 
 let openPopupsCloseHandlers = [];
 
@@ -17,7 +18,7 @@ export class ProfilePopup {
   async showOnClick(displayElement) {
     const clusters = await this.api.getTwitterUserClusters(this.userTwitterId);
     const topFollowersCluster = await this.settings.getOptionValue('topFollowersCluster');
-    const { followers } = await this.api.getTwitterUserScore(
+    const { podcasts, followers } = await this.api.getTwitterUserScore(
       this.userTwitterId,
       topFollowersCluster
     );
@@ -112,11 +113,46 @@ export class ProfilePopup {
         FOLLOWERS_HTML += `</div>`;
       }
 
+      let PODCASTS_HTML = '';
+
+      if (podcasts && podcasts.length) {
+        PODCASTS_HTML += `
+        <br/>
+        <h3 class="${POPUP_CLASS}_title">Recent Podcasts</h3>
+        <div class="${POPUP_CLASS}_podcasts">`;
+
+        const currentYear = moment().format('YYYY');
+
+        podcasts.forEach(({ node }) => {
+          const safePodcastName = escapeHTML(node.name);
+
+          let date = moment.unix(node.published);
+
+          if (date.format('YYYY') === currentYear) {
+            date = date.format('D MMMM');
+          } else {
+            date = date.format('D MMMM YYYY');
+          }
+
+          PODCASTS_HTML += `
+                        <a class="${POPUP_CLASS}_podcasts_podcast" rel="noopener noreferrer" href="${escapeHTML(
+            node.episodeUrl
+          )}">
+                            - ${safePodcastName}
+                            <span class="${POPUP_CLASS}_podcasts_podcast_meta">- ${date}</span>
+                        </a>
+                    `;
+        });
+
+        PODCASTS_HTML += `</div>`;
+      }
+
       const CUSTOM_HTML = `
                 <div class="${POPUP_CLASS}_content">
                     ${clustersHTML}
                 </div>
                 ${FOLLOWERS_HTML}
+                ${PODCASTS_HTML}
                 <br/>
                 <a href="https://hive.one/profile/${escapeHTML(
                   this.userTwitterId
