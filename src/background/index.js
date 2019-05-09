@@ -16,18 +16,28 @@ chrome.runtime.onInstalled.addListener(function() {
     });
   });
 
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.declarativeContent.onPageChanged.addRules([
-      {
-        conditions: [
-          new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostEquals: 'twitter.com' }
-          })
-        ],
-        actions: [new chrome.declarativeContent.ShowPageAction()]
+  if (chrome.declarativeContent) {
+    chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
+      chrome.declarativeContent.onPageChanged.addRules([
+        {
+          conditions: [
+            new chrome.declarativeContent.PageStateMatcher({
+              pageUrl: { hostEquals: 'twitter.com' }
+            })
+          ],
+          actions: [new chrome.declarativeContent.ShowPageAction()]
+        }
+      ]);
+    });
+  } else {
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+      if (tab.status === 'complete' && tab.url.match(/twitter.com/)) {
+        chrome.pageAction.show(tabId);
+      } else {
+        chrome.pageAction.hide(tabId);
       }
-    ]);
-  });
+    });
+  }
 });
 
 // Standard Google Universal Analytics code
