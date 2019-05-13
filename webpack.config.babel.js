@@ -4,7 +4,13 @@ import ChromeExtensionReloader from 'webpack-chrome-extension-reloader';
 import CopyPlugin from 'copy-webpack-plugin';
 import path from 'path';
 
-const { NODE_ENV = 'development' } = process.env;
+const { NODE_ENV = 'development', BROWSER = 'chrome' } = process.env;
+
+let manifestFile = 'manifest-chrome';
+
+if (BROWSER === 'firefox') {
+  manifestFile = 'manifest-firefox';
+}
 
 const base = {
   context: __dirname,
@@ -42,7 +48,7 @@ const base = {
   },
   plugins: [
     new CopyPlugin([
-      { from: './src/manifest.json', to: './manifest.json' },
+      { from: `./src/${manifestFile}.json`, to: './manifest.json' },
       { from: './src/assets/images', to: './images' }
     ]),
     new HtmlWebpackPlugin({

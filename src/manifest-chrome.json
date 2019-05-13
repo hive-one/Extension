@@ -1,11 +1,9 @@
-  {
+{
     "name": "Hive",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "https://hive.one",
     "manifest_version": 2,
     "permissions": [
-        "tabs",
-        "activeTab",
         "declarativeContent",
         "storage",
         "https://hive.one/*",
