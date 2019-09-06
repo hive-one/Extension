@@ -47,7 +47,7 @@
     "lint-staged": {
         "*.js": [
             "eslint --fix",
-            "prettier --write --config ./.prettierrc --config-precedence file-override",
+            "prettier --write --config ./package.json --config-precedence file-override",
             "git add"
         ]
     },
