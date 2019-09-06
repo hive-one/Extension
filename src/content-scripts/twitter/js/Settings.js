@@ -1,20 +1,18 @@
 class ExtensionSettings {
+    isNewTwitterDesign;
     constructor() {
+        this.isNewTwitterDesign = this.getIsNewTwitterDesign();
         return new Promise(async resolve => {
-            this.clusterToDisplay = await this.getOptionValue(
-                'clusterToDisplay',
-            );
+            this.clusterToDisplay = await this.getOptionValue('clusterToDisplay');
             resolve(this);
         });
     }
 
     get isDarkTheme() {
-        return Boolean(
-            document.querySelector('.js-nightmode-icon.Icon--crescentFilled'),
-        );
+        return Boolean(document.querySelector('.js-nightmode-icon.Icon--crescentFilled'));
     }
 
-    get isNewTwitterDesign() {
+    getIsNewTwitterDesign() {
         return !!document.getElementById('react-root');
     }
 

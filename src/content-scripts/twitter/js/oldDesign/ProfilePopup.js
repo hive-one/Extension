@@ -9,16 +9,16 @@ export class ProfilePopup {
     userTwitterId;
     settings;
 
-    constructor(userTwitterId, api, settings) {
-        this.userTwitterId = userTwitterId;
-        this.api = api;
-        this.settings = settings;
+    constructor(_userTwitterId, _api, _settings) {
+        this.userTwitterId = _userTwitterId;
+        this.api = _api;
+        this.settings = _settings;
     }
 
     async showOnClick(displayElement) {
-        const clusters = await this.api.getTwitterUserClustersById(this.userTwitterId);
+        const scores = await this.api.getTwitterUserScores(this.userTwitterId);
         const topFollowersCluster = await this.settings.getOptionValue('topFollowersCluster');
-        const { podcasts, followers } = await this.api.getTwitterUserScoreById(this.userTwitterId, topFollowersCluster);
+        const { podcasts, followers } = await this.api.getTwitterUserData(this.userTwitterId, topFollowersCluster);
 
         let popupNode, closePopup;
 
@@ -63,7 +63,7 @@ export class ProfilePopup {
 
             let clustersHTML = ``;
 
-            clusters.map(cluster => {
+            scores.map(({ node: cluster }) => {
                 if (cluster.abbr === 'Crypto') {
                     return;
                 }
@@ -96,7 +96,8 @@ export class ProfilePopup {
         <h3 class="${POPUP_CLASS}_title">Top Followers</h3>
         <div class="${POPUP_CLASS}_followers">`;
 
-                followers.forEach(({ screenName }) => {
+                followers.forEach(({ node }) => {
+                    const { screenName } = node;
                     const safeScreenName = escapeHTML(screenName);
 
                     FOLLOWERS_HTML += `

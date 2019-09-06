@@ -30,7 +30,7 @@ export class TwitterTweetsAuthorScoreExtension {
 
             const authorId = tweet.getAttribute('data-user-id');
 
-            const { name: clusterName, score: userScore } = await this._api.getTwitterUserScoreById(authorId);
+            const { name: clusterName, score: userScore } = await this._api.getTwitterUserData(authorId);
 
             const userScoreDisplay = document.createElement('div');
             userScoreDisplay.classList.add(TWEET_INDIVIDUAL_SCORE_CLASS);
@@ -86,7 +86,7 @@ export class TwitterTweetsAuthorScoreExtension {
                 score: userScore,
                 rank: defaultClusterRank,
                 indexed: accountIndexed,
-            } = await this._api.getTwitterUserScoreById(authorId);
+            } = await this._api.getTwitterUserData(authorId);
 
             if (!accountIndexed) {
                 return;

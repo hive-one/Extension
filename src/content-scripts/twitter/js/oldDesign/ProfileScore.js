@@ -42,7 +42,7 @@ export class TwitterProfileScoreExtension {
             name: defaultClusterName,
             rank: defaultClusterRank,
             indexed: accountIndexed,
-        } = await this._api.getTwitterUserScoreById(userTwitterId);
+        } = await this._api.getTwitterUserData(userTwitterId);
 
         this.displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed);
     }

@@ -24,6 +24,6 @@ export const getScreenNameFromUrl = () => {
     try {
         return pattern.exec(pathname)[1];
     } catch (err) {
-        console.error('Failed parsing @handle from URL\n', err);
+        return;
     }
 };

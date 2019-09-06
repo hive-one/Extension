@@ -1,9 +1,9 @@
 import { MESSAGES } from '../../../config';
 
-class HIVE_API_FETCH_DATA_STATUS {
-    static SUCCESS = 'success';
-    static ERROR = 'error';
-}
+const RESPONSE_TYPES = Object.freeze({
+    SUCCESS: 'success',
+    ERROR: 'error',
+});
 
 const AVAILABLE_SCREEN_NAMES_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_SCREEN_NAMES';
 const AVAILABLE_IDS_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_IDS';
@@ -13,13 +13,14 @@ class HiveAPI {
     host = '';
 
     _acceptableIds;
-    _userRequestsMap = {};
+    _requestsMap;
 
     constructor(_host, settings, _cache) {
         this.host = _host;
         this.settings = settings;
         this.cache = _cache;
         this._acceptableIds = [];
+        this._requestsMap = new Map();
         return new Promise(async resolve => {
             if (settings.isNewTwitterDesign) {
                 await this._initialize(
@@ -35,6 +36,14 @@ class HiveAPI {
 
     get defaultCluster() {
         return this.settings.clusterToDisplay;
+    }
+
+    get userDataUrl() {
+        if (this.settings.isNewTwitterDesign) {
+            return `${this.host}/api/influencers/scores/people/screen_name`;
+        } else {
+            return `${this.host}/api/influencers/scores/people/id`;
+        }
     }
 
     async _initialize(key, url) {
@@ -57,7 +66,9 @@ class HiveAPI {
         }
     }
 
-    async getTwitterUserScoreById(id, clusterName = this.defaultCluster) {
+    async getTwitterUserData(id, clusterName = this.defaultCluster) {
+        // loads cached user reponse & returns scores/ranks based on the selected cluster
+
         let score = 0;
         let name = clusterName;
         let indexed = false;
@@ -66,61 +77,26 @@ class HiveAPI {
         let podcasts = [];
 
         if (id && this.isIdentifierIndexed(id)) {
-            const { data, status } = await this.getTwitterUserDataById(id);
+            const { data, status } = await this._getTwitterUserData(id);
 
-            if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
+            if (status === RESPONSE_TYPES.SUCCESS) {
                 if (clusterName === 'Highest') {
                     const highestScoreCluster = data.clusters.slice().sort((a, b) => b.score - a.score)[0];
 
                     name = highestScoreCluster.abbr;
                     score = highestScoreCluster.score;
                     rank = highestScoreCluster.rank;
-                    followers = highestScoreCluster.followers;
+                    followers = highestScoreCluster.followers.edges;
                 } else {
-                    const cluster = data.clusters.find(item => item.abbr === clusterName);
+                    const { node: cluster } = data.scores.find(({ node: cluster }) => cluster.abbr === clusterName);
                     score = cluster.score;
                     rank = cluster.rank;
-                    followers = cluster.followers;
+                    followers = cluster.followers.edges;
                 }
 
                 podcasts =
-                    data.podcasts && data.podcasts.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
-
-                indexed = true;
-            }
-        }
-
-        return { name, score, rank, indexed, followers, podcasts };
-    }
-    async getTwitterUserScoreByScreenName(screenName, clusterName = this.defaultCluster) {
-        let score = 0;
-        let name = clusterName;
-        let indexed = false;
-        let rank = null;
-        let followers = [];
-        let podcasts = [];
-
-        //TODO fix the isIndentifierIndexed
-        // if (screenName && this.isIdentifierIndexed(screenName)) {
-        if (screenName) {
-            const { data, status } = await this.getTwitterUserDataByName(screenName);
-            if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
-                if (clusterName === 'Highest') {
-                    const highestScoreCluster = data.clusters.slice().sort((a, b) => b.score - a.score)[0];
-
-                    name = highestScoreCluster.abbr;
-                    score = highestScoreCluster.score;
-                    rank = highestScoreCluster.rank;
-                    followers = highestScoreCluster.followers;
-                } else {
-                    const cluster = data.clusters.find(item => item.abbr === clusterName);
-                    score = cluster.score;
-                    rank = cluster.rank;
-                    followers = cluster.followers;
-                }
-
-                podcasts =
-                    data.podcasts && data.podcasts.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+                    data.podcasts.edges &&
+                    data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
 
                 indexed = true;
             }
@@ -129,103 +105,83 @@ class HiveAPI {
         return { name, score, rank, indexed, followers, podcasts };
     }
 
-    async getTwitterUserClustersById(id) {
-        const { data, status } = await this.getTwitterUserDataById(id);
-        let clusters = [];
+    async getTwitterUserScores(idOrScreenName) {
+        const { data, status } = await this._getTwitterUserData(idOrScreenName);
+        let scores = [];
 
-        if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
-            clusters = data.clusters;
+        if (status === RESPONSE_TYPES.SUCCESS) {
+            scores = data.scores;
         }
 
-        return clusters;
+        return scores;
     }
 
-    async getTwitterUserClustersByName(name) {
-        const { data, status } = await this.getTwitterUserDataByName(name);
-        console.log('data and scores from API fetch call ', data, status);
-        let clusters = [];
-
-        if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
-            clusters = data.clusters;
-        }
-        console.log('clusters ', clusters);
-        return clusters;
-    }
-
-    async getTwitterUserDataById(id) {
-        const cacheKey = this.getUserScoreStoringCacheKey(id);
+    async _getTwitterUserData(idOrScreenName) {
+        // Tries pulling data from cache
+        // if not requests dat from the API and caches it
+        const cacheKey = this.getUserDataCacheKey(idOrScreenName);
         const cachedData = await this.cache.get(cacheKey);
 
         if (typeof cachedData !== 'undefined' && cachedData !== null) {
             return cachedData;
         }
 
-        let status, data;
-
-        try {
-            let responsePromise = this._userRequestsMap[id];
-
-            if (!responsePromise) {
-                responsePromise = this.fetchInBackgroundContext(`${this.host}/api/influencers/scores/people/id/${id}/`);
-                this._userRequestsMap[id] = responsePromise;
-            }
-
-            const response = await responsePromise;
-            data = this.processScoreResponse(response);
-            status = HIVE_API_FETCH_DATA_STATUS.SUCCESS;
-        } catch (error) {
-            status = HIVE_API_FETCH_DATA_STATUS.ERROR;
+        let status;
+        const data = await this._requestUserData(idOrScreenName);
+        if (data) {
+            status = RESPONSE_TYPES.SUCCESS;
+        } else {
+            status = RESPONSE_TYPES.ERROR;
         }
 
-        const fetchingInfo = {
+        const resInfo = {
             data,
             status,
         };
+        await this.cache.save(cacheKey, resInfo);
 
-        await this.cache.save(cacheKey, fetchingInfo);
-
-        return fetchingInfo;
+        return resInfo;
     }
 
-    async getTwitterUserDataByName(name) {
-        const cacheKey = this.getUserScoreStoringCacheKey(name);
-        const cachedData = await this.cache.get(cacheKey);
-
-        if (typeof cachedData !== 'undefined' && cachedData !== null) {
-            return cachedData;
+    async _requestUserData(idOrScreenName) {
+        const url = `${this.userDataUrl}/${idOrScreenName}/`;
+        // Immediately save requests to state to prevent duplicate requests
+        let responsePromise = this._requestsMap[idOrScreenName];
+        if (!responsePromise) {
+            responsePromise = fetch(url);
+            this._requestsMap[idOrScreenName] = responsePromise;
         }
 
-        let status, data;
-
+        let userData;
         try {
-            let responsePromise = this._userRequestsMap[name];
-
-            if (!responsePromise) {
-                responsePromise = this.fetchInBackgroundContext(
-                    `${this.host}/api/influencers/scores/people/screen_name/${name}/`,
-                );
-                this._userRequestsMap[name] = responsePromise;
+            const res = await responsePromise;
+            if (!res.ok) {
+                throw new Error(`Unhandled response code: "${res.status}" for URL: "${url}"`);
             }
-
-            const response = await responsePromise;
-            data = this.processScoreResponse(response);
-            status = HIVE_API_FETCH_DATA_STATUS.SUCCESS;
-        } catch (error) {
-            status = HIVE_API_FETCH_DATA_STATUS.ERROR;
+            const { data } = await res.json();
+            userData = data;
+            // pop from state
+            delete this._requestsMap[idOrScreenName];
+        } catch (err) {
+            console.error(err);
+        }
+        if (!userData) {
+            throw new Error(`Failed requesting user data: ${idOrScreenName}`);
         }
 
-        const fetchingInfo = {
-            data,
-            status,
-        };
-
-        await this.cache.save(cacheKey, fetchingInfo);
-
-        return fetchingInfo;
+        return userData;
     }
 
-    getUserScoreStoringCacheKey(id) {
-        return `user_${id}_allCrypto_score`;
+    getUserDataCacheKey(id) {
+        return `twitter_user_${id}`;
+    }
+
+    isIdentifierIndexed(id) {
+        if (id.toString) {
+            id = id.toString();
+        }
+
+        return this._acceptableIds.includes(id);
     }
 
     fetchInBackgroundContext(url) {
@@ -244,36 +200,6 @@ class HiveAPI {
                 },
             );
         });
-    }
-
-    processScoreResponse(response) {
-        response = JSON.parse(JSON.stringify(response.data));
-
-        response.clusters = response.scores.map(item => {
-            if (item.node.followers && item.node.followers.edges) {
-                item.node.followers = item.node.followers.edges.map(followerNode => followerNode.node);
-            }
-
-            return item.node;
-        });
-
-        delete response.scores;
-
-        response.podcasts = response.podcasts.edges;
-
-        return response;
-    }
-
-    getAvailableIdentifiers() {
-        return this._acceptableIds;
-    }
-
-    isIdentifierIndexed(id) {
-        if (id.toString) {
-            id = id.toString();
-        }
-
-        return this.getAvailableIdentifiers().includes(id);
     }
 }
 
