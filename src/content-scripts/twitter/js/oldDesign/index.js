@@ -4,11 +4,10 @@ import { TwitterProfileScoreExtension } from './ProfileScore';
 import { TwitterTweetsAuthorScoreExtension } from './TweetsAuthorScore';
 import { CONFIG } from '../../../../config';
 import { ExtensionIcons } from './Icons';
-import { ExtensionSettings } from '../Settings';
 import { TwitterProfileHoverPopupScoreExtension } from './ProfileHoverPopupScore';
 import { TimedCache } from '../TimedCache';
 
-const runOldDesign = () => {
+const runOldDesign = ({ settings }) => {
     const observeDOM = (() => {
         const MutationObserver =
                 window.MutationObserver || window.WebKitMutationObserver,
@@ -34,14 +33,12 @@ const runOldDesign = () => {
     })();
 
     (async () => {
-        const settings = new ExtensionSettings();
-
-        const clusterToDisplay = await settings.getOptionValue(
-            'clusterToDisplay',
-        );
-
         const cache = new TimedCache(CONFIG.USER_DATA_CACHE_LIFETIME);
-        const api = new HiveAPI(CONFIG.API_HOST, clusterToDisplay, cache);
+        const api = new HiveAPI(
+            CONFIG.API_HOST,
+            settings.clusterToDisplay,
+            cache,
+        );
 
         await api.initialize();
 
