@@ -2,8 +2,7 @@ import { ProfilePopup } from './ProfilePopup';
 import escapeHTML from 'escape-html';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension-Twitter_tweet-author-score';
-const TWEET_INDIVIDUAL_SCORE_CLASS =
-    'HiveExtension-Twitter_tweet-individual-score';
+const TWEET_INDIVIDUAL_SCORE_CLASS = 'HiveExtension-Twitter_tweet-individual-score';
 const TWEETS_SELECTOR = '.tweet';
 
 export class TwitterTweetsAuthorScoreExtension {
@@ -31,10 +30,7 @@ export class TwitterTweetsAuthorScoreExtension {
 
             const authorId = tweet.getAttribute('data-user-id');
 
-            const {
-                name: clusterName,
-                score: userScore,
-            } = await this._api.getTwitterUserScore(authorId);
+            const { name: clusterName, score: userScore } = await this._api.getTwitterUserScoreById(authorId);
 
             const userScoreDisplay = document.createElement('div');
             userScoreDisplay.classList.add(TWEET_INDIVIDUAL_SCORE_CLASS);
@@ -52,9 +48,7 @@ export class TwitterTweetsAuthorScoreExtension {
         </div>
 
       <span class="ProfileTweet-actionCount">
-        <span class="${TWEET_INDIVIDUAL_SCORE_CLASS}_display_score">${Math.round(
-                userScore,
-            )}</span>
+        <span class="${TWEET_INDIVIDUAL_SCORE_CLASS}_display_score">${Math.round(userScore)}</span>
       </span>
 
       </button>
@@ -92,7 +86,7 @@ export class TwitterTweetsAuthorScoreExtension {
                 score: userScore,
                 rank: defaultClusterRank,
                 indexed: accountIndexed,
-            } = await this._api.getTwitterUserScore(authorId);
+            } = await this._api.getTwitterUserScoreById(authorId);
 
             if (!accountIndexed) {
                 return;
@@ -101,14 +95,9 @@ export class TwitterTweetsAuthorScoreExtension {
             const tweetIsThread =
                 Boolean(tweet.querySelector('.self-thread-tweet-cta')) ||
                 tweet.classList.contains('conversation-tweet') ||
-                (tweet.parentElement &&
-                    tweet.parentElement.classList.contains(
-                        'conversation-first-visible-tweet',
-                    )) ||
+                (tweet.parentElement && tweet.parentElement.classList.contains('conversation-first-visible-tweet')) ||
                 (tweet.parentElement.parentElement &&
-                    tweet.parentElement.parentElement.classList.contains(
-                        'ThreadedConversation-tweet',
-                    ));
+                    tweet.parentElement.parentElement.classList.contains('ThreadedConversation-tweet'));
 
             let threadClass = TWEET_AUTHOR_SCORE_CLASS + '_display-in-thread';
 
@@ -116,18 +105,13 @@ export class TwitterTweetsAuthorScoreExtension {
                 threadClass += '-dark';
             }
 
-            const option = await this._settings.getOptionValue(
-                'displaySetting',
-            );
+            const option = await this._settings.getOptionValue('displaySetting');
             const useIcons = await this._settings.getOptionValue('useIcons');
 
             let value = '';
             let tooltip = '';
 
-            if (
-                ['showRanksWithScoreFallback', 'showRanks'].includes(option) &&
-                defaultClusterRank
-            ) {
+            if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && defaultClusterRank) {
                 value = defaultClusterRank;
 
                 if (!useIcons) {
@@ -153,9 +137,7 @@ export class TwitterTweetsAuthorScoreExtension {
             userScoreDisplay.classList.add(TWEET_AUTHOR_SCORE_CLASS);
 
             if (useIcons) {
-                userScoreDisplay.classList.add(
-                    `${TWEET_AUTHOR_SCORE_CLASS}-icons`,
-                );
+                userScoreDisplay.classList.add(`${TWEET_AUTHOR_SCORE_CLASS}-icons`);
             }
 
             userScoreDisplay.innerHTML = `
@@ -165,17 +147,11 @@ export class TwitterTweetsAuthorScoreExtension {
           <svg viewBox="0 0 36 36" class="${TWEET_AUTHOR_SCORE_CLASS}_icon">
             <use xlink:href="#hive-icon-small" />
           </svg>
-          <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${escapeHTML(
-                value,
-            )}</span>
+          <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${escapeHTML(value)}</span>
         </b>`;
 
             if (accountIndexed) {
-                const popup = new ProfilePopup(
-                    authorId,
-                    this._api,
-                    this._settings,
-                );
+                const popup = new ProfilePopup(authorId, this._api, this._settings);
                 popup.showOnClick(userScoreDisplay);
             }
 

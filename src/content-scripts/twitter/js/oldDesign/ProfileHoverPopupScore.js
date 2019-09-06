@@ -23,11 +23,7 @@ export class TwitterProfileHoverPopupScoreExtension {
     shouldRun() {
         const container = document.querySelector(PROFILE_HOVER_CONTAINER);
 
-        return (
-            container &&
-            !container.querySelector(`.${ELEMENT_CLASS}`) &&
-            container.style.display !== 'none'
-        );
+        return container && !container.querySelector(`.${ELEMENT_CLASS}`) && container.style.display !== 'none';
     }
 
     async start() {
@@ -46,22 +42,12 @@ export class TwitterProfileHoverPopupScoreExtension {
             name: defaultClusterName,
             rank: defaultClusterRank,
             indexed: accountIndexed,
-        } = await this._api.getTwitterUserScore(userTwitterId);
+        } = await this._api.getTwitterUserScoreById(userTwitterId);
 
-        this.displayUserScore(
-            defaultClusterScore,
-            defaultClusterRank,
-            defaultClusterName,
-            accountIndexed,
-        );
+        this.displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed);
     }
 
-    async displayUserScore(
-        defaultClusterScore,
-        defaultClusterRank,
-        defaultClusterName,
-        accountIndexed,
-    ) {
+    async displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed) {
         if (!accountIndexed) {
             return;
         }
@@ -72,10 +58,7 @@ export class TwitterProfileHoverPopupScoreExtension {
 
         const option = await this._settings.getOptionValue('displaySetting');
 
-        if (
-            ['showRanksWithScoreFallback', 'showRanks'].includes(option) &&
-            defaultClusterRank
-        ) {
+        if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && defaultClusterRank) {
             value = `${defaultClusterRank}`;
             label = `${defaultClusterName} Rank`;
             tooltip = `${defaultClusterName} Rank ${defaultClusterRank}`;
@@ -98,19 +81,13 @@ export class TwitterProfileHoverPopupScoreExtension {
         `;
 
         if (label) {
-            const popup = new ProfilePopup(
-                this.getUserId(),
-                this._api,
-                this._settings,
-            );
+            const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
             popup.showOnClick(displayElement);
         } else {
             displayElement.style.display = 'none';
         }
 
-        const statList = document.querySelector(
-            `${PROFILE_HOVER_CONTAINER} .ProfileCardStats-statList`,
-        );
+        const statList = document.querySelector(`${PROFILE_HOVER_CONTAINER} .ProfileCardStats-statList`);
 
         if (statList && this.shouldRun()) {
             statList.prepend(displayElement);

@@ -1,11 +1,9 @@
 import { ProfilePopup } from './ProfilePopup';
 
-const PROFILE_SCORE_EXTENSION_CLASS_NAME =
-    'HiveExtension-Twitter_profile-score';
+const PROFILE_SCORE_EXTENSION_CLASS_NAME = 'HiveExtension-Twitter_profile-score';
 const PROFILE_SIDEBAR_SELECTOR = '.ProfileSidebar';
 const PROFILE_NAV_SELECTOR = '.ProfileNav';
-const PROCESSED_INDICATOR_CLASS =
-    'HiveExtension-Twitter_profile-score-processed';
+const PROCESSED_INDICATOR_CLASS = 'HiveExtension-Twitter_profile-score-processed';
 
 export class TwitterProfileScoreExtension {
     _api;
@@ -31,10 +29,7 @@ export class TwitterProfileScoreExtension {
 
         const profileNav = document.querySelector('.ProfileNav-list');
 
-        if (
-            !profileNav ||
-            profileNav.classList.contains(PROCESSED_INDICATOR_CLASS)
-        ) {
+        if (!profileNav || profileNav.classList.contains(PROCESSED_INDICATOR_CLASS)) {
             return;
         }
 
@@ -47,22 +42,12 @@ export class TwitterProfileScoreExtension {
             name: defaultClusterName,
             rank: defaultClusterRank,
             indexed: accountIndexed,
-        } = await this._api.getTwitterUserScore(userTwitterId);
+        } = await this._api.getTwitterUserScoreById(userTwitterId);
 
-        this.displayUserScore(
-            defaultClusterScore,
-            defaultClusterRank,
-            defaultClusterName,
-            accountIndexed,
-        );
+        this.displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed);
     }
 
-    async displayUserScore(
-        defaultClusterScore,
-        defaultClusterRank,
-        defaultClusterName,
-        accountIndexed,
-    ) {
+    async displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed) {
         if (!accountIndexed) {
             return;
         }
@@ -73,10 +58,7 @@ export class TwitterProfileScoreExtension {
 
         const option = await this._settings.getOptionValue('displaySetting');
 
-        if (
-            ['showRanksWithScoreFallback', 'showRanks'].includes(option) &&
-            defaultClusterRank
-        ) {
+        if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && defaultClusterRank) {
             value = `${defaultClusterRank}`;
             label = `${defaultClusterName} Rank`;
             tooltip = `${defaultClusterName} Rank ${defaultClusterRank}`;
@@ -100,17 +82,11 @@ export class TwitterProfileScoreExtension {
             </div>
         `;
 
-            const popup = new ProfilePopup(
-                this.getUserId(),
-                this._api,
-                this._settings,
-            );
+            const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
             popup.showOnClick(displayElement);
         }
 
-        document
-            .querySelector('.ProfileNav-item:nth-of-type(4)')
-            .insertAdjacentElement('afterend', displayElement);
+        document.querySelector('.ProfileNav-item:nth-of-type(4)').insertAdjacentElement('afterend', displayElement);
     }
 
     isOnProfileScreen() {
@@ -118,8 +94,6 @@ export class TwitterProfileScoreExtension {
     }
 
     hasAlreadyRun() {
-        return Boolean(
-            document.querySelector(`.${PROFILE_SCORE_EXTENSION_CLASS_NAME}`),
-        );
+        return Boolean(document.querySelector(`.${PROFILE_SCORE_EXTENSION_CLASS_NAME}`));
     }
 }

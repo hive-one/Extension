@@ -16,16 +16,9 @@ export class ProfilePopup {
     }
 
     async showOnClick(displayElement) {
-        const clusters = await this.api.getTwitterUserClusters(
-            this.userTwitterId,
-        );
-        const topFollowersCluster = await this.settings.getOptionValue(
-            'topFollowersCluster',
-        );
-        const { podcasts, followers } = await this.api.getTwitterUserScore(
-            this.userTwitterId,
-            topFollowersCluster,
-        );
+        const clusters = await this.api.getTwitterUserClustersById(this.userTwitterId);
+        const topFollowersCluster = await this.settings.getOptionValue('topFollowersCluster');
+        const { podcasts, followers } = await this.api.getTwitterUserScoreById(this.userTwitterId, topFollowersCluster);
 
         let popupNode, closePopup;
 
@@ -43,20 +36,14 @@ export class ProfilePopup {
             };
 
             const closeAllPopups = () => {
-                openPopupsCloseHandlers.forEach(popupCloseHandler =>
-                    popupCloseHandler(event),
-                );
+                openPopupsCloseHandlers.forEach(popupCloseHandler => popupCloseHandler(event));
                 openPopupsCloseHandlers = [];
             };
 
             event.stopPropagation();
 
             if (displayElement.querySelector(`.${POPUP_CLASS}`)) {
-                if (
-                    popupNode &&
-                    (event.target !== popupNode &&
-                        !popupNode.contains(event.target))
-                ) {
+                if (popupNode && (event.target !== popupNode && !popupNode.contains(event.target))) {
                     closeAllPopups();
                 }
 
@@ -82,9 +69,7 @@ export class ProfilePopup {
                 }
 
                 const roundedScore = Math.round(cluster.score);
-                const percentage = Math.floor(
-                    (roundedScore / CONFIG.MAX_SCORE) * 100,
-                );
+                const percentage = Math.floor((roundedScore / CONFIG.MAX_SCORE) * 100);
 
                 clustersHTML += `
               <div class="HiveExtension-Twitter_popup-profile_cluster-score">
@@ -166,9 +151,7 @@ export class ProfilePopup {
                 ${FOLLOWERS_HTML}
                 ${PODCASTS_HTML}
                 <br/>
-                <a href="https://hive.one/profile/${escapeHTML(
-                    this.userTwitterId,
-                )}" class="${POPUP_CLASS}_credit">
+                <a href="https://hive.one/profile/${escapeHTML(this.userTwitterId)}" class="${POPUP_CLASS}_credit">
                   Learn more about this profile at hive.one
                   <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
                     <use xlink:href="#hive-icon" />
@@ -196,10 +179,7 @@ export class ProfilePopup {
 
             setTimeout(() => {
                 closePopup = event => {
-                    if (
-                        event.target === popupNode ||
-                        popupNode.contains(event.target)
-                    ) {
+                    if (event.target === popupNode || popupNode.contains(event.target)) {
                         return;
                     }
 
