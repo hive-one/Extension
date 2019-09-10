@@ -18,7 +18,10 @@ export class ProfilePopup {
     async showOnClick(displayElement) {
         const scores = await this.api.getTwitterUserScores(this.userTwitterId);
         const topFollowersCluster = await this.settings.getOptionValue('topFollowersCluster');
-        const { podcasts, followers } = await this.api.getTwitterUserData(this.userTwitterId, topFollowersCluster);
+        const { podcasts, followers } = await this.api.getFilteredTwitterUserData(
+            this.userTwitterId,
+            topFollowersCluster,
+        );
 
         let popupNode, closePopup;
 

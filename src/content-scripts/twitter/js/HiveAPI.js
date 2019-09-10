@@ -22,14 +22,7 @@ class HiveAPI {
         this._acceptableIds = [];
         this._requestsMap = new Map();
         return new Promise(async resolve => {
-            if (settings.isNewTwitterDesign) {
-                await this._initialize(
-                    AVAILABLE_SCREEN_NAMES_KEY,
-                    `${this.host}/api/influencers/scores/people/available/screen_names/`,
-                );
-            } else {
-                await this._initialize(AVAILABLE_IDS_KEY, `${this.host}/api/influencers/scores/people/available/ids/`);
-            }
+            await this._initialize();
             resolve(this);
         });
     }
@@ -46,9 +39,29 @@ class HiveAPI {
         }
     }
 
-    async _initialize(key, url) {
+    get availableIdsKey() {
+        if (this.settings.isNewTwitterDesign) {
+            return AVAILABLE_SCREEN_NAMES_KEY;
+        } else {
+            return AVAILABLE_IDS_KEY;
+        }
+    }
+
+    get availableIdsUrl() {
+        if (this.settings.isNewTwitterDesign) {
+            return `${this.host}/api/influencers/scores/people/available/screen_names/`;
+        } else {
+            return `${this.host}/api/influencers/scores/people/available/ids/`;
+        }
+    }
+
+    async _initialize() {
+        const key = this.availableIdsKey;
+        const url = this.availableIdsUrl;
+
         try {
             var cachedIds = await this.cache.get(key);
+
             if (!cachedIds) {
                 const res = await fetch(url);
                 if (!res.ok) {
@@ -66,43 +79,55 @@ class HiveAPI {
         }
     }
 
-    async getTwitterUserData(id, clusterName = this.defaultCluster) {
+    async getFilteredTwitterUserData(idOrScreenName, clusterName = this.defaultCluster) {
         // loads cached user reponse & returns scores/ranks based on the selected cluster
 
+        if (!idOrScreenName) {
+            throw new Error('Missing arg: idOrScreenName');
+        }
+
+        if (!this.isIdentifierIndexed(idOrScreenName)) {
+            throw new Error(`Could not find ${idOrScreenName} within this._acceptableIds`);
+        }
+
+        let id, screenName, rank;
         let score = 0;
         let name = clusterName;
         let indexed = false;
-        let rank = null;
         let followers = [];
         let podcasts = [];
+        let scores = [];
 
-        if (id && this.isIdentifierIndexed(id)) {
-            const { data, status } = await this._getTwitterUserData(id);
+        const { data, status } = await this._getTwitterUserData(idOrScreenName);
 
-            if (status === RESPONSE_TYPES.SUCCESS) {
-                if (clusterName === 'Highest') {
-                    const highestScoreCluster = data.clusters.slice().sort((a, b) => b.score - a.score)[0];
-
-                    name = highestScoreCluster.abbr;
-                    score = highestScoreCluster.score;
-                    rank = highestScoreCluster.rank;
-                    followers = highestScoreCluster.followers.edges;
-                } else {
-                    const { node: cluster } = data.scores.find(({ node: cluster }) => cluster.abbr === clusterName);
-                    score = cluster.score;
-                    rank = cluster.rank;
-                    followers = cluster.followers.edges;
-                }
-
-                podcasts =
-                    data.podcasts.edges &&
-                    data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
-
-                indexed = true;
-            }
+        if (status !== RESPONSE_TYPES.SUCCESS || !data) {
+            throw new Error(`Failed getting data for for: ${idOrScreenName}`);
         }
 
-        return { name, score, rank, indexed, followers, podcasts };
+        id = data.twitter_id;
+        screenName = data.screenName;
+        scores = data.scores;
+
+        if (clusterName === 'Highest') {
+            const highestScoreCluster = data.scores.slice().sort((a, b) => b.score - a.score)[0];
+
+            name = highestScoreCluster.abbr;
+            score = highestScoreCluster.score;
+            rank = highestScoreCluster.rank;
+            followers = highestScoreCluster.followers.edges;
+        } else {
+            const { node: selectedCluster } = data.scores.find(c => c.node.abbr === clusterName);
+            score = selectedCluster.score;
+            rank = selectedCluster.rank;
+            followers = selectedCluster.followers.edges;
+        }
+
+        podcasts =
+            data.podcasts.edges && data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+
+        indexed = true;
+
+        return { id, screenName, clusterName: name, score, scores, rank, indexed, followers, podcasts };
     }
 
     async getTwitterUserScores(idOrScreenName) {
@@ -172,16 +197,16 @@ class HiveAPI {
         return userData;
     }
 
-    getUserDataCacheKey(id) {
-        return `twitter_user_${id}`;
+    getUserDataCacheKey(idOrScreenName) {
+        return `twitter_user_${idOrScreenName}`;
     }
 
-    isIdentifierIndexed(id) {
-        if (id.toString) {
-            id = id.toString();
+    isIdentifierIndexed(idOrScreenName) {
+        if (idOrScreenName.toString) {
+            idOrScreenName = idOrScreenName.toString();
         }
 
-        return this._acceptableIds.includes(id);
+        return this._acceptableIds.includes(idOrScreenName);
     }
 
     fetchInBackgroundContext(url) {

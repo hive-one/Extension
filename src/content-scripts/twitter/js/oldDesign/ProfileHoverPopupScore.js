@@ -37,21 +37,15 @@ export class TwitterProfileHoverPopupScoreExtension {
             return;
         }
 
-        const {
-            score: defaultClusterScore,
-            name: defaultClusterName,
-            rank: defaultClusterRank,
-            indexed: accountIndexed,
-        } = await this._api.getTwitterUserData(userTwitterId);
+        const userData = await this._api.getFilteredTwitterUserData(userTwitterId);
+        if (!userData) return;
 
-        this.displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed);
+        const { score, clusterName, rank: defaultClusterRank } = userData;
+
+        this.displayUserScore(score, defaultClusterRank, clusterName);
     }
 
-    async displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName, accountIndexed) {
-        if (!accountIndexed) {
-            return;
-        }
-
+    async displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName) {
         let tooltip = '';
         let label = '';
         let value = '';

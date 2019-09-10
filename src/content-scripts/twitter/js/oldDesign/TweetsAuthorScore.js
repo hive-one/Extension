@@ -30,7 +30,7 @@ export class TwitterTweetsAuthorScoreExtension {
 
             const authorId = tweet.getAttribute('data-user-id');
 
-            const { name: clusterName, score: userScore } = await this._api.getTwitterUserData(authorId);
+            const { clusterName, score: userScore } = await this._api.getFilteredTwitterUserData(authorId);
 
             const userScoreDisplay = document.createElement('div');
             userScoreDisplay.classList.add(TWEET_INDIVIDUAL_SCORE_CLASS);
@@ -81,16 +81,10 @@ export class TwitterTweetsAuthorScoreExtension {
                 return;
             }
 
-            const {
-                name: defaultClusterName,
-                score: userScore,
-                rank: defaultClusterRank,
-                indexed: accountIndexed,
-            } = await this._api.getTwitterUserData(authorId);
+            const userData = await this._api.getFilteredTwitterUserData(authorId);
+            if (!userData) return;
 
-            if (!accountIndexed) {
-                return;
-            }
+            const { clusterName, score: userScore, rank: defaultClusterRank } = userData;
 
             const tweetIsThread =
                 Boolean(tweet.querySelector('.self-thread-tweet-cta')) ||
@@ -118,7 +112,7 @@ export class TwitterTweetsAuthorScoreExtension {
                     value = `#${value}`;
                 }
 
-                tooltip = `${defaultClusterName} Rank ${defaultClusterRank}`;
+                tooltip = `${clusterName} Rank ${defaultClusterRank}`;
             } else if (option !== 'showRanks') {
                 value = Math.round(userScore);
 
@@ -126,7 +120,7 @@ export class TwitterTweetsAuthorScoreExtension {
                     value = `[ ${value} ]`;
                 }
 
-                tooltip = `${defaultClusterName} Score ${value}`;
+                tooltip = `${clusterName} Score ${value}`;
             }
 
             if (!value || !tooltip) {
@@ -150,10 +144,8 @@ export class TwitterTweetsAuthorScoreExtension {
           <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${escapeHTML(value)}</span>
         </b>`;
 
-            if (accountIndexed) {
-                const popup = new ProfilePopup(authorId, this._api, this._settings);
-                popup.showOnClick(userScoreDisplay);
-            }
+            const popup = new ProfilePopup(authorId, this._api, this._settings);
+            popup.showOnClick(userScoreDisplay);
 
             const accountGroup = tweet.querySelector('.stream-item-header');
 

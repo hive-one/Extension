@@ -1,28 +1,32 @@
-import { waitUntilDomLoaded, getScreenNameFromUrl } from './utils';
+import runProfile from './runProfile';
 
 const skippableRoutes = /^\/(home|notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists)/;
 
-const run = async () => {
+const run = async (settings, api) => {
     const { pathname } = window.location;
-    if (pathname.match(skippableRoutes)) {
+
+    if (pathname === '/' || pathname.match(skippableRoutes)) {
         console.log(`TODO: Handle route: "${pathname}"`);
         return;
     }
 
-    await waitUntilDomLoaded();
+    // TODO: waitUntiltrue
+    // pass a function which loops / sleeps until true
+    // I keep getting the error "Failed finding profile image for roy12312312"
 
-    const profileScreenName = getScreenNameFromUrl();
-
-    console.log('Handling profile:', profileScreenName);
+    // RUN PROFILE
+    runProfile(settings, api);
 };
 
 const rerunOnUrlChange = (oldUrl, rerun) => {
     let newUrl = window.location.href;
     if (oldUrl === newUrl) {
-        setTimeout(() => rerunOnUrlChange(newUrl), 200);
+        setTimeout(() => rerunOnUrlChange(newUrl, rerun), 200);
     } else {
+        console.log(oldUrl, newUrl);
+
         rerun();
-        setTimeout(() => rerunOnUrlChange(window.location.href), 200);
+        setTimeout(() => rerunOnUrlChange(window.location.href, rerun), 200);
     }
 };
 
