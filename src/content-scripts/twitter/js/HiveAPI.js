@@ -62,7 +62,7 @@ class HiveAPI {
         try {
             var cachedIds = await this.cache.get(key);
 
-            if (!cachedIds) {
+            if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
                 const res = await fetch(url);
                 if (!res.ok) {
                     throw new Error(`Cannot handle status code "${res.status}" for url "${url}"`);

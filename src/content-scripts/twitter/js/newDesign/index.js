@@ -1,4 +1,5 @@
 import runProfile from './runProfile';
+import { initialiseIcons } from './utils';
 
 const skippableRoutes = /^\/(home|notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists)/;
 
@@ -31,6 +32,7 @@ const rerunOnUrlChange = (oldUrl, rerun) => {
 };
 
 const runNewDesign = (settings, api) => {
+    initialiseIcons();
     rerunOnUrlChange(window.location.href, () => run(settings, api));
     run(settings, api);
 };

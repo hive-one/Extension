@@ -1,17 +1,13 @@
 @import 'base';
 
-:root {
-    --primary-color: #1da1f2;
-    --twitter-text-grey: rgb(101, 119, 134);
-}
-
 #HiveExtension_Twitter_ProfileNav {
     border: 1px solid $purple_one;
     color: $purple_one;
     text-align: center;
-    line-height: 39px;
+    line-height: 37px;
     font-family: $twitter_font-family;
     font-weight: 300;
+    font-size: 12px;
 
     &:hover {
         background-color: #564dff2d;
@@ -40,19 +36,40 @@
         position: absolute;
         width: 48px;
 
+        &_container {
+            padding: 12px;
+        }
+
+        &_text {
+            color: $twitter_grey;
+            font-family: $twitter_font-family;
+            font-size: 12px;
+            font-weight: 300;
+
+            &:hover {
+                color: $twitter_blue;
+                transition-duration: 0.2s;
+            }
+        }
+
+        &_icon {
+            fill: $purple_two;
+            width: 14px;
+        }
+
         .GalleryTweet & {
             display: none;
         }
 
         &-icons {
             #{$root}_display {
-                background: var(--primary-color) !important;
+                background: $twitter_blue !important;
                 border-radius: 4px;
                 height: 16px;
 
                 #{$root}_text {
                     background: white;
-                    color: var(--primary-color);
+                    color: $twitter_blue;
                     display: block;
                     min-width: 26px;
                     line-height: 1;
@@ -77,13 +94,9 @@
                 }
 
                 &:hover {
-                    color: var(--primary-color);
+                    color: $twitter_blue;
                 }
             }
-        }
-
-        &_icon {
-            display: none;
         }
 
         &_display {
@@ -94,7 +107,7 @@
             color: #657786;
 
             &:hover {
-                color: var(--primary-color);
+                color: $twitter_blue;
             }
 
             &-in-thread {
@@ -145,11 +158,11 @@
 
             &:hover {
                 #{$root}_score {
-                    color: var(--primary-color);
+                    color: $twitter_blue;
                 }
 
                 #{$root}_icon {
-                    fill: var(--primary-color);
+                    fill: $twitter_blue;
                 }
             }
         }
@@ -214,12 +227,12 @@
             }
 
             &_credit {
-                color: var(--primary-color);
+                color: $twitter_blue;
                 font-family: $twitter_font-family;
 
                 &_icon {
                     width: 16px;
-                    fill: var(--primary-color);
+                    fill: $twitter_blue;
                     vertical-align: bottom;
                     float: left;
                     margin-top: 3px;
@@ -227,7 +240,7 @@
                 }
 
                 &:hover {
-                    color: var(--primary-color);
+                    color: $twitter_blue;
                 }
             }
 
@@ -278,7 +291,7 @@
                     background-color: white;
                     padding: 5px;
                     border: 1px solid #eeedff;
-                    color: var(--primary-color);
+                    color: $twitter_blue;
                     width: 100%;
                     text-align: left;
                     text-indent: 10px;
@@ -330,7 +343,7 @@
                     }
 
                     &_progress {
-                        background-color: var(--primary-color);
+                        background-color: $twitter_blue;
                         position: absolute;
                         height: 4px;
                         border-radius: 4px;

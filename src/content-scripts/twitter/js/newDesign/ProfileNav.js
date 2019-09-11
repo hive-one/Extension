@@ -1,16 +1,13 @@
 // This component renders a rank/score on a users profile
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
 import { waitUntilResult, getProfileImage } from './utils';
-// import { ProfilePopup } from '../oldDesign/ProfilePopup';
 import createProfilePopup from './ProfilePopup';
 
 const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 
 const createNavIconHTML = (classes, tooltip, value) => `
 <div id="${PROILE_NAV_ICON_ID}" class="${classes} HiveExtension-Twitter_profile_rank-container" href="#" data-original-title="${tooltip}">
-    <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">
-        ${value}
-    </span>
+    <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">${value}</span>
 </div>
 `;
 
@@ -43,8 +40,7 @@ class ProfileNav {
         const { rank, clusterName, score } = userData;
 
         // TODO: add tooltip
-        let tooltip = '';
-        let value = '';
+        let tooltip, value;
 
         const option = await this.settings.getOptionValue('displaySetting');
 
