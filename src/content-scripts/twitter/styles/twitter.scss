@@ -15,6 +15,20 @@
     }
 }
 
+.HiveExtension_Twitter_Popup {
+    position: absolute;
+    background: #fafbfd;
+    padding: 10px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    width: 300px;
+    font-size: 14px;
+    line-height: 19.25px;
+    user-select: none;
+    color: #14171a;
+    text-align: left;
+    cursor: initial;
+}
+
 .HiveExtension-Twitter {
     font-family: $twitter_font-family;
     &_profile-score {
@@ -184,6 +198,8 @@
             color: #14171a;
             text-align: left;
             cursor: initial;
+            top: 254px;
+            right: 0;
 
             &-dark {
                 color: #ffffff;

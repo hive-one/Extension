@@ -108,12 +108,11 @@ const createPopupHTML = (screenName, scores, followers, podcasts) => {
     `;
 };
 
-const createProfilePopup = async (settings, userData, clickableNode, appendableNode) => {
+const createProfilePopup = async (settings, userData, clickableNode, appendableNode, popupId, popupStyles) => {
     // clickableNode = node that triggers the popup being created
     // appendableNode = node that popup is injected to
 
     const { screenName, podcasts, followers, scores } = userData;
-    const POPUP_ID = `HiveExtension-Twitter_Profile_Popup_${screenName}`;
 
     let popupNode, closePopup;
     const displayPopup = event => {
@@ -121,18 +120,20 @@ const createProfilePopup = async (settings, userData, clickableNode, appendableN
 
         const removePopupElement = () => {
             document.removeEventListener('click', closePopup);
-            document.getElementById(POPUP_ID).remove();
+            document.getElementById(popupId).remove();
         };
 
         popupNode = document.createElement('div');
-        popupNode.id = POPUP_ID;
-        popupNode.classList.add(POPUP_CLASS);
+        popupNode.id = popupId;
+        for (const key in popupStyles) {
+            popupNode.style[key] = popupStyles[key];
+        }
+        popupNode.classList.add('HiveExtension_Twitter_Popup');
+        // TODO: Handle dark theme
         if (settings.isDarkTheme) {
-            popupNode.classList.add(`${POPUP_CLASS}-dark`);
+            popupNode.classList.add(`HiveExtension_Twitter_Popup-dark`);
         }
         popupNode.innerHTML = createPopupHTML(screenName, scores, followers, podcasts);
-        popupNode.style.top = '254px';
-        popupNode.style.right = 0;
         appendableNode.appendChild(popupNode);
 
         setTimeout(() => {

@@ -1,7 +1,7 @@
 import runProfile from './runProfile';
-import { initialiseIcons } from './utils';
+import { initialiseIcons, sleep } from './utils';
 
-const skippableRoutes = /^\/(home|notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists)/;
+const skippableRoutes = /^\/(home|notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists|[A-Za-z0-9_]+\/status)/;
 
 const run = async (settings, api) => {
     const { pathname } = window.location;
@@ -11,30 +11,36 @@ const run = async (settings, api) => {
         return;
     }
 
-    // TODO: waitUntiltrue
-    // pass a function which loops / sleeps until true
-    // I keep getting the error "Failed finding profile image for roy12312312"
-
     // RUN PROFILE
-    runProfile(settings, api);
+    const screenName = pathname.slice(1);
+    await runProfile(settings, api, screenName);
 };
 
-const rerunOnUrlChange = (oldUrl, rerun) => {
+const rerunOnUrlChange = async (oldUrl, rerun, oldRunningTask) => {
+    await sleep(200);
+
     let newUrl = window.location.href;
     if (oldUrl === newUrl) {
-        setTimeout(() => rerunOnUrlChange(newUrl, rerun), 200);
+        rerunOnUrlChange(newUrl, rerun, oldRunningTask);
     } else {
-        console.log(oldUrl, newUrl);
-
-        rerun();
-        setTimeout(() => rerunOnUrlChange(window.location.href, rerun), 200);
+        // kill old task
+        window.clearTimeout(oldRunningTask);
+        const newRunningTask = rerun();
+        rerunOnUrlChange(window.location.href, rerun, newRunningTask);
     }
 };
 
-const runNewDesign = (settings, api) => {
+const runNewDesign = async (settings, api) => {
+    // This extention works by listening for changes in
+    // window.location.href and running / killing / rerunning
+    // a function that injects relevant html on the page.
     initialiseIcons();
-    rerunOnUrlChange(window.location.href, () => run(settings, api));
-    run(settings, api);
+    const task = () => {
+        const timeout = setTimeout(() => run(settings, api));
+        return timeout;
+    };
+    const runningTask = task();
+    rerunOnUrlChange(window.location.href, task, runningTask);
 };
 
 export default runNewDesign;

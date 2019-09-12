@@ -5,10 +5,8 @@ import createProfilePopup from './ProfilePopup';
 
 const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 
-const createNavIconHTML = (classes, tooltip, value) => `
-<div id="${PROILE_NAV_ICON_ID}" class="${classes} HiveExtension-Twitter_profile_rank-container" href="#" data-original-title="${tooltip}">
-    <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">${value}</span>
-</div>
+const createNavIconHTML = value => `
+    <span class="${PROILE_NAV_ICON_ID}-value" data-count="${value}" data-is-compact="false">${value}</span>
 `;
 
 const profileNavIconExists = () => !!document.getElementById(PROILE_NAV_ICON_ID);
@@ -24,32 +22,30 @@ class ProfileNav {
     }
 
     async run() {
-        if (!profileNavIconExists()) {
-            await this.injectProfileNavIcon();
-        }
-    }
-
-    async injectProfileNavIcon() {
         const profileImageAnchor = await waitUntilResult(() => getProfileImage(this.screenName));
         if (!profileImageAnchor) {
             throw new Error(`Failed finding profile image for ${this.screenName}`);
         }
 
+        if (profileNavIconExists()) return;
+
         const userData = await this.api.getFilteredTwitterUserData(this.screenName);
         if (!userData) return;
-        const { rank, clusterName, score } = userData;
+        // const { rank, clusterName, score } = userData;
+        const { rank, score } = userData;
 
         // TODO: add tooltip
-        let tooltip, value;
+        // let tooltip;
+        let value;
 
         const option = await this.settings.getOptionValue('displaySetting');
 
         if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && rank) {
             value = `#${rank}`;
-            tooltip = `${rank} Rank ${rank}`;
+            // tooltip = `${rank} Rank ${rank}`;
         } else if (option !== 'showRanks') {
             value = Math.round(score);
-            tooltip = `${clusterName} Score ${value}`;
+            // tooltip = `${clusterName} Score ${value}`;
         }
 
         const profileNavIcon = document.createElement('div');
@@ -57,17 +53,26 @@ class ProfileNav {
         // contains actions such as follow/unfollow, message, notifications on/off
         const profileActionsList = profileImageAnchor.nextSibling;
         // The following classnames are from the other icons in the list
+        const firstActionItem = profileActionsList.firstChild;
+        if (firstActionItem.id === PROILE_NAV_ICON_ID) return;
         const adjacentClasses = profileActionsList.firstChild.className;
         if (!adjacentClasses) {
             throw new Error('Failed finding adjacent classNames in profileActionsList');
         }
-        profileNavIcon.innerHTML = createNavIconHTML(adjacentClasses, tooltip, value);
 
+        profileNavIcon.id = PROILE_NAV_ICON_ID;
+        profileNavIcon.className = adjacentClasses;
+        profileNavIcon.innerHTML = createNavIconHTML(value);
+
+        const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.screenName}`;
+        // const POPUP_CLASS = 'HiveExtension_Twitter_Popup_Profile';
         await createProfilePopup(
             this.settings,
             userData,
             profileNavIcon,
             profileImageAnchor.parentNode.parentNode.parentNode.parentNode,
+            POPUP_ID,
+            { top: '254px', right: 0 },
         );
 
         profileActionsList.insertBefore(profileNavIcon, profileActionsList.firstChild);
