@@ -29,6 +29,60 @@
     cursor: initial;
 }
 
+.HiveExtension_Twitter_TweetAuthor-container {
+    padding: 12px;
+}
+.HiveExtension_Twitter_TweetAuthor-text {
+    color: $twitter_grey;
+    font-family: $twitter_font-family;
+    font-size: 12px;
+    font-weight: 300;
+
+    &:hover {
+        color: $purple_one;
+        transition-duration: 0.2s;
+    }
+}
+
+.HiveExtension_Tooltip {
+    position: relative;
+}
+
+.HiveExtension_Tooltip .HiveExtension_Tooltip-text {
+    visibility: hidden;
+    width: 80px;
+    margin-left: -40px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    border-radius: 4px;
+    padding: 8px 0;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 12px;
+    line-height: 16px;
+    font-family: $twitter_font-family;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: black transparent transparent transparent;
+    }
+}
+
+.HiveExtension_Tooltip:hover .HiveExtension_Tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
 .HiveExtension-Twitter {
     font-family: $twitter_font-family;
     &_profile-score {
@@ -52,18 +106,6 @@
 
         &_container {
             padding: 12px;
-        }
-
-        &_text {
-            color: $twitter_grey;
-            font-family: $twitter_font-family;
-            font-size: 12px;
-            font-weight: 300;
-
-            &:hover {
-                color: $twitter_blue;
-                transition-duration: 0.2s;
-            }
         }
 
         &_icon {

@@ -2,11 +2,15 @@
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
 import { waitUntilResult, getProfileImage } from './utils';
 import createProfilePopup from './ProfilePopup';
+import { TOOLTIPS } from '../../../../config';
 
 const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 
-const createNavIconHTML = value => `
-    <span class="${PROILE_NAV_ICON_ID}-value" data-count="${value}" data-is-compact="false">${value}</span>
+const createNavIconHTML = ({ text = '', tooltipText = '' }) => `
+    <div class="${TOOLTIPS.TOOLTIP_CLASS}">
+        <span class="${PROILE_NAV_ICON_ID}-value" data-count="${text}" data-is-compact="false">${text}</span>
+        <span class="${TOOLTIPS.TOOLTIP_TEXT_CLASS}">${tooltipText}</span>
+    <div>
 `;
 
 const profileNavIconExists = () => !!document.getElementById(PROILE_NAV_ICON_ID);
@@ -31,21 +35,18 @@ class ProfileNav {
 
         const userData = await this.api.getFilteredTwitterUserData(this.screenName);
         if (!userData) return;
-        // const { rank, clusterName, score } = userData;
-        const { rank, score } = userData;
+        const { rank, clusterName, score } = userData;
 
-        // TODO: add tooltip
         // let tooltip;
         let value;
 
+        // TODO: use options
         const option = await this.settings.getOptionValue('displaySetting');
 
         if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && rank) {
             value = `#${rank}`;
-            // tooltip = `${rank} Rank ${rank}`;
         } else if (option !== 'showRanks') {
             value = Math.round(score);
-            // tooltip = `${clusterName} Score ${value}`;
         }
 
         const profileNavIcon = document.createElement('div');
@@ -62,7 +63,7 @@ class ProfileNav {
 
         profileNavIcon.id = PROILE_NAV_ICON_ID;
         profileNavIcon.className = adjacentClasses;
-        profileNavIcon.innerHTML = createNavIconHTML(value);
+        profileNavIcon.innerHTML = createNavIconHTML({ text: value, tooltipText: `${clusterName} Rank` });
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.screenName}`;
         // const POPUP_CLASS = 'HiveExtension_Twitter_Popup_Profile';

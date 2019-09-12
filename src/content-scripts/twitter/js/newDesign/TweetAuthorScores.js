@@ -1,11 +1,13 @@
 import { waitUntilResult, getTweets, depthFirstNodeSearch } from './utils';
 import createProfilePopup from './ProfilePopup';
+import { TOOLTIPS } from '../../../../config';
 
-const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension-Twitter_tweet-author-score';
+const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 
-const createTweetScoreIcon = value => `
-<div class="HiveExtension-Twitter_tweet-author-score_container">
-    <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${value}</span>
+const createTweetScoreIcon = ({ text = '', tooltipText = '' }) => `
+<div class="${TWEET_AUTHOR_SCORE_CLASS} ${TOOLTIPS.TOOLTIP_CLASS}">
+    <span class="${TWEET_AUTHOR_SCORE_CLASS}-text">${text}</span>
+    <span class="${TOOLTIPS.TOOLTIP_TEXT_CLASS}">${tooltipText}</span>
 </div>
 `;
 
@@ -48,13 +50,13 @@ export default class {
             throw new Error(`Failed getting user data for tweet author @${tweetAuthorScreenName}`);
         }
 
-        const { rank } = userData;
+        const { rank, clusterName } = userData;
 
         const userScoreDisplay = document.createElement('div');
         userScoreDisplay.id = elementId;
         userScoreDisplay.classList.add(`${TWEET_AUTHOR_SCORE_CLASS}-container`);
 
-        userScoreDisplay.innerHTML = createTweetScoreIcon(`#${rank}`);
+        userScoreDisplay.innerHTML = createTweetScoreIcon({ text: rank, tooltipText: `${clusterName} Rank` });
 
         const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, tweetAuthorScreenName);
         const authorImageColumn = authorImageAnchor.parentNode.parentNode.parentNode;
