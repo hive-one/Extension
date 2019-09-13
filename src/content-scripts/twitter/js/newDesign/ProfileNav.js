@@ -1,16 +1,22 @@
 // This component renders a rank/score on a users profile
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
-import { waitUntilResult, getProfileImage } from './utils';
 import createProfilePopup from './ProfilePopup';
-import { TOOLTIPS } from '../../../../config';
+import { waitUntilResult, getProfileImage, displayRank, displayScore } from './utils';
+import { TOOLTIP_CLASSNAMES, DISPLAY_TYPES } from '../../../../config';
 
 const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 
-const createNavIconHTML = ({ text = '', tooltipText = '' }) => `
-    <div class="${TOOLTIPS.TOOLTIP_CLASS}">
-        <span class="${PROILE_NAV_ICON_ID}-value" data-count="${text}" data-is-compact="false">${text}</span>
-        <span class="${TOOLTIPS.TOOLTIP_TEXT_CLASS}">${tooltipText}</span>
+const createNavIconHTML = ({ display = '', tooltipText = '' }) => `
+    <div class="${TOOLTIP_CLASSNAMES.TOOLTIP} ${PROILE_NAV_ICON_ID}-container">
+        <span class="${PROILE_NAV_ICON_ID}-display">${display}</span>
+        <span class="${TOOLTIP_CLASSNAMES.TEXT}">${tooltipText}</span>
     <div>
+`;
+
+const BEE_ICON = `
+    <svg viewBox="0 0 36 36" class="${PROILE_NAV_ICON_ID}-icon">
+        <use xlink:href="#HiveExtension-icon-bee" />
+    </svg>
 `;
 
 const profileNavIconExists = () => !!document.getElementById(PROILE_NAV_ICON_ID);
@@ -35,18 +41,22 @@ class ProfileNav {
 
         const userData = await this.api.getFilteredTwitterUserData(this.screenName);
         if (!userData) return;
-        const { rank, clusterName, score } = userData;
+        const { rank, score, clusterName } = userData;
 
-        // let tooltip;
         let value;
-
-        // TODO: use options
-        const option = await this.settings.getOptionValue('displaySetting');
-
-        if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && rank) {
-            value = `#${rank}`;
-        } else if (option !== 'showRanks') {
-            value = Math.round(score);
+        const useIcons = await this.settings.getOptionValue('useIcons');
+        if (useIcons) {
+            value = BEE_ICON;
+        } else {
+            const displaySetting = await this.settings.getOptionValue('displaySetting');
+            if (
+                displaySetting === DISPLAY_TYPES.RANKS ||
+                (rank && displaySetting === DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK)
+            ) {
+                value = `#${displayRank(rank)}`;
+            } else if (displaySetting !== DISPLAY_TYPES.RANKS) {
+                value = displayScore(score);
+            }
         }
 
         const profileNavIcon = document.createElement('div');
@@ -63,10 +73,9 @@ class ProfileNav {
 
         profileNavIcon.id = PROILE_NAV_ICON_ID;
         profileNavIcon.className = adjacentClasses;
-        profileNavIcon.innerHTML = createNavIconHTML({ text: value, tooltipText: `${clusterName} Rank` });
+        profileNavIcon.innerHTML = createNavIconHTML({ display: value, tooltipText: `${clusterName} Rank` });
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.screenName}`;
-        // const POPUP_CLASS = 'HiveExtension_Twitter_Popup_Profile';
         await createProfilePopup(
             this.settings,
             userData,

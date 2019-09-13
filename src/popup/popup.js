@@ -1,7 +1,7 @@
-import './popup.scss';
 import ExtensionSettings from '../content-scripts/twitter/js/Settings';
 import HiveAPI from '../content-scripts/twitter/js/HiveAPI';
 import { CONFIG } from '../config';
+import './popup.scss';
 
 const SETTINGS_SELECTS = [
     ['#cluster-options-select', 'clusterToDisplay'],

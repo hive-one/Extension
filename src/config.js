@@ -13,14 +13,29 @@ export const CONFIG = Object.freeze({
     USER_DATA_CACHE_LIFETIME: 86400, // 24 hours
 });
 
-export const MESSAGES = Object.freeze({
+//
+export const GA_TYPES = Object.freeze({
     FETCH: 'fetch',
     FETCH_SUCCESS: 'fetch-success',
     FETCH_FAILURE: 'fetch-failure',
     TRACK_EVENT: 'trackEvent',
 });
 
-export const TOOLTIPS = Object.freeze({
-    TOOLTIP_CLASS: 'HiveExtension_Tooltip',
-    TOOLTIP_TEXT_CLASS: 'HiveExtension_Tooltip-text',
+export const TOOLTIP_CLASSNAMES = Object.freeze({
+    TOOLTIP: 'HiveExtension_Tooltip',
+    TEXT: 'HiveExtension_Tooltip-text',
+});
+
+export const DISPLAY_TYPES = Object.freeze({
+    RANKS: 'showRanks',
+    SCORES: 'showScores',
+    RANKS_WITH_SCORES_FALLBACK: 'showRanksWithScoreFallback',
+});
+
+export const CLUSTER_TYPES = Object.freeze({
+    HIGHEST: 'Highest',
+    CRYPTO: 'Crypto',
+    BTC: 'BTC',
+    ETH: 'ETH',
+    XRP: 'XRP',
 });

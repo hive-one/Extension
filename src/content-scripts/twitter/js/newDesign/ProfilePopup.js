@@ -1,4 +1,4 @@
-import { CONFIG, MESSAGES } from '../../../../config';
+import { CONFIG, GA_TYPES } from '../../../../config';
 import escapeHTML from 'escape-html';
 import moment from 'moment';
 
@@ -150,7 +150,7 @@ const createProfilePopup = async (settings, userData, clickableNode, appendableN
 
         const ACTION_NAME = 'popup-opened-in-profile-header';
         chrome.runtime.sendMessage({
-            type: MESSAGES.TRACK_EVENT,
+            type: GA_TYPES.TRACK_EVENT,
             category: 'plugin-interactions',
             ACTION_NAME,
         });

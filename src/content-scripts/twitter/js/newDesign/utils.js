@@ -24,6 +24,28 @@ export const initialiseIcons = () => {
     );
 };
 
+export const displayRank = num => {
+    if (num < 1000) return num;
+    const numWithDecimal = num * (1 / 1000);
+    return numWithDecimal.toFixed(1).toString() + 'k';
+};
+
+export const displayScore = num => {
+    if (num === null) {
+        return 0;
+    }
+
+    let numDecimalPoints;
+    if (num > 100) {
+        numDecimalPoints = 0;
+    } else if (num > 10) {
+        numDecimalPoints = 1;
+    } else {
+        numDecimalPoints = 2;
+    }
+    return parseFloat(num).toFixed(numDecimalPoints);
+};
+
 const anchorsLoaded = () => document.getElementsByTagName('a').length > 10;
 
 export const getProfileImage = screenName => {

@@ -1,4 +1,4 @@
-import { MESSAGES } from '../../../config';
+import { GA_TYPES, CLUSTER_TYPES } from '../../../config';
 
 const RESPONSE_TYPES = Object.freeze({
     SUCCESS: 'success',
@@ -108,7 +108,7 @@ class HiveAPI {
         screenName = data.screenName;
         scores = data.scores;
 
-        if (clusterName === 'Highest') {
+        if (clusterName === CLUSTER_TYPES.HIGHEST) {
             const highestScoreCluster = data.scores.slice().sort((a, b) => b.score - a.score)[0];
 
             name = highestScoreCluster.abbr;
@@ -213,11 +213,11 @@ class HiveAPI {
         return new Promise((resolve, reject) => {
             chrome.runtime.sendMessage(
                 {
-                    type: MESSAGES.FETCH,
+                    type: GA_TYPES.FETCH,
                     url,
                 },
                 ({ type, data, error }) => {
-                    if (type === MESSAGES.FETCH_SUCCESS) {
+                    if (type === GA_TYPES.FETCH_SUCCESS) {
                         resolve(data);
                     } else {
                         reject(error);

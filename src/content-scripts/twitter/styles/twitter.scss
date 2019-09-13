@@ -1,18 +1,37 @@
 @import 'base';
 
 #HiveExtension_Twitter_ProfileNav {
+    display: table;
     border: 1px solid $purple_one;
     color: $purple_one;
     text-align: center;
-    line-height: 37px;
     font-family: $twitter_font-family;
     font-weight: 300;
-    font-size: 12px;
+    font-size: 11px;
 
     &:hover {
         background-color: #564dff2d;
         transition-duration: 0.2s;
     }
+}
+
+.HiveExtension_Twitter_ProfileNav-container {
+    display: table;
+    height: 100%;
+    width: 100%;
+}
+
+.HiveExtension_Twitter_ProfileNav-display {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100%;
+    text-align: center;
+}
+
+.HiveExtension_Twitter_ProfileNav-icon {
+    height: 22px;
+    fill: $purple_one;
+    margin-bottom: -1px;
 }
 
 .HiveExtension_Twitter_Popup {
@@ -40,6 +59,18 @@
 
     &:hover {
         color: $purple_one;
+        transition-duration: 0.2s;
+    }
+}
+
+.HiveExtension_Twitter_TweetAuthor-icon {
+    height: 18px;
+    fill: $twitter_grey;
+    margin-bottom: -1px;
+
+    &:hover {
+        cursor: pointer;
+        fill: $purple_one;
         transition-duration: 0.2s;
     }
 }

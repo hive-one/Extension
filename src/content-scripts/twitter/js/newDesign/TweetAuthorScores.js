@@ -1,14 +1,20 @@
-import { waitUntilResult, getTweets, depthFirstNodeSearch } from './utils';
 import createProfilePopup from './ProfilePopup';
-import { TOOLTIPS } from '../../../../config';
+import { waitUntilResult, getTweets, depthFirstNodeSearch, displayRank, displayScore } from './utils';
+import { TOOLTIP_CLASSNAMES, DISPLAY_TYPES } from '../../../../config';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 
-const createTweetScoreIcon = ({ text = '', tooltipText = '' }) => `
-<div class="${TWEET_AUTHOR_SCORE_CLASS} ${TOOLTIPS.TOOLTIP_CLASS}">
-    <span class="${TWEET_AUTHOR_SCORE_CLASS}-text">${text}</span>
-    <span class="${TOOLTIPS.TOOLTIP_TEXT_CLASS}">${tooltipText}</span>
+const createTweetScoreIcon = ({ display = '', tooltipText = '' }) => `
+<div class="${TWEET_AUTHOR_SCORE_CLASS} ${TOOLTIP_CLASSNAMES.TOOLTIP}">
+    <span class="${TWEET_AUTHOR_SCORE_CLASS}-text">${display}</span>
+    <span class="${TOOLTIP_CLASSNAMES.TEXT}">${tooltipText}</span>
 </div>
+`;
+
+const BEE_ICON = `
+    <svg viewBox="0 0 36 36" class="${TWEET_AUTHOR_SCORE_CLASS}-icon">
+        <use xlink:href="#HiveExtension-icon-bee" />
+    </svg>
 `;
 
 export default class {
@@ -50,13 +56,30 @@ export default class {
             throw new Error(`Failed getting user data for tweet author @${tweetAuthorScreenName}`);
         }
 
-        const { rank, clusterName } = userData;
+        const { rank, score, clusterName } = userData;
 
         const userScoreDisplay = document.createElement('div');
         userScoreDisplay.id = elementId;
         userScoreDisplay.classList.add(`${TWEET_AUTHOR_SCORE_CLASS}-container`);
 
-        userScoreDisplay.innerHTML = createTweetScoreIcon({ text: rank, tooltipText: `${clusterName} Rank` });
+        let value;
+        const useIcons = await this.settings.getOptionValue('useIcons');
+        if (useIcons) {
+            value = BEE_ICON;
+        } else {
+            const displaySetting = await this.settings.getOptionValue('displaySetting');
+            if (
+                displaySetting === DISPLAY_TYPES.RANKS ||
+                (rank && displaySetting === DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK)
+            ) {
+                value = `#${displayRank(rank)}`;
+            } else if (displaySetting !== DISPLAY_TYPES.RANKS) {
+                value = displayScore(score);
+            }
+        }
+        console.log(value);
+
+        userScoreDisplay.innerHTML = createTweetScoreIcon({ display: value, tooltipText: `${clusterName} Rank` });
 
         const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, tweetAuthorScreenName);
         const authorImageColumn = authorImageAnchor.parentNode.parentNode.parentNode;

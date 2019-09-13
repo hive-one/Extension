@@ -1,4 +1,4 @@
-import { CONFIG, MESSAGES } from '../../../../config';
+import { CONFIG, GA_TYPES } from '../../../../config';
 import escapeHTML from 'escape-html';
 import moment from 'moment';
 
@@ -204,7 +204,7 @@ export class ProfilePopup {
             }
 
             chrome.runtime.sendMessage({
-                type: MESSAGES.TRACK_EVENT,
+                type: GA_TYPES.TRACK_EVENT,
                 category: 'plugin-interactions',
                 action,
             });
