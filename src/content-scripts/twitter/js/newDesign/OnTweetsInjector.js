@@ -1,6 +1,6 @@
-import createProfilePopup from './ProfilePopup';
+import createHiveProfilePopup from './HiveProfilePopup';
 import { waitUntilResult, getTweets, depthFirstNodeSearch, displayRank, displayScore } from './utils';
-import { TOOLTIP_CLASSNAMES, DISPLAY_TYPES } from '../../../../config';
+import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 
@@ -28,7 +28,7 @@ export default class {
     async run() {
         const tweets = await waitUntilResult(getTweets);
         if (!tweets || !tweets.length) {
-            throw new Error(`Failed finding tweets for @${this.screenName}`);
+            throw new Error('Failed finding tweets');
         }
 
         // All statuses (tweets) have a url in which they link too, including some promoted tweets
@@ -49,68 +49,76 @@ export default class {
                     continue;
                 }
             }
-            const tweetAuthorScreenName = match[1];
+
+            // Tweet authors screen name
+            const screenName = match[1];
             const tweetId = match[2];
-
-            // Skip tweets from users who aren't within our available ids
-            if (!this.api.isIdentifierIndexed(tweetAuthorScreenName)) continue;
-            const TWEET_AUTHOR_SCORE_ID = `HiveExtension-Twitter_tweet-author-score_${tweetId}`;
-            if (document.getElementById(TWEET_AUTHOR_SCORE_ID)) continue;
-
-            await this.addAuthorScoreToTweet(tweetNode, tweetAuthorScreenName, TWEET_AUTHOR_SCORE_ID, tweetId);
+            await this.injectOntoTweet(tweetNode, screenName, tweetId);
         }
     }
 
-    async addAuthorScoreToTweet(tweetNode, tweetAuthorScreenName, elementId, tweetId) {
-        const userData = await this.api.getFilteredTwitterUserData(tweetAuthorScreenName);
+    async injectOntoTweet(tweetNode, screenName, tweetId) {
+        // Skip tweets from users who aren't within our available ids
+        if (!this.api.isIdentifierIndexed(screenName)) return;
+        const ICON_ID = `HiveExtension-Twitter_tweet-author-score_${tweetId}`;
+        if (document.getElementById(ICON_ID)) return;
+
+        const userData = await this.api.getFilteredTwitterUserData(screenName);
         if (!userData) {
-            throw new Error(`Failed getting user data for tweet author @${tweetAuthorScreenName}`);
+            throw new Error(`Failed getting user data for tweet author @${screenName}`);
         }
 
+        const injectableIcon = await this.createIcon(screenName, userData, ICON_ID, tweetId);
+
+        // Create popup
+        const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${tweetId}`;
+        const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, screenName);
+        const popupStyles = this.createPopupStyles(tweetNode, authorImageAnchor);
+
+        await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
+
+        if (document.getElementById(ICON_ID)) return;
+        const authorImageContainer = authorImageAnchor.parentNode.parentNode;
+        authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
+    }
+
+    async createIcon(screenName, userData, nodeId, tweetId) {
         const { rank, score, clusterName } = userData;
 
         const userScoreDisplay = document.createElement('div');
-        userScoreDisplay.id = elementId;
+        userScoreDisplay.id = nodeId;
         userScoreDisplay.classList.add(`${TWEET_AUTHOR_SCORE_CLASS}-container`);
 
         let iconContent;
-        const displaySetting = await this.settings.getOptionValue('displaySetting');
-        if (rank && displaySetting in [DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK, DISPLAY_TYPES.RANKS]) {
+        if (rank && this.settings.shouldDisplayRank) {
             iconContent = `#${displayRank(rank)}`;
-        } else if (displaySetting in [DISPLAY_TYPES.SCORES, DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK]) {
+        } else if (this.settings.shouldDisplayScore) {
             iconContent = `[ ${displayScore(score)} ]`;
-        } else if (displaySetting === DISPLAY_TYPES.ICONS) {
+        } else if (this.settings.shouldDisplayIcon) {
             iconContent = BEE_ICON;
         } else {
             throw new Error(
-                `Unrecognised displaySetting: "${displaySetting}" on tweet ${tweetId} by @${tweetAuthorScreenName}`,
+                `Unrecognised displaySetting: "${
+                    this.settings.displaySetting
+                }" on tweet "${tweetId}" by "@${screenName}"`,
             );
         }
 
         userScoreDisplay.innerHTML = createTweetScoreIcon({ display: iconContent, tooltipText: `In ${clusterName}` });
+        return userScoreDisplay;
+    }
 
-        const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, tweetAuthorScreenName);
-        const authorImageColumn = authorImageAnchor.parentNode.parentNode.parentNode;
-
-        const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${tweetId}`;
-
-        // Create popup styles
+    createPopupStyles(tweetNode, authorImageAnchor) {
         // Twitters new design contains numerous instances of z-index: 0 not
         // only on every tweet, but several children nodes within the tweet.
         // This constant creation of new stacking contexts requires ugly hacky
         // solutions to display our popup.
-
-        const tweetRect = tweetNode.getBoundingClientRect();
         const authorImageRect = authorImageAnchor.getBoundingClientRect();
 
+        const tweetRect = tweetNode.getBoundingClientRect();
         const left = tweetRect.left + 'px';
         const top = authorImageRect.top + window.pageYOffset + 80 + 'px';
-        const popupStyles = { top, left };
-
-        await createProfilePopup(this.settings, userData, userScoreDisplay, document.body, POPUP_ID, popupStyles);
-
-        if (document.getElementById(elementId)) return;
-        authorImageColumn.firstChild.insertAdjacentElement('afterend', userScoreDisplay);
+        return { top, left };
     }
 
     getAuthorImageAnchor(tweetNode, screenName) {

@@ -1,14 +1,14 @@
-import ProfileNav from './ProfileNav';
-import TweetAuthorScores from './TweetAuthorScores';
+import OnProfileInjector from './OnProfileInjector';
+import OnTweetsInjector from './OnTweetsInjector';
 import { sleep } from './utils';
 
 const runProfile = async (settings, api, screenName) => {
-    const pNav = new ProfileNav(settings, api, screenName);
-    await pNav.run();
+    const pInjector = new OnProfileInjector(settings, api, screenName);
+    await pInjector.run();
 
     if (settings.showScoreOnTweets) {
-        const tweetScores = new TweetAuthorScores(settings, api);
-        await tweetScores.run();
+        const tInjector = new OnTweetsInjector(settings, api);
+        await tInjector.run();
     }
 
     // loop

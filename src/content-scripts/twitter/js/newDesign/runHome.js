@@ -1,10 +1,10 @@
-import TweetAuthorScores from './TweetAuthorScores';
+import OnTweetsInjector from './OnTweetsInjector';
 import { sleep } from './utils';
 
 const runHome = async (settings, api) => {
     if (settings.showScoreOnTweets) {
-        const tweetScores = new TweetAuthorScores(settings, api);
-        await tweetScores.run();
+        const tInjector = new OnTweetsInjector(settings, api);
+        await tInjector.run();
 
         // loop
         await sleep(2000);

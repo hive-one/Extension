@@ -108,7 +108,7 @@ const createPopupHTML = (screenName, scores, followers, podcasts) => {
     `;
 };
 
-const createProfilePopup = async (settings, userData, clickableNode, appendableNode, popupId, popupStyles) => {
+const createHiveProfilePopup = async (settings, userData, clickableNode, appendableNode, popupId, popupStyles) => {
     // clickableNode = node that triggers the popup being created
     // appendableNode = node that popup is injected to
 
@@ -159,4 +159,4 @@ const createProfilePopup = async (settings, userData, clickableNode, appendableN
     clickableNode.addEventListener('click', displayPopup, false);
 };
 
-export default createProfilePopup;
+export default createHiveProfilePopup;
