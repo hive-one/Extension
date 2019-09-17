@@ -23,10 +23,6 @@ const createScoreRow = (clusterName, displayScore, scoreAsPercentage) => `
 const createScoreSection = clusters =>
     clusters
         .map(({ node }) => {
-            if (node.abbr === 'Crypto') {
-                return;
-            }
-
             const roundedScore = Math.round(node.score);
             const percentage = Math.floor((roundedScore / CONFIG.MAX_SCORE) * 100);
 
