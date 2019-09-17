@@ -282,10 +282,22 @@
                     color: white;
                 }
 
-                #{$root}_content,
+                #{$root}_content {
+                    background-color: #15202b;
+                    border-color: #38444d;
+                }
                 #{$root}_followers_follower {
                     background-color: #15202b;
                     border-color: #38444d;
+                }
+
+                #{$root}_podcasts_podcast {
+                    background-color: #15202b;
+                    border-color: #38444d;
+
+                    &_meta {
+                        color: white;
+                    }
                 }
 
                 #{$root}_cluster-score_progress-bar {

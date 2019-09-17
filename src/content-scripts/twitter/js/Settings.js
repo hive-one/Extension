@@ -8,12 +8,26 @@ class ExtensionSettings {
             this.clusterToDisplay = await this.getOptionValue('clusterToDisplay');
             this.showScoreOnTweets = await this.getOptionValue('showScoreOnTweets');
             this.displaySetting = await this.getOptionValue('displaySetting');
+            this.isDarkTheme = await this.isDarkTheme();
             resolve(this);
         });
     }
 
-    get isDarkTheme() {
-        return Boolean(document.querySelector('.js-nightmode-icon.Icon--crescentFilled'));
+    async getNewDesignNightModeCookie() {
+        return new Promise(resolve => {
+            chrome.runtime.sendMessage({ type: 'SET_COOKIE' }, data => {
+                resolve(data.value);
+            });
+        });
+    }
+
+    async isDarkTheme() {
+        if (this.isNewTwitterDesign) {
+            let cookieValue = await this.getNewDesignNightModeCookie();
+            return cookieValue === '1';
+        } else {
+            return Boolean(document.querySelector('.js-nightmode-icon.Icon--crescentFilled'));
+        }
     }
 
     get shouldDisplayRank() {

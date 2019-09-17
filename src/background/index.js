@@ -86,5 +86,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case GA_TYPES.FETCH:
             fetchURL(request.url, request.options, sendResponse);
             return true;
+        case 'SET_COOKIE':
+            chrome.cookies.get({ url: 'https:twitter.com/', name: 'night_mode' }, cookie => {
+                sendResponse({ type: 'nightModeCookie', value: cookie.value });
+            });
+            return true;
     }
 });

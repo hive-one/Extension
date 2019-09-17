@@ -21,10 +21,9 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         for (const key in popupStyles) {
             popupNode.style[key] = popupStyles[key];
         }
-        popupNode.classList.add('HiveExtension_Twitter_Popup');
-        // TODO: Handle dark theme
+        popupNode.classList.add('HiveExtension-Twitter_popup-profile');
         if (settings.isDarkTheme) {
-            popupNode.classList.add(`HiveExtension_Twitter_Popup-dark`);
+            popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
         }
         popupNode.innerHTML = createPopupHTML(screenName, scores, followers, podcasts);
         appendableNode.appendChild(popupNode);
