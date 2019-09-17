@@ -68,7 +68,7 @@ export default class {
             throw new Error(`Failed getting user data for tweet author @${screenName}`);
         }
 
-        const injectableIcon = await this.createIcon(screenName, userData, ICON_ID, tweetId);
+        const injectableIcon = await this.createIcon(userData, ICON_ID, tweetId);
 
         // Create popup
         const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${tweetId}`;
@@ -82,8 +82,8 @@ export default class {
         authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
     }
 
-    async createIcon(screenName, userData, nodeId, tweetId) {
-        const { rank, score, clusterName } = userData;
+    async createIcon(userData, nodeId, tweetId) {
+        const { screenName, rank, score, clusterName } = userData;
 
         const userScoreDisplay = document.createElement('div');
         userScoreDisplay.id = nodeId;
