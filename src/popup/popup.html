@@ -10,37 +10,35 @@
             <input class="HiveExtension-options_option_toggle" id="show-score-on-tweets" type="checkbox"/>
           </div>
         <div class="HiveExtension-options_option">
-          <div class="HiveExtension-options_option_title">Use Icons</div>
-          <input class="HiveExtension-options_option_toggle" id="use-icons" type="checkbox"/>
-        </div>
-        <div class="HiveExtension-options_option">
           <div class="HiveExtension-options_option_title">Display Settings</div>
           <select class="HiveExtension-options_option_select" id="display-settings-select">
             <option value="showRanksWithScoreFallback">Show ranks with score fallback</option>
-            <option value="showScores">Show scores</option>
-            <option value="showRanks">Show ranks</option>
+            <option value="showScores">Show users score</option>
+            <option value="showRanks">Show users rank</option>
+            <option value="showIcons">Show icons</option>
           </select>
         </div>
         <br/>
         <div class="HiveExtension-options_option">
           <div class="HiveExtension-options_option_title">Cluster Options</div>
+          <div>Scores & ranks to show on profiles & tweets</div>
           <select class="HiveExtension-options_option_select" id="cluster-options-select">
-            <option value="Crypto">Display combined crypto cluster</option>
-            <option value="Highest">Display cluster with the highest values</option>
-            <option value="BTC">Display BTC cluster only</option>
-            <option value="ETH">Display ETH cluster only</option>
-            <option value="XRP">Display XRP cluster only</option>
+            <option value="Crypto">Show me Crypto</option>
+            <option value="Highest">Show me whichever is highest</option>
+            <option value="BTC">Show me BTC</option>
+            <option value="ETH">Show me ETH</option>
+            <option value="XRP">Show me XRP</option>
           </select>
         </div>
         <br/>
         <div class="HiveExtension-options_option">
             <div class="HiveExtension-options_option_title">Top Followers Cluster</div>
             <select class="HiveExtension-options_option_select" id="top-followers-cluster-select">
-              <option value="Crypto">Combined crypto cluster</option>
-              <option value="Highest">Cluster with the highest values</option>
+              <option value="Crypto">Crypto</option>
               <option value="BTC">BTC</option>
               <option value="ETH">ETH</option>
               <option value="XRP">XRP</option>
+              <option value="Highest">Cluster with the highest values</option>
             </select>
           </div>
           <br/>

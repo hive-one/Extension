@@ -13,7 +13,7 @@ export const CONFIG = Object.freeze({
     USER_DATA_CACHE_LIFETIME: 86400, // 24 hours
 });
 
-//
+// Google Analytics
 export const GA_TYPES = Object.freeze({
     FETCH: 'fetch',
     FETCH_SUCCESS: 'fetch-success',
@@ -30,6 +30,7 @@ export const DISPLAY_TYPES = Object.freeze({
     RANKS: 'showRanks',
     SCORES: 'showScores',
     RANKS_WITH_SCORES_FALLBACK: 'showRanksWithScoreFallback',
+    ICONS: 'showIcons',
 });
 
 export const CLUSTER_TYPES = Object.freeze({

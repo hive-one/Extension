@@ -25,18 +25,6 @@ SETTINGS_SELECTS.forEach(([selector, name]) => {
     });
 });
 
-const USE_ICONS_CHECKBOX = document.querySelector('#use-icons');
-
-chrome.storage.sync.get(['useIcons'], result => {
-    USE_ICONS_CHECKBOX.checked = result.useIcons;
-});
-
-USE_ICONS_CHECKBOX.addEventListener('click', event => {
-    chrome.storage.sync.set({
-        useIcons: event.target.checked,
-    });
-});
-
 const SCORE_ON_TWEETS_CHECKBOX = document.querySelector('#show-score-on-tweets');
 
 chrome.storage.sync.get(['showScoreOnTweets'], result => {
