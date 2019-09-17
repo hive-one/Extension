@@ -4,6 +4,7 @@ class ExtensionSettings {
         this.isNewTwitterDesign = this.getIsNewTwitterDesign();
         return new Promise(async resolve => {
             this.clusterToDisplay = await this.getOptionValue('clusterToDisplay');
+            this.showScoreOnTweets = await this.getOptionValue('showScoreOnTweets');
             resolve(this);
         });
     }

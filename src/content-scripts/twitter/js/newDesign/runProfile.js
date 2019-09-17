@@ -6,8 +6,10 @@ const runProfile = async (settings, api, screenName) => {
     const pNav = new ProfileNav(settings, api, screenName);
     await pNav.run();
 
-    const tweetScores = new TweetAuthorScores(settings, api);
-    await tweetScores.run();
+    if (settings.showScoreOnTweets) {
+        const tweetScores = new TweetAuthorScores(settings, api);
+        await tweetScores.run();
+    }
 
     // loop
     await sleep(2000);
