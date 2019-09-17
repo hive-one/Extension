@@ -7,9 +7,13 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
 
     const { screenName, podcasts, followers, scores } = userData;
 
+    const popUpExists = () => !!document.getElementById(popupId);
+
     let popupNode, closePopup;
     const displayPopup = event => {
         event.stopPropagation();
+
+        if (popUpExists()) return;
 
         const removePopupElement = () => {
             document.removeEventListener('click', closePopup);
@@ -30,6 +34,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
 
         setTimeout(() => {
             closePopup = e => {
+                console.log('close popup??');
                 if (e.target === popupNode || popupNode.contains(e.target)) {
                     return;
                 }
