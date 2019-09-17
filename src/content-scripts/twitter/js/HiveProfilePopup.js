@@ -34,7 +34,6 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
 
         setTimeout(() => {
             closePopup = e => {
-                console.log('close popup??');
                 if (e.target === popupNode || popupNode.contains(e.target)) {
                     return;
                 }
