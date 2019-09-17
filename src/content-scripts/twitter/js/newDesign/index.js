@@ -1,6 +1,6 @@
 import runProfile from './runProfile';
 import runHome from './runHome';
-import { initialiseIcons, sleep } from './utils';
+import { initialiseIcons } from './utils';
 
 const skippableRoutes = /^\/(notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists)/;
 
@@ -25,20 +25,6 @@ const run = async (settings, api) => {
     }
 };
 
-const rerunOnUrlChange = async (oldUrl, rerun, oldRunningTask) => {
-    await sleep(1000);
-
-    let newUrl = window.location.href;
-    if (oldUrl === newUrl) {
-        rerunOnUrlChange(newUrl, rerun, oldRunningTask);
-    } else {
-        // kill old task
-        window.clearTimeout(oldRunningTask);
-        const newRunningTask = rerun();
-        rerunOnUrlChange(window.location.href, rerun, newRunningTask);
-    }
-};
-
 const runNewDesign = async (settings, api) => {
     // This extention works by listening for changes in
     // window.location.href and running / killing / rerunning
@@ -51,8 +37,7 @@ const runNewDesign = async (settings, api) => {
         }, 2000);
         return timeout;
     };
-    const runningTask = task();
-    rerunOnUrlChange(window.location.href, task, runningTask);
+    task();
 };
 
 export default runNewDesign;
