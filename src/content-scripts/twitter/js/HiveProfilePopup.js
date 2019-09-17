@@ -1,5 +1,5 @@
-import { GA_TYPES } from '../../../../config';
-import { createPopupHTML } from '../HTMLSnippets';
+import { GA_TYPES } from '../../../config';
+import { createPopupHTML } from './HTMLSnippets';
 
 const createHiveProfilePopup = async (settings, userData, clickableNode, appendableNode, popupId, popupStyles) => {
     // clickableNode = node that triggers the popup being created

@@ -1,15 +1,16 @@
-import { ProfilePopup } from './ProfilePopup';
+import createHiveProfilePopup from '../HiveProfilePopup';
+import { displayScore } from '../newDesign/utils';
 
 const PROFILE_HOVER_CONTAINER = '#profile-hover-container';
 const ELEMENT_CLASS = 'HiveExtension-Twitter_profile-hover-popup';
 
 export class TwitterProfileHoverPopupScoreExtension {
-    _api;
-    _settings;
+    api;
+    settings;
 
-    constructor(api, settings) {
-        this._api = api;
-        this._settings = settings;
+    constructor(_api, _settings) {
+        this.api = _api;
+        this.settings = _settings;
     }
 
     getUserId() {
@@ -27,39 +28,36 @@ export class TwitterProfileHoverPopupScoreExtension {
     }
 
     async start() {
+        // This runs on the profile popup that twitter creates
+        // within the 'You may also like' section
         if (!this.shouldRun()) {
             return;
         }
 
         const userTwitterId = this.getUserId();
 
-        if (!userTwitterId) {
-            return;
-        }
+        if (!userTwitterId) return;
+        if (!this.api.isIdentifierIndexed(userTwitterId)) return;
 
-        const userData = await this._api.getFilteredTwitterUserData(userTwitterId);
+        const userData = await this.api.getFilteredTwitterUserData(userTwitterId);
         if (!userData) return;
 
-        const { score, clusterName, rank: defaultClusterRank } = userData;
+        const { screenName, score, clusterName, rank } = userData;
 
-        this.displayUserScore(score, defaultClusterRank, clusterName);
-    }
-
-    async displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName) {
         let tooltip = '';
         let label = '';
         let value = '';
 
-        const option = await this._settings.getOptionValue('displaySetting');
-
-        if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && defaultClusterRank) {
-            value = `${defaultClusterRank}`;
-            label = `${defaultClusterName} Rank`;
-            tooltip = `${defaultClusterName} Rank ${defaultClusterRank}`;
-        } else if (option !== 'showRanks') {
-            label = `${defaultClusterName} Score`;
-            value = Math.round(defaultClusterScore);
-            tooltip = `${defaultClusterName} Score ${value}`;
+        if (rank && this.settings.shouldDisplayRank) {
+            value = rank;
+            label = `${clusterName} Rank`;
+            tooltip = `${clusterName} Rank ${rank}`;
+        } else if (this.settings.shouldDisplayScore) {
+            label = `${clusterName} Score`;
+            value = displayScore(score);
+            tooltip = `${clusterName} Score ${value}`;
+        } else if (this.settings.shouldDisplayIcon) {
+            // TODO: show icon
         }
 
         const displayElement = document.createElement('li');
@@ -74,12 +72,8 @@ export class TwitterProfileHoverPopupScoreExtension {
           </div>
         `;
 
-        if (label) {
-            const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
-            popup.showOnClick(displayElement);
-        } else {
-            displayElement.style.display = 'none';
-        }
+        const POPUP_ID = `HiveExtension_Twitter_Popup_YouMayLike_${screenName}`;
+        await createHiveProfilePopup(this.settings, userData, displayElement, displayElement, POPUP_ID, {});
 
         const statList = document.querySelector(`${PROFILE_HOVER_CONTAINER} .ProfileCardStats-statList`);
 

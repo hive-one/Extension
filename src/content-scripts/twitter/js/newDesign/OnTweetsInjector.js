@@ -1,4 +1,4 @@
-import createHiveProfilePopup from './HiveProfilePopup';
+import createHiveProfilePopup from '../HiveProfilePopup';
 import { waitUntilResult, getTweets, depthFirstNodeSearch, displayRank, displayScore } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 

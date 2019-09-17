@@ -105,7 +105,7 @@ class HiveAPI {
         }
 
         id = data.twitter_id;
-        screenName = data.screenName;
+        screenName = data.screen_name;
         scores = data.scores;
 
         if (clusterName === CLUSTER_TYPES.HIGHEST) {

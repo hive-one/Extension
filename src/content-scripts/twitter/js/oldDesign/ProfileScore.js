@@ -1,4 +1,5 @@
-import { ProfilePopup } from './ProfilePopup';
+import createHiveProfilePopup from '../HiveProfilePopup';
+import { displayScore } from '../newDesign/utils';
 
 const PROFILE_SCORE_EXTENSION_CLASS_NAME = 'HiveExtension-Twitter_profile-score';
 const PROFILE_SIDEBAR_SELECTOR = '.ProfileSidebar';
@@ -6,12 +7,12 @@ const PROFILE_NAV_SELECTOR = '.ProfileNav';
 const PROCESSED_INDICATOR_CLASS = 'HiveExtension-Twitter_profile-score-processed';
 
 export class TwitterProfileScoreExtension {
-    _api;
-    _settings;
+    api;
+    settings;
 
     constructor(api, settings) {
-        this._api = api;
-        this._settings = settings;
+        this.api = api;
+        this.settings = settings;
     }
 
     getUserId() {
@@ -23,6 +24,9 @@ export class TwitterProfileScoreExtension {
     }
 
     async start() {
+        // This runs on a twitter users profile and injects
+        // our score within the a nav bar
+        // eg: Tweets | Following | Followers | Crypto Rank
         if (!this.isOnProfileScreen() || this.hasAlreadyRun()) {
             return;
         }
@@ -36,49 +40,42 @@ export class TwitterProfileScoreExtension {
         profileNav.classList.add(PROCESSED_INDICATOR_CLASS);
 
         const userTwitterId = this.getUserId();
+        if (!this.api.isIdentifierIndexed(userTwitterId)) return;
 
-        const userData = await this._api.getFilteredTwitterUserData(userTwitterId);
+        const userData = await this.api.getFilteredTwitterUserData(userTwitterId);
         if (!userData) return;
 
-        const { score: defaultClusterScore, clusterName, rank: defaultClusterRank } = userData;
+        const { screenName, score, clusterName, rank } = userData;
 
-        this.displayUserScore(defaultClusterScore, defaultClusterRank, clusterName);
-    }
-
-    async displayUserScore(defaultClusterScore, defaultClusterRank, defaultClusterName) {
         let tooltip = '';
         let label = '';
         let value = '';
 
-        const option = await this._settings.getOptionValue('displaySetting');
-
-        if (['showRanksWithScoreFallback', 'showRanks'].includes(option) && defaultClusterRank) {
-            value = `${defaultClusterRank}`;
-            label = `${defaultClusterName} Rank`;
-            tooltip = `${defaultClusterName} Rank ${defaultClusterRank}`;
-        } else if (option !== 'showRanks') {
-            label = `${defaultClusterName} Score`;
-            value = Math.round(defaultClusterScore);
-            tooltip = `${defaultClusterName} Score ${value}`;
+        if (rank && this.settings.shouldDisplayRank) {
+            value = rank;
+            label = `${clusterName} Rank`;
+            tooltip = `${clusterName} Rank ${rank}`;
+        } else if (this.settings.shouldDisplayScore) {
+            label = `${clusterName} Score`;
+            value = displayScore(score);
+            tooltip = `${clusterName} Score ${value}`;
+        } else if (this.settings.shouldDisplayIcon) {
+            // TODO: show icon
         }
 
         const displayElement = document.createElement('div');
         displayElement.classList.add('ProfileNav-item');
         displayElement.classList.add(PROFILE_SCORE_EXTENSION_CLASS_NAME);
 
-        if (!value || !label) {
-            displayElement.style.display = 'none';
-        } else {
-            displayElement.innerHTML = `
-            <div class="ProfileNav-stat ProfileNav-stat--link u-borderUserColor u-textCenter js-tooltip js-nav u-textUserColor" href="#" data-original-title="${tooltip}">
-                  <span class="ProfileNav-label">${label}</span>
-                  <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">${value}</span>
-            </div>
+        displayElement.innerHTML = `
+        <div class="ProfileNav-stat ProfileNav-stat--link u-borderUserColor u-textCenter js-tooltip js-nav u-textUserColor" href="#" data-original-title="${tooltip}">
+                <span class="ProfileNav-label">${label}</span>
+                <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">${value}</span>
+        </div>
         `;
 
-            const popup = new ProfilePopup(this.getUserId(), this._api, this._settings);
-            popup.showOnClick(displayElement);
-        }
+        const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${screenName}`;
+        await createHiveProfilePopup(this.settings, userData, displayElement, displayElement, POPUP_ID, {});
 
         document.querySelector('.ProfileNav-item:nth-of-type(4)').insertAdjacentElement('afterend', displayElement);
     }

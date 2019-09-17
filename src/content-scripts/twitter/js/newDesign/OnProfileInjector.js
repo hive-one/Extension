@@ -1,6 +1,6 @@
 // This component renders a rank/score on a users profile
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
-import createHiveProfilePopup from './HiveProfilePopup';
+import createHiveProfilePopup from '../HiveProfilePopup';
 import { waitUntilResult, getProfileImage, displayRank, displayScore } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
