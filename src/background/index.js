@@ -62,6 +62,9 @@ ga('send', 'pageview', '/');
 async function fetchURL(url, options, callback) {
     try {
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Cannot handle status code "${response.status}" for url "${url}"`);
+        }
         const data = await response.json();
         callback({
             type: GA_TYPES.FETCH_SUCCESS,

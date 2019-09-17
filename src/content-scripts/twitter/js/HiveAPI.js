@@ -63,11 +63,11 @@ class HiveAPI {
             var cachedIds = await this.cache.get(key);
 
             if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
-                const res = await fetch(url);
-                if (!res.ok) {
-                    throw new Error(`Cannot handle status code "${res.status}" for url "${url}"`);
+                const res = await this.fetchInBackgroundContext(url);
+                if (res.error) {
+                    throw new Error(res.error);
                 }
-                const { data } = await res.json();
+                const { data } = res;
                 cachedIds = data;
                 this.cache.save(AVAILABLE_SCREEN_NAMES_KEY, {
                     available: cachedIds.available,
@@ -143,7 +143,7 @@ class HiveAPI {
 
     async _getTwitterUserData(idOrScreenName) {
         // Tries pulling data from cache
-        // if not requests dat from the API and caches it
+        // if not requests data from the API and caches it
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
         const cachedData = await this.cache.get(cacheKey);
 
@@ -173,17 +173,17 @@ class HiveAPI {
         // Immediately save requests to state to prevent duplicate requests
         let responsePromise = this._requestsMap[idOrScreenName];
         if (!responsePromise) {
-            responsePromise = fetch(url);
+            responsePromise = this.fetchInBackgroundContext(url);
             this._requestsMap[idOrScreenName] = responsePromise;
         }
 
         let userData;
         try {
             const res = await responsePromise;
-            if (!res.ok) {
-                throw new Error(`Unhandled response code: "${res.status}" for URL: "${url}"`);
+            if (res.error) {
+                throw new Error(res.error);
             }
-            const { data } = await res.json();
+            const { data } = res;
             userData = data;
             // pop from state
             delete this._requestsMap[idOrScreenName];
