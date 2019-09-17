@@ -31,12 +31,23 @@ export default class {
             throw new Error(`Failed finding tweets for @${this.screenName}`);
         }
 
+        // All statuses (tweets) have a url in which they link too, including some promoted tweets
         const r = /\/([A-Za-z0-9_]+)\/status\/([0-9]+)/;
         for (let i = 0; i < tweets.length; i++) {
             const tweetNode = tweets[i];
+            if (tweetNode.classList.contains('promoted')) continue;
+
             const match = r.exec(tweetNode.innerHTML);
             if (!match) {
-                throw new Error(`Founded unrecognisable <article> ${tweetNode.outerHTML}`);
+                // Some promoted tweets will not have their own url however.
+                // These tweets do not have anchor tags with links to the status,
+                // instead they have javascript which navigates you to the tweets url.
+                if (!tweetNode.innerHTML.match(/>Promoted</)) {
+                    throw new Error(`Found unrecognisable <article> ${tweetNode.outerHTML}`);
+                } else {
+                    tweetNode.classList.add('promoted');
+                    continue;
+                }
             }
             const tweetAuthorScreenName = match[1];
             const tweetId = match[2];
@@ -62,24 +73,21 @@ export default class {
         userScoreDisplay.id = elementId;
         userScoreDisplay.classList.add(`${TWEET_AUTHOR_SCORE_CLASS}-container`);
 
-        let value;
-        const useIcons = await this.settings.getOptionValue('useIcons');
-        if (useIcons) {
-            value = BEE_ICON;
+        let iconContent;
+        const displaySetting = await this.settings.getOptionValue('displaySetting');
+        if (rank && displaySetting in [DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK, DISPLAY_TYPES.RANKS]) {
+            iconContent = `#${displayRank(rank)}`;
+        } else if (displaySetting in [DISPLAY_TYPES.SCORES, DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK]) {
+            iconContent = `[ ${displayScore(score)} ]`;
+        } else if (displaySetting === DISPLAY_TYPES.ICONS) {
+            iconContent = BEE_ICON;
         } else {
-            const displaySetting = await this.settings.getOptionValue('displaySetting');
-            if (
-                displaySetting === DISPLAY_TYPES.RANKS ||
-                (rank && displaySetting === DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK)
-            ) {
-                value = `#${displayRank(rank)}`;
-            } else if (displaySetting !== DISPLAY_TYPES.RANKS) {
-                value = displayScore(score);
-            }
+            throw new Error(
+                `Unrecognised displaySetting: "${displaySetting}" on tweet ${tweetId} by @${tweetAuthorScreenName}`,
+            );
         }
-        console.log(value);
 
-        userScoreDisplay.innerHTML = createTweetScoreIcon({ display: value, tooltipText: `${clusterName} Rank` });
+        userScoreDisplay.innerHTML = createTweetScoreIcon({ display: iconContent, tooltipText: `In ${clusterName}` });
 
         const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, tweetAuthorScreenName);
         const authorImageColumn = authorImageAnchor.parentNode.parentNode.parentNode;
@@ -102,7 +110,7 @@ export default class {
         await createProfilePopup(this.settings, userData, userScoreDisplay, document.body, POPUP_ID, popupStyles);
 
         if (document.getElementById(elementId)) return;
-        authorImageColumn.appendChild(userScoreDisplay);
+        authorImageColumn.firstChild.insertAdjacentElement('afterend', userScoreDisplay);
     }
 
     getAuthorImageAnchor(tweetNode, screenName) {

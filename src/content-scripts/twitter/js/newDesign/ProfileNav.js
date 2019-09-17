@@ -43,20 +43,16 @@ class ProfileNav {
         if (!userData) return;
         const { rank, score, clusterName } = userData;
 
-        let value;
-        const useIcons = await this.settings.getOptionValue('useIcons');
-        if (useIcons) {
-            value = BEE_ICON;
+        let iconContent;
+        const displaySetting = await this.settings.getOptionValue('displaySetting');
+        if (rank && displaySetting in [DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK, DISPLAY_TYPES.RANKS]) {
+            iconContent = `#${displayRank(rank)}`;
+        } else if (displaySetting in [DISPLAY_TYPES.SCORES, DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK]) {
+            iconContent = displayScore(score);
+        } else if (displaySetting === DISPLAY_TYPES.ICONS) {
+            iconContent = BEE_ICON;
         } else {
-            const displaySetting = await this.settings.getOptionValue('displaySetting');
-            if (
-                displaySetting === DISPLAY_TYPES.RANKS ||
-                (rank && displaySetting === DISPLAY_TYPES.RANKS_WITH_SCORES_FALLBACK)
-            ) {
-                value = `#${displayRank(rank)}`;
-            } else if (displaySetting !== DISPLAY_TYPES.RANKS) {
-                value = displayScore(score);
-            }
+            throw new Error(`Unrecognised displaySetting: ${displaySetting} on @${this.screenName}'s profile.`);
         }
 
         const profileNavIcon = document.createElement('div');
@@ -73,7 +69,7 @@ class ProfileNav {
 
         profileNavIcon.id = PROILE_NAV_ICON_ID;
         profileNavIcon.className = adjacentClasses;
-        profileNavIcon.innerHTML = createNavIconHTML({ display: value, tooltipText: `${clusterName} Rank` });
+        profileNavIcon.innerHTML = createNavIconHTML({ display: iconContent, tooltipText: `In ${clusterName}` });
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.screenName}`;
         await createProfilePopup(
