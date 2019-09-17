@@ -45,7 +45,10 @@ const runNewDesign = async (settings, api) => {
     // a function that injects relevant html on the page.
     initialiseIcons();
     const task = () => {
-        const timeout = setTimeout(() => run(settings, api));
+        const timeout = setTimeout(() => {
+            run(settings, api);
+            task();
+        }, 2000);
         return timeout;
     };
     const runningTask = task();
