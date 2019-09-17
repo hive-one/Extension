@@ -1,7 +1,8 @@
 import runProfile from './runProfile';
+import runHome from './runHome';
 import { initialiseIcons, sleep } from './utils';
 
-const skippableRoutes = /^\/(home|notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists|[A-Za-z0-9_]+\/status)/;
+const skippableRoutes = /^\/(notifications|explore|messages|i\/|compose|settings|[A-Za-z0-9_]+\/lists|[A-Za-z0-9_]+\/status)/;
 
 const run = async (settings, api) => {
     const { pathname } = window.location;
@@ -9,15 +10,18 @@ const run = async (settings, api) => {
     if (pathname === '/' || pathname.match(skippableRoutes)) {
         console.log(`TODO: Handle route: "${pathname}"`);
         return;
+    } else if (pathname === '/home') {
+        await runHome(settings, api);
+    } else if (pathname.match(/^\/[A-Za-z0-9_]+$/)) {
+        const screenName = pathname.slice(1);
+        await runProfile(settings, api, screenName);
+    } else {
+        throw new Error(`Unhandled route: ${pathname}`);
     }
-
-    // RUN PROFILE
-    const screenName = pathname.slice(1);
-    await runProfile(settings, api, screenName);
 };
 
 const rerunOnUrlChange = async (oldUrl, rerun, oldRunningTask) => {
-    await sleep(200);
+    await sleep(1000);
 
     let newUrl = window.location.href;
     if (oldUrl === newUrl) {
