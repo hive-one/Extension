@@ -26,9 +26,9 @@ const run = async (settings, api) => {
 };
 
 const runNewDesign = async (settings, api) => {
-    // This extention works by listening for changes in
-    // window.location.href and running / killing / rerunning
-    // a function that injects relevant html on the page.
+    // This extension works by running a task every 2 seconds
+    // that checks the current URL and runs an appropriate function
+    // that injects relevant html on the page.
     initialiseIcons();
     const task = () => {
         const timeout = setTimeout(() => {
