@@ -32,7 +32,7 @@ export const displayRank = num => {
 
 export const displayScore = num => {
     if (num === null) {
-        return 0;
+        return null;
     }
 
     let numDecimalPoints;
@@ -45,8 +45,6 @@ export const displayScore = num => {
     }
     return parseFloat(num).toFixed(numDecimalPoints);
 };
-
-const anchorsLoaded = () => document.getElementsByTagName('a').length > 10;
 
 export const getProfileImage = screenName => {
     const PHOTO_URL = `${window.location.href}/photo`;
@@ -63,16 +61,6 @@ export const getTweets = () => {
     const articles = document.getElementsByTagName('article');
     if (articles.length) return articles;
     throw new Error('Failed finding tweets.');
-};
-
-export const waitUntilDomLoaded = async () => {
-    while (!anchorsLoaded()) {
-        // console.log('sleeping...');
-        await sleep(200);
-    }
-    console.log('DOM Loaded...');
-
-    return;
 };
 
 export const waitUntilResult = async func => {
