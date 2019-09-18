@@ -6,6 +6,12 @@ const PROFILE_SIDEBAR_SELECTOR = '.ProfileSidebar';
 const PROFILE_NAV_SELECTOR = '.ProfileNav';
 const PROCESSED_INDICATOR_CLASS = 'HiveExtension-Twitter_profile-score-processed';
 
+const BEE_ICON = `
+    <svg style='height: 17px' viewBox="0 0 36 36">
+        <use xlink:href="#hive-icon" />
+    </svg>
+`;
+
 export class TwitterProfileScoreExtension {
     api;
     settings;
@@ -50,6 +56,7 @@ export class TwitterProfileScoreExtension {
         let tooltip = '';
         let label = '';
         let value = '';
+        let icon = '';
 
         if (rank && this.settings.shouldDisplayRank) {
             value = rank;
@@ -60,18 +67,20 @@ export class TwitterProfileScoreExtension {
             value = displayScore(score);
             tooltip = `${clusterName} Score ${value}`;
         } else if (this.settings.shouldDisplayIcon) {
-            // TODO: show icon
+            label = `${clusterName}`;
+            icon = BEE_ICON;
         }
 
-        const displayElement = document.createElement('div');
+        const displayElement = document.createElement('li');
         displayElement.classList.add('ProfileNav-item');
         displayElement.classList.add(PROFILE_SCORE_EXTENSION_CLASS_NAME);
 
         displayElement.innerHTML = `
-        <div class="ProfileNav-stat ProfileNav-stat--link u-borderUserColor u-textCenter js-tooltip js-nav u-textUserColor" href="#" data-original-title="${tooltip}">
+        <li class="ProfileNav-stat ProfileNav-stat--link u-borderUserColor u-textCenter js-tooltip js-nav u-textUserColor" href="#" data-original-title="${tooltip}">
                 <span class="ProfileNav-label">${label}</span>
+                <span class="ProfileNav-value">${icon}</span>
                 <span class="ProfileNav-value" data-count="${value}" data-is-compact="false">${value}</span>
-        </div>
+        </li>
         `;
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${screenName}`;

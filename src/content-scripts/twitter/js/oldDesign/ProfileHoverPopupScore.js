@@ -4,6 +4,12 @@ import { displayScore } from '../newDesign/utils';
 const PROFILE_HOVER_CONTAINER = '#profile-hover-container';
 const ELEMENT_CLASS = 'HiveExtension-Twitter_profile-hover-popup';
 
+const BEE_ICON = `
+    <svg style='height: 17px; display: block; margin: auto' viewBox="0 0 36 36">
+        <use xlink:href="#hive-icon" />
+    </svg>
+`;
+
 export class TwitterProfileHoverPopupScoreExtension {
     api;
     settings;
@@ -47,6 +53,7 @@ export class TwitterProfileHoverPopupScoreExtension {
         let tooltip = '';
         let label = '';
         let value = '';
+        let icon = '';
 
         if (rank && this.settings.shouldDisplayRank) {
             value = rank;
@@ -57,7 +64,8 @@ export class TwitterProfileHoverPopupScoreExtension {
             value = displayScore(score);
             tooltip = `${clusterName} Score ${value}`;
         } else if (this.settings.shouldDisplayIcon) {
-            // TODO: show icon
+            label = `${clusterName}`;
+            icon = BEE_ICON;
         }
 
         const displayElement = document.createElement('li');
@@ -67,7 +75,8 @@ export class TwitterProfileHoverPopupScoreExtension {
 
         displayElement.innerHTML = `
           <div class="ProfileCardStats-statLink u-textUserColor u-linkClean u-block js-nav js-tooltip" data-original-title="${tooltip}">
-            <span class="ProfileCardStats-statLabel u-block" style="width: 76px">${label}</span>
+            <span class="ProfileCardStats-statLabel u-block" style="width: 76px; text-align: center;">${label}</span>
+            <span class="ProfileCardStats-statValue">${icon}</span>
             <span class="ProfileCardStats-statValue" style="text-align: center;" data-count="${value}" data-is-compact="false">${value}</span>
           </div>
         `;
