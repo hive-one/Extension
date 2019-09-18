@@ -2,7 +2,7 @@ import runProfile from './runProfile';
 import runHome from './runHome';
 import { initialiseIcons } from './utils';
 
-const skippableRoutes = /^\/(notifications|messages|compose|settings)/;
+const skippableRoutes = /^\/(notifications|messages|compose|settings|[A-Za-z0-9_]+\/followers|[A-Za-z0-9_]+\/following|[A-Za-z0-9_]+\/followers_you_follow)/;
 const workingRoutes = /^\/(home|explore|i|[A-Za-z0-9_]+\/)/;
 
 const run = async (settings, api) => {
