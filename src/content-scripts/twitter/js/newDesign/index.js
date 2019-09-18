@@ -2,7 +2,8 @@ import runProfile from './runProfile';
 import runHome from './runHome';
 import { initialiseIcons } from './utils';
 
-const skippableRoutes = /^\/(notifications|messages|compose|settings|[A-Za-z0-9_]+\/lists)/;
+const skippableRoutes = /^\/(notifications|messages|compose|settings)/;
+const workingRoutes = /^\/(home|explore|i|[A-Za-z0-9_]+\/)/;
 
 const run = async (settings, api) => {
     const { pathname } = window.location;
@@ -10,7 +11,7 @@ const run = async (settings, api) => {
     if (pathname === '/' || pathname.match(skippableRoutes)) {
         console.log(`TODO: Handle route: "${pathname}"`);
         return;
-    } else if (pathname === '/home' || pathname === '/explore' || pathname === '/i/timeline') {
+    } else if (pathname.match(workingRoutes)) {
         await runHome(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+\/status/)) {
         // at the moment there is no difference in how
