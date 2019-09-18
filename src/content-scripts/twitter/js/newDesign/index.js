@@ -1,9 +1,11 @@
 import runProfile from './runProfile';
 import runHome from './runHome';
+import runProfilePreview from './runProfilePreview';
 import { initialiseIcons } from './utils';
 
-const skippableRoutes = /^\/(notifications|messages|compose|settings|[A-Za-z0-9_]+\/followers|[A-Za-z0-9_]+\/following|[A-Za-z0-9_]+\/followers_you_follow)/;
-const workingRoutes = /^\/(home|explore|i|[A-Za-z0-9_]+\/)/;
+const skippableRoutes = /^\/(notifications|messages|compose|settings)/;
+const homeRoutes = /^\/(home|explore|i+\/+interactions|(^i\/related_users+\/)|[A-Za-z0-9_]+\/with_replies|[A-Za-z0-9_]+\/media|[A-Za-z0-9_]+\/likes)/;
+const profilePreviewRoutes = /^\/([A-Za-z0-9_]+\/followers|[A-Za-z0-9_]+\/following|[A-Za-z0-9_]+\/followers_you_follow|i\/related_users+\/)/;
 
 const run = async (settings, api) => {
     const { pathname } = window.location;
@@ -11,7 +13,7 @@ const run = async (settings, api) => {
     if (pathname === '/' || pathname.match(skippableRoutes)) {
         console.log(`TODO: Handle route: "${pathname}"`);
         return;
-    } else if (pathname.match(workingRoutes)) {
+    } else if (pathname.match(homeRoutes)) {
         await runHome(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+\/status/)) {
         // at the moment there is no difference in how
@@ -21,6 +23,8 @@ const run = async (settings, api) => {
     } else if (pathname.match(/^\/[A-Za-z0-9_]+$/)) {
         const screenName = pathname.slice(1);
         await runProfile(settings, api, screenName);
+    } else if (pathname.match(profilePreviewRoutes)) {
+        await runProfilePreview(settings, api);
     } else {
         throw new Error(`Unhandled route: ${pathname}`);
     }
