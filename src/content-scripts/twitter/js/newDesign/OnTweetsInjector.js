@@ -101,6 +101,9 @@ export default class {
         if (document.getElementById(ICON_ID)) return;
         const authorImageContainer = authorImageAnchor.parentNode.parentNode;
         authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
+
+        // If inside a thread, this will make sure the "main tweet" looks right.
+        authorImageContainer.parentNode.parentNode.style.alignItems = 'flex-start';
     }
 
     createIcon(userData, nodeId, tweetId) {
