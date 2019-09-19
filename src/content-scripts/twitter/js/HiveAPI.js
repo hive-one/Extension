@@ -64,12 +64,14 @@ class HiveAPI {
 
             // Checks to see if the cached values are in the correct format
             // If a user accesses another design, that design's `available` array gets cached.
-            if (cachedIds.available) {
-                if (
-                    (key === AVAILABLE_SCREEN_NAMES_KEY && !isNaN(parseInt(cachedIds.available[0], 10))) ||
-                    (key === AVAILABLE_IDS_KEY && isNaN(parseInt(cachedIds.available[0], 10)))
-                ) {
-                    delete cachedIds.available;
+            if (cachedIds) {
+                if (cachedIds.available) {
+                    if (
+                        (key === AVAILABLE_SCREEN_NAMES_KEY && !isNaN(parseInt(cachedIds.available[0], 10))) ||
+                        (key === AVAILABLE_IDS_KEY && isNaN(parseInt(cachedIds.available[0], 10)))
+                    ) {
+                        delete cachedIds.available;
+                    }
                 }
             }
 
