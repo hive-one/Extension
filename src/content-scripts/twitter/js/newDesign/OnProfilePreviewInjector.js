@@ -27,12 +27,7 @@ export default class {
     }
 
     async run() {
-        const whoToFollowElem = document.getElementsByClassName(
-            'css-18t94o4 css-1dbjc4n r-my5ep6 r-rull8r r-qklmqi r-1j3t67a r-1w50u8q r-o7ynqc r-1j63xyz',
-        );
-        const followingElems = document.getElementsByClassName('css-1dbjc4n r-my5ep6 r-qklmqi r-1adg3ll');
-
-        let profilePreviews = whoToFollowElem.length ? whoToFollowElem : followingElems;
+        let profilePreviews = document.querySelectorAll('[data-testid=UserCell]');
 
         if (!profilePreviews || !profilePreviews.length) {
             throw new Error('Failed finding profile previews');

@@ -20,13 +20,21 @@ const BEE_ICON = `
 export default class {
     settings;
     api;
-    constructor(_settings, _api) {
+    passedTweets;
+    constructor(_settings, _api, passedTweets = []) {
         this.settings = _settings;
         this.api = _api;
+        this.passedTweets = passedTweets;
     }
 
     async run() {
-        const tweets = await waitUntilResult(getTweets);
+        let tweets = [];
+        if (!this.passedTweets.length) {
+            tweets = await waitUntilResult(getTweets);
+        } else {
+            tweets = this.passedTweets;
+        }
+
         if (!tweets || !tweets.length) {
             throw new Error('Failed finding tweets');
         }
