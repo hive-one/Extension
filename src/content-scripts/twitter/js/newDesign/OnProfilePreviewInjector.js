@@ -3,7 +3,7 @@ import { depthFirstNodeSearch, displayRank, displayScore } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 // TODO: Make the score appear on the bottom of the image instead of the right
-const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
+const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
 
 const createPreviewScoreIcon = ({ display = '', tooltipText = '' }) => `
 <div class="${USER_PREVIEW_SCORE_CLASS} ${TOOLTIP_CLASSNAMES.TOOLTIP}">
@@ -71,7 +71,7 @@ export default class {
         await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
 
         if (document.getElementById(ICON_ID)) return;
-        const authorImageContainer = authorImageAnchor.parentNode.parentNode;
+        const authorImageContainer = authorImageAnchor.parentNode;
         authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
     }
 

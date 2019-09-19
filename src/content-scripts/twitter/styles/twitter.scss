@@ -51,7 +51,7 @@
 .HiveExtension_Twitter_TweetAuthor-container {
     padding: 12px;
 }
-.HiveExtension_Twitter_TweetAuthor-text {
+.HiveExtension_Twitter_TweetAuthor-text, .HiveExtension_Twitter_ProfilePreview-text {
     color: $twitter_grey;
     font-family: $twitter_font-family;
     font-size: 12px;
@@ -63,7 +63,7 @@
     }
 }
 
-.HiveExtension_Twitter_TweetAuthor-icon {
+.HiveExtension_Twitter_TweetAuthor-icon, .HiveExtension_Twitter_ProfilePreview-icon  {
     height: 18px;
     fill: $twitter_grey;
     margin-bottom: -1px;
@@ -73,6 +73,11 @@
         fill: $purple_one;
         transition-duration: 0.2s;
     }
+}
+
+.HiveExtension_Twitter_ProfilePreview-container {
+    text-align: center;
+    padding-top: 12px;
 }
 
 .HiveExtension_Tooltip {
