@@ -42,26 +42,38 @@ export default class {
         // All statuses (tweets) have a url in which they link too, including some promoted tweets
         const r = /\/([A-Za-z0-9_]+)\/status\/([0-9]+)/;
         for (let i = 0; i < tweets.length; i++) {
-            const tweetNode = tweets[i];
-            if (tweetNode.classList.contains('promoted')) continue;
-
-            const match = r.exec(tweetNode.innerHTML);
-            if (!match) {
-                // Some promoted tweets will not have their own url however.
-                // These tweets do not have anchor tags with links to the status,
-                // instead they have javascript which navigates you to the tweets url.
-                if (!tweetNode.innerHTML.match(/>Promoted</)) {
-                    throw new Error(`Found unrecognisable <article> ${tweetNode.outerHTML}`);
-                } else {
-                    tweetNode.classList.add('promoted');
-                    continue;
+            try {
+                const tweetNode = tweets[i];
+                if (tweetNode.classList.contains('promoted')) continue;
+                // INFO: This doesn't work if the main tweet does not have retweets or likes
+                const match = r.exec(tweetNode.innerHTML);
+                if (!match) {
+                    // Some promoted tweets will not have their own url however.
+                    // These tweets do not have anchor tags with links to the status,
+                    // instead they have javascript which navigates you to the tweets url.
+                    if (!tweetNode.innerHTML.match(/>Promoted</)) {
+                        // Fallback if the main tweet doesn't have any retweet or likes
+                        const screenName = /(^|[^@\w])@(\w{1,15})\b/;
+                        const screenNameMatch = screenName.exec(tweetNode.innerHTML);
+                        if (!screenNameMatch) {
+                            throw new Error(`Found unrecognisable <article> ${tweetNode.outerHTML}`);
+                        }
+                        let pathnameMatch = r.exec(location.pathname);
+                        await this.injectOntoTweet(tweetNode, screenNameMatch[2], pathnameMatch[2]);
+                        continue;
+                    } else {
+                        tweetNode.classList.add('promoted');
+                        continue;
+                    }
                 }
-            }
 
-            // Tweet authors screen name
-            const screenName = match[1];
-            const tweetId = match[2];
-            await this.injectOntoTweet(tweetNode, screenName, tweetId);
+                // Tweet authors screen name
+                const screenName = match[1];
+                const tweetId = match[2];
+                await this.injectOntoTweet(tweetNode, screenName, tweetId);
+            } catch (error) {
+                console.log('Error: ', error);
+            }
         }
     }
 
