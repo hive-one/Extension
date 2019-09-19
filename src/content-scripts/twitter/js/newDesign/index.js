@@ -15,22 +15,17 @@ const run = async (settings, api) => {
         console.log(`TODO: Handle route: "${pathname}"`);
         return;
     } else if (pathname.match(homeRoutes)) {
-        console.log('Running A');
         await runHome(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+\/status/)) {
         // at the moment there is no difference in how
         // the home route is handled and how threads are
         // handled
-        console.log('Running B');
         await runHome(settings, api);
     } else if (pathname.match(profilePreviewRoutes)) {
-        console.log('Running D');
         await runProfilePreview(settings, api);
     } else if (pathname == '/notifications' || pathname == '/notifications/mentions') {
-        console.log('Running E');
         await runNotifications(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+$/)) {
-        console.log('Running C');
         const screenName = pathname.slice(1);
         await runProfile(settings, api, screenName);
     } else {

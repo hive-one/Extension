@@ -17,11 +17,9 @@ import runNewDesign from './newDesign';
 (async () => {
     // Constructor returns a promise, thus it must be awaited,
     // despite what VSCodes squiggly line says
-    console.log('Hello');
     const settings = await new ExtensionSettings();
     const cache = new TimedCache(CONFIG.USER_DATA_CACHE_LIFETIME);
     const api = await new HiveAPI(CONFIG.API_HOST, settings, cache);
-    console.log('World');
 
     if (settings.isNewTwitterDesign) {
         console.log('HIVE.ONE EXTENTION: Running for the new design (2019.07.15 and later)');
