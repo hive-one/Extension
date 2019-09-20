@@ -5,7 +5,6 @@ import runNotifications from './runNotifications';
 import { initialiseIcons } from './utils';
 
 // TODO: Handle popup showing who retweeted and who liked
-// TODO: Handle 'Who to follow' Module
 
 const skippableRoutes = /^\/(messages|compose|settings)/;
 const homeRoutes = /^\/(home|explore|i+\/+interactions|(^i\/related_users+\/)|[A-Za-z0-9_]+\/with_replies|[A-Za-z0-9_]+\/media|[A-Za-z0-9_]+\/likes)/;
@@ -19,18 +18,22 @@ const run = async (settings, api) => {
         return;
     } else if (pathname.match(homeRoutes)) {
         await runHome(settings, api);
+        await runProfilePreview(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+\/status/)) {
         // at the moment there is no difference in how
         // the home route is handled and how threads are
         // handled
         await runHome(settings, api);
+        await runProfilePreview(settings, api);
     } else if (pathname.match(profilePreviewRoutes)) {
         await runProfilePreview(settings, api);
     } else if (pathname == '/notifications' || pathname == '/notifications/mentions') {
         await runNotifications(settings, api);
+        await runProfilePreview(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+$/)) {
         const screenName = pathname.slice(1);
         await runProfile(settings, api, screenName);
+        await runProfilePreview(settings, api);
     } else {
         throw new Error(`Unhandled route: ${pathname}`);
     }

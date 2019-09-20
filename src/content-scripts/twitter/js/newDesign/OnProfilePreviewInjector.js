@@ -1,5 +1,5 @@
 import createHiveProfilePopup from '../HiveProfilePopup';
-import { depthFirstNodeSearch, displayRank, displayScore } from './utils';
+import { depthFirstNodeSearch, displayRank, displayScore, stringToHash } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
@@ -38,15 +38,17 @@ export default class {
             const imageAnchor = depthFirstNodeSearch(profileNode, testCondition);
             if (imageAnchor) {
                 let screenName = imageAnchor.href.slice(20);
-                await this.injectOntoProfilePreview(profileNode, screenName);
+                // Create's a unique ID based on the element as sometimes the same profile might appear on the same page but will have different classnames
+                let hashableString = screenName + profileNode.parentNode.parentNode.className;
+                await this.injectOntoProfilePreview(profileNode, screenName, stringToHash(hashableString));
             }
         }
     }
 
-    async injectOntoProfilePreview(previewNode, screenName) {
+    async injectOntoProfilePreview(previewNode, screenName, uniqueID) {
         if (!this.api.isIdentifierIndexed(screenName)) return;
 
-        const ICON_ID = `HiveExtension-Twitter_user_preview-score_${screenName}`;
+        const ICON_ID = `HiveExtension-Twitter_user_preview-score_${uniqueID}`;
         if (document.getElementById(ICON_ID)) return;
 
         const userData = await this.api.getFilteredTwitterUserData(screenName);
@@ -58,7 +60,7 @@ export default class {
         if (!injectableIcon) return;
 
         // Create popup
-        const POPUP_ID = `HiveExtension-Twitter_UserPreview_Popup_${screenName}`;
+        const POPUP_ID = `HiveExtension-Twitter_UserPreview_Popup_${uniqueID}`;
         const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
         const popupStyles = this.createPopupStyles(previewNode, authorImageAnchor);
 

@@ -101,3 +101,15 @@ export const depthFirstNodeSearch = (parentNode, testCondition, currentDepth = 1
     }
     return null;
 };
+
+export const stringToHash = str => {
+    const len = str.length;
+    let hash = 0;
+    if (len === 0) return hash;
+    let i;
+    for (i = 0; i < len; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
