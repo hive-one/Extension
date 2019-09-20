@@ -2,7 +2,6 @@ import createHiveProfilePopup from '../HiveProfilePopup';
 import { depthFirstNodeSearch, displayRank, displayScore } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
-// TODO: Make the score appear on the bottom of the image instead of the right
 const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
 
 const createPreviewScoreIcon = ({ display = '', tooltipText = '' }) => `

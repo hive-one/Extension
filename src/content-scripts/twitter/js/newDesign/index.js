@@ -4,6 +4,9 @@ import runProfilePreview from './runProfilePreview';
 import runNotifications from './runNotifications';
 import { initialiseIcons } from './utils';
 
+// TODO: Handle popup showing who retweeted and who liked
+// TODO: Handle 'Who to follow' Module
+
 const skippableRoutes = /^\/(messages|compose|settings)/;
 const homeRoutes = /^\/(home|explore|i+\/+interactions|(^i\/related_users+\/)|[A-Za-z0-9_]+\/with_replies|[A-Za-z0-9_]+\/media|[A-Za-z0-9_]+\/likes)/;
 const profilePreviewRoutes = /^\/([A-Za-z0-9_]+\/followers|[A-Za-z0-9_]+\/following|[A-Za-z0-9_]+\/followers_you_follow|i\/related_users+\/)/;

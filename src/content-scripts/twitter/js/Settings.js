@@ -23,6 +23,7 @@ class ExtensionSettings {
 
     async isDarkTheme() {
         if (this.isNewTwitterDesign) {
+            // The CSS for the new design is a little confusing, using this cookie is a lot easier
             let cookieValue = await this.getNewDesignNightModeCookie();
             return cookieValue === '1';
         } else {
