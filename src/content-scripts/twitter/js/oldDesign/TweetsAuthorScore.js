@@ -5,6 +5,12 @@ import escapeHTML from 'escape-html';
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension-Twitter_tweet-author-score';
 const TWEETS_SELECTOR = '.tweet';
 
+const BEE_ICON = `
+    <svg style='height: 17px' viewBox="0 0 36 36">
+        <use xlink:href="#hive-icon" />
+    </svg>
+`;
+
 export class TwitterTweetsAuthorScoreExtension {
     api;
     settings;
@@ -60,6 +66,7 @@ export class TwitterTweetsAuthorScoreExtension {
 
             let value = '';
             let tooltip = '';
+            let icon = '';
 
             if (rank && this.settings.shouldDisplayRank) {
                 value = `#${rank}`;
@@ -69,7 +76,7 @@ export class TwitterTweetsAuthorScoreExtension {
                 tooltip = `${clusterName} Score ${value}`;
                 value = `[ ${value} ]`;
             } else if (this.settings.shouldDisplayIcon) {
-                // TODO: show icon
+                icon = BEE_ICON;
             }
 
             const userScoreDisplay = document.createElement('div');
@@ -79,7 +86,8 @@ export class TwitterTweetsAuthorScoreExtension {
             <b class="${TWEET_AUTHOR_SCORE_CLASS}_display ${threadClass} js-tooltip" data-original-title="${escapeHTML(
                 tooltip,
             )}">
-            <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${escapeHTML(value)}</span>
+                <span class="${TWEET_AUTHOR_SCORE_CLASS}_text">${escapeHTML(value)}</span>
+                <span>${icon}</span>
             </b>
             `;
 

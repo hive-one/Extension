@@ -62,12 +62,25 @@ class HiveAPI {
         try {
             var cachedIds = await this.cache.get(key);
 
-            if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
-                const res = await fetch(url);
-                if (!res.ok) {
-                    throw new Error(`Cannot handle status code "${res.status}" for url "${url}"`);
+            // Checks to see if the cached values are in the correct format
+            // If a user accesses another design, that design's `available` array gets cached.
+            if (cachedIds) {
+                if (cachedIds.available) {
+                    if (
+                        (key === AVAILABLE_SCREEN_NAMES_KEY && !isNaN(parseInt(cachedIds.available[0], 10))) ||
+                        (key === AVAILABLE_IDS_KEY && isNaN(parseInt(cachedIds.available[0], 10)))
+                    ) {
+                        delete cachedIds.available;
+                    }
                 }
-                const { data } = await res.json();
+            }
+
+            if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
+                const res = await this.fetchInBackgroundContext(url);
+                if (res.error) {
+                    throw new Error(res.error);
+                }
+                const { data } = res;
                 cachedIds = data;
                 this.cache.save(AVAILABLE_SCREEN_NAMES_KEY, {
                     available: cachedIds.available,
@@ -143,7 +156,7 @@ class HiveAPI {
 
     async _getTwitterUserData(idOrScreenName) {
         // Tries pulling data from cache
-        // if not requests dat from the API and caches it
+        // if not requests data from the API and caches it
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
         const cachedData = await this.cache.get(cacheKey);
 
@@ -173,17 +186,17 @@ class HiveAPI {
         // Immediately save requests to state to prevent duplicate requests
         let responsePromise = this._requestsMap[idOrScreenName];
         if (!responsePromise) {
-            responsePromise = fetch(url);
+            responsePromise = this.fetchInBackgroundContext(url);
             this._requestsMap[idOrScreenName] = responsePromise;
         }
 
         let userData;
         try {
             const res = await responsePromise;
-            if (!res.ok) {
-                throw new Error(`Unhandled response code: "${res.status}" for URL: "${url}"`);
+            if (res.error) {
+                throw new Error(res.error);
             }
-            const { data } = await res.json();
+            const { data } = res;
             userData = data;
             // pop from state
             delete this._requestsMap[idOrScreenName];

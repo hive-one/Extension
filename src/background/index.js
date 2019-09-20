@@ -62,6 +62,9 @@ ga('send', 'pageview', '/');
 async function fetchURL(url, options, callback) {
     try {
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Cannot handle status code "${response.status}" for url "${url}"`);
+        }
         const data = await response.json();
         callback({
             type: GA_TYPES.FETCH_SUCCESS,
@@ -82,6 +85,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
         case GA_TYPES.FETCH:
             fetchURL(request.url, request.options, sendResponse);
+            return true;
+        case 'SET_COOKIE':
+            chrome.cookies.get({ url: 'https:twitter.com/', name: 'night_mode' }, cookie => {
+                console.log('gets this far?', cookie);
+                sendResponse({ type: 'nightModeCookie', value: cookie ? cookie.value : 0 });
+            });
             return true;
     }
 });

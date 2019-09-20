@@ -37,7 +37,13 @@ export default class {
             throw new Error(`Failed finding profile image for ${this.screenName}`);
         }
 
-        if (profileNavIconExists()) return;
+        // Check to see if the hive profile element already exists
+        // If so and if the screenName is not the same then remove it and continue
+        if (profileNavIconExists()) {
+            let existingElement = document.getElementById(PROILE_NAV_ICON_ID);
+            if (existingElement.dataset.screenName == this.screenName) return;
+            existingElement.remove();
+        }
 
         const userData = await this.api.getFilteredTwitterUserData(this.screenName);
         if (!userData) return;
@@ -62,7 +68,9 @@ export default class {
         const profileActionsList = profileImageAnchor.nextSibling;
         // The following classnames are from the other icons in the list
         const firstActionItem = profileActionsList.firstChild;
-        if (firstActionItem.id === PROILE_NAV_ICON_ID) return;
+        if (firstActionItem.id === PROILE_NAV_ICON_ID) {
+            if (document.getElementById(PROILE_NAV_ICON_ID).dataset.screenName == this.screenName) return;
+        }
         const adjacentClasses = profileActionsList.firstChild.className;
         if (!adjacentClasses) {
             throw new Error('Failed finding adjacent classNames in profileActionsList');
@@ -71,6 +79,7 @@ export default class {
         profileNavIcon.id = PROILE_NAV_ICON_ID;
         profileNavIcon.className = adjacentClasses;
         profileNavIcon.innerHTML = createNavIconHTML({ display: iconContent, tooltipText: `In ${clusterName}` });
+        profileNavIcon.dataset.screenName = this.screenName;
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.screenName}`;
         await createHiveProfilePopup(

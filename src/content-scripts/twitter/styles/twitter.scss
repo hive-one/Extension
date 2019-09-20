@@ -51,7 +51,7 @@
 .HiveExtension_Twitter_TweetAuthor-container {
     padding: 12px;
 }
-.HiveExtension_Twitter_TweetAuthor-text {
+.HiveExtension_Twitter_TweetAuthor-text, .HiveExtension_Twitter_ProfilePreview-text {
     color: $twitter_grey;
     font-family: $twitter_font-family;
     font-size: 12px;
@@ -63,7 +63,7 @@
     }
 }
 
-.HiveExtension_Twitter_TweetAuthor-icon {
+.HiveExtension_Twitter_TweetAuthor-icon, .HiveExtension_Twitter_ProfilePreview-icon {
     height: 18px;
     fill: $twitter_grey;
     margin-bottom: -1px;
@@ -73,6 +73,11 @@
         fill: $purple_one;
         transition-duration: 0.2s;
     }
+}
+
+.HiveExtension_Twitter_ProfilePreview-container {
+    text-align: center;
+    padding-top: 12px;
 }
 
 .HiveExtension_Tooltip {
@@ -282,10 +287,22 @@
                     color: white;
                 }
 
-                #{$root}_content,
+                #{$root}_content {
+                    background-color: #15202b;
+                    border-color: #38444d;
+                }
                 #{$root}_followers_follower {
                     background-color: #15202b;
                     border-color: #38444d;
+                }
+
+                #{$root}_podcasts_podcast {
+                    background-color: #15202b;
+                    border-color: #38444d;
+
+                    &_meta {
+                        color: white;
+                    }
                 }
 
                 #{$root}_cluster-score_progress-bar {
@@ -381,7 +398,6 @@
                     padding: 5px;
                     border: 1px solid #eeedff;
                     color: $twitter_blue;
-                    width: 100%;
                     text-align: left;
                     text-indent: 10px;
                     font-size: 10px;
