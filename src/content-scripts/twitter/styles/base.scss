@@ -1,0 +1,71 @@
+// PRIMARY COLOURS
+$purple_one: #574dff;
+$purple_two: #817aff;
+$purple_three: #a19cff;
+$purple_four: #c2beff;
+$purple_five: #dfdeff;
+$purple_six: #eeedff;
+$purple_seven: #f5f7fa;
+
+// SECONDARY COLOURS
+$blue_one: #574dff;
+$blue_two: #3a5acf;
+$blue_three: #4b9ae9;
+$blue_four: #3a98fa;
+
+$green_one: #21a560;
+$green_two: #54d893;
+$green_three: #87ffc6;
+
+$red_one: #cc4644;
+$red_two: #ff7977;
+$red_three: #ff9391;
+$red_four: #ffacaa;
+
+$yellow_one: #f5ff70;
+$yellow_two: #ffffa3;
+$yellow_three: #ffffd6;
+
+$grey_one: #545454;
+$grey_two: #6c6c6c;
+$grey_three: #8d8d8d;
+$grey_four: #9ca4ab;
+$grey_five: #dbdbdb;
+
+// BACKGROUND COLOURS
+$page_background: #fafbfd;
+$panel_background: #ffffff;
+
+// TWITTER
+$twitter_blue: #1da1f2;
+$twitter_blue_hover: #0c7abf;
+$twitter_font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue',
+    sans-serif;
+$twitter_grey: rgb(101, 119, 134);
+
+// BORDERS
+$border_purple_six: 1px solid $purple_six;
+$border_edge: 6px;
+
+// MARGINS
+$page_margin_sm: 20px;
+$page_margin_lg: 96px;
+
+%page-margin {
+    margin-left: $page_margin_sm;
+    margin-right: $page_margin_sm;
+}
+%edges {
+    border-radius: $border_edge;
+}
+%border-purple {
+    @extend %edges;
+    border: $border_purple_six;
+}
+
+@media (min-width: 800px) {
+    %page-margin {
+        margin-left: $page_margin_lg;
+        margin-right: $page_margin_lg;
+    }
+}

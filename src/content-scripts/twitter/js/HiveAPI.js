@@ -1,196 +1,244 @@
-import { MESSAGES } from '../../../config';
+import { GA_TYPES, CLUSTER_TYPES } from '../../../config';
 
-class HIVE_API_FETCH_DATA_STATUS {
-  static SUCCESS = 'success';
-  static ERROR = 'error';
-}
+const RESPONSE_TYPES = Object.freeze({
+    SUCCESS: 'success',
+    ERROR: 'error',
+});
 
-const AVAILABLE_IDENTIFIERS_STORING_KEY = 'HiveAPI::AVAILABLE_IDENTIFIERS';
+const AVAILABLE_SCREEN_NAMES_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_SCREEN_NAMES';
+const AVAILABLE_IDS_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_IDS';
 
-export class HiveAPI {
-  cache;
-  host = '';
-  defaultCluster = 'Crypto';
+class HiveAPI {
+    cache;
+    host = '';
 
-  _availableIdentifiers;
-  _initializationPromise;
-  _userRequestsMap = {};
+    _acceptableIds;
+    _requestsMap;
 
-  constructor(_host, _defaultCluster, _cache) {
-    this.host = _host;
-    this.defaultCluster = _defaultCluster;
-    this.cache = _cache;
-    this._availableIdentifiers = [];
-
-    this.initialize();
-  }
-
-  async initialize() {
-    if (!this._initializationPromise) {
-      this._initializationPromise = new Promise(async resolve => {
-        await this._initializeAvailableIdentifiers();
-
-        resolve();
-      });
-    }
-
-    return this._initializationPromise;
-  }
-
-  async _initializeAvailableIdentifiers() {
-    const cachedIdentifiers = await this.cache.get(AVAILABLE_IDENTIFIERS_STORING_KEY);
-
-    if (cachedIdentifiers) {
-      this._availableIdentifiers = cachedIdentifiers.available;
-    } else {
-      const response = await this.fetchInBackgroundContext(
-        `${this.host}/api/influencers/scores/people/available/`
-      );
-
-      if (response && response.data && response.data.available) {
-        this._availableIdentifiers = response.data.available;
-        this.cache.save(AVAILABLE_IDENTIFIERS_STORING_KEY, {
-          available: this._availableIdentifiers
+    constructor(_host, settings, _cache) {
+        this.host = _host;
+        this.settings = settings;
+        this.cache = _cache;
+        this._acceptableIds = [];
+        this._requestsMap = new Map();
+        return new Promise(async resolve => {
+            await this._initialize();
+            resolve(this);
         });
-      }
     }
-  }
 
-  async getTwitterUserScore(id, clusterName = this.defaultCluster) {
-    let score = 0;
-    let name = clusterName;
-    let indexed = false;
-    let rank = null;
-    let followers = [];
-    let podcasts = [];
+    get defaultCluster() {
+        return this.settings.clusterToDisplay;
+    }
 
-    if (id && this.isIdentifierIndexed(id)) {
-      const { data, status } = await this.getTwitterUserData(id);
-
-      if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
-        if (clusterName === 'Highest') {
-          const highestScoreCluster = data.clusters.slice().sort((a, b) => b.score - a.score)[0];
-
-          name = highestScoreCluster.abbr;
-          score = highestScoreCluster.score;
-          rank = highestScoreCluster.rank;
-          followers = highestScoreCluster.followers;
+    get userDataUrl() {
+        if (this.settings.isNewTwitterDesign) {
+            return `${this.host}/api/influencers/scores/people/screen_name`;
         } else {
-          const cluster = data.clusters.find(item => item.abbr === clusterName);
-          score = cluster.score;
-          rank = cluster.rank;
-          followers = cluster.followers;
+            return `${this.host}/api/influencers/scores/people/id`;
+        }
+    }
+
+    get availableIdsKey() {
+        if (this.settings.isNewTwitterDesign) {
+            return AVAILABLE_SCREEN_NAMES_KEY;
+        } else {
+            return AVAILABLE_IDS_KEY;
+        }
+    }
+
+    get availableIdsUrl() {
+        if (this.settings.isNewTwitterDesign) {
+            return `${this.host}/api/influencers/scores/people/available/screen_names/`;
+        } else {
+            return `${this.host}/api/influencers/scores/people/available/ids/`;
+        }
+    }
+
+    async _initialize() {
+        const key = this.availableIdsKey;
+        const url = this.availableIdsUrl;
+
+        try {
+            var cachedIds = await this.cache.get(key);
+
+            // Checks to see if the cached values are in the correct format
+            // If a user accesses another design, that design's `available` array gets cached.
+            if (cachedIds) {
+                if (cachedIds.available) {
+                    if (
+                        (key === AVAILABLE_SCREEN_NAMES_KEY && !isNaN(parseInt(cachedIds.available[0], 10))) ||
+                        (key === AVAILABLE_IDS_KEY && isNaN(parseInt(cachedIds.available[0], 10)))
+                    ) {
+                        delete cachedIds.available;
+                    }
+                }
+            }
+
+            if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
+                const res = await this.fetchInBackgroundContext(url);
+                if (res.error) {
+                    throw new Error(res.error);
+                }
+                const { data } = res;
+                cachedIds = data;
+                this.cache.save(AVAILABLE_SCREEN_NAMES_KEY, {
+                    available: cachedIds.available,
+                });
+            }
+            this._acceptableIds = cachedIds.available;
+        } catch (err) {
+            console.error('Failed initializing HiveAPI\n', err);
+        }
+    }
+
+    async getFilteredTwitterUserData(idOrScreenName, clusterName = this.defaultCluster) {
+        // loads cached user reponse & returns scores/ranks based on the selected cluster
+
+        if (!idOrScreenName) {
+            throw new Error('Missing arg: idOrScreenName');
+        }
+
+        if (!this.isIdentifierIndexed(idOrScreenName)) {
+            throw new Error(`Could not find ${idOrScreenName} within this._acceptableIds`);
+        }
+
+        let id, screenName, rank;
+        let score = 0;
+        let name = clusterName;
+        let indexed = false;
+        let followers = [];
+        let podcasts = [];
+        let scores = [];
+
+        const { data, status } = await this._getTwitterUserData(idOrScreenName);
+
+        if (status !== RESPONSE_TYPES.SUCCESS || !data) {
+            throw new Error(`Failed getting data for for: ${idOrScreenName}`);
+        }
+
+        id = data.twitter_id;
+        screenName = data.screen_name;
+        scores = data.scores;
+
+        if (clusterName === CLUSTER_TYPES.HIGHEST) {
+            const highestScoreCluster = data.scores.slice().sort((a, b) => b.score - a.score)[0];
+
+            name = highestScoreCluster.abbr;
+            score = highestScoreCluster.score;
+            rank = highestScoreCluster.rank;
+            followers = highestScoreCluster.followers.edges;
+        } else {
+            const { node: selectedCluster } = data.scores.find(c => c.node.abbr === clusterName);
+            score = selectedCluster.score;
+            rank = selectedCluster.rank;
+            followers = selectedCluster.followers.edges;
         }
 
         podcasts =
-          data.podcasts &&
-          data.podcasts.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+            data.podcasts.edges && data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
 
         indexed = true;
-      }
+
+        return { id, screenName, clusterName: name, score, scores, rank, indexed, followers, podcasts };
     }
 
-    return { name, score, rank, indexed, followers, podcasts };
-  }
+    async getTwitterUserScores(idOrScreenName) {
+        const { data, status } = await this._getTwitterUserData(idOrScreenName);
+        let scores = [];
 
-  async getTwitterUserClusters(id) {
-    const { data, status } = await this.getTwitterUserData(id);
-
-    let clusters = [];
-
-    if (status === HIVE_API_FETCH_DATA_STATUS.SUCCESS) {
-      clusters = data.clusters;
-    }
-
-    return clusters;
-  }
-
-  async getTwitterUserData(id) {
-    const cacheKey = this.getUserScoreStoringCacheKey(id);
-    const cachedData = await this.cache.get(cacheKey);
-
-    if (typeof cachedData !== 'undefined' && cachedData !== null) {
-      return cachedData;
-    }
-
-    let status, data;
-
-    try {
-      let responsePromise = this._userRequestsMap[id];
-
-      if (!responsePromise) {
-        responsePromise = this.fetchInBackgroundContext(
-          `${this.host}/api/influencers/scores/people/id/${id}/`
-        );
-        this._userRequestsMap[id] = responsePromise;
-      }
-
-      const response = await responsePromise;
-      data = this.processScoreResponse(response);
-      status = HIVE_API_FETCH_DATA_STATUS.SUCCESS;
-    } catch (error) {
-      status = HIVE_API_FETCH_DATA_STATUS.ERROR;
-    }
-
-    const fetchingInfo = {
-      data,
-      status
-    };
-
-    await this.cache.save(cacheKey, fetchingInfo);
-
-    return fetchingInfo;
-  }
-
-  getUserScoreStoringCacheKey(id) {
-    return `user_${id}_allCrypto_score`;
-  }
-
-  fetchInBackgroundContext(url) {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(
-        {
-          type: MESSAGES.FETCH,
-          url
-        },
-        ({ type, data, error }) => {
-          if (type === MESSAGES.FETCH_SUCCESS) {
-            resolve(data);
-          } else {
-            reject(error);
-          }
+        if (status === RESPONSE_TYPES.SUCCESS) {
+            scores = data.scores;
         }
-      );
-    });
-  }
 
-  processScoreResponse(response) {
-    response = JSON.parse(JSON.stringify(response.data));
-
-    response.clusters = response.scores.map(item => {
-      if (item.node.followers && item.node.followers.edges) {
-        item.node.followers = item.node.followers.edges.map(followerNode => followerNode.node);
-      }
-
-      return item.node;
-    });
-
-    delete response.scores;
-
-    response.podcasts = response.podcasts.edges;
-
-    return response;
-  }
-
-  getAvailableIdentifiers() {
-    return this._availableIdentifiers;
-  }
-
-  isIdentifierIndexed(id) {
-    if (id.toString) {
-      id = id.toString();
+        return scores;
     }
 
-    return this.getAvailableIdentifiers().includes(id);
-  }
+    async _getTwitterUserData(idOrScreenName) {
+        // Tries pulling data from cache
+        // if not requests data from the API and caches it
+        const cacheKey = this.getUserDataCacheKey(idOrScreenName);
+        const cachedData = await this.cache.get(cacheKey);
+
+        if (typeof cachedData !== 'undefined' && cachedData !== null) {
+            return cachedData;
+        }
+
+        let status;
+        const data = await this._requestUserData(idOrScreenName);
+        if (data) {
+            status = RESPONSE_TYPES.SUCCESS;
+        } else {
+            status = RESPONSE_TYPES.ERROR;
+        }
+
+        const resInfo = {
+            data,
+            status,
+        };
+        await this.cache.save(cacheKey, resInfo);
+
+        return resInfo;
+    }
+
+    async _requestUserData(idOrScreenName) {
+        const url = `${this.userDataUrl}/${idOrScreenName}/`;
+        // Immediately save requests to state to prevent duplicate requests
+        let responsePromise = this._requestsMap[idOrScreenName];
+        if (!responsePromise) {
+            responsePromise = this.fetchInBackgroundContext(url);
+            this._requestsMap[idOrScreenName] = responsePromise;
+        }
+
+        let userData;
+        try {
+            const res = await responsePromise;
+            if (res.error) {
+                throw new Error(res.error);
+            }
+            const { data } = res;
+            userData = data;
+            // pop from state
+            delete this._requestsMap[idOrScreenName];
+        } catch (err) {
+            console.error(err);
+        }
+        if (!userData) {
+            throw new Error(`Failed requesting user data: ${idOrScreenName}`);
+        }
+
+        return userData;
+    }
+
+    getUserDataCacheKey(idOrScreenName) {
+        return `twitter_user_${idOrScreenName}`;
+    }
+
+    isIdentifierIndexed(idOrScreenName) {
+        if (idOrScreenName.toString) {
+            idOrScreenName = idOrScreenName.toString();
+        }
+
+        return this._acceptableIds.includes(idOrScreenName);
+    }
+
+    fetchInBackgroundContext(url) {
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage(
+                {
+                    type: GA_TYPES.FETCH,
+                    url,
+                },
+                ({ type, data, error }) => {
+                    if (type === GA_TYPES.FETCH_SUCCESS) {
+                        resolve(data);
+                    } else {
+                        reject(error);
+                    }
+                },
+            );
+        });
+    }
 }
+
+export default HiveAPI;
