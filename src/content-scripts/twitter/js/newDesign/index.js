@@ -40,7 +40,7 @@ const run = async (settings, api) => {
 };
 
 const runNewDesign = async (settings, api) => {
-    // This extension works by running a task every 2 seconds
+    // This extension works by running a task every 200 milliseconds
     // that checks the current URL and runs an appropriate function
     // that injects relevant html on the page.
     initialiseIcons();
@@ -48,7 +48,7 @@ const runNewDesign = async (settings, api) => {
         const timeout = setTimeout(() => {
             run(settings, api);
             task();
-        }, 2000);
+        }, 200);
         return timeout;
     };
     task();
