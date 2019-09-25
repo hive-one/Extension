@@ -152,7 +152,8 @@ export default class {
         // crawls the children nodes of the tweet for the anchor tag that
         // wraps the tweet authors profile image
         const HREF = `https://twitter.com/${screenName}`;
-        const testCondition = node => node.tagName === 'A' && node.href === HREF;
+        const testCondition = node =>
+            node.tagName === 'A' && node.href === HREF && node.getAttribute('aria-haspopup') === 'false';
         const authorImageAnchor = depthFirstNodeSearch(tweetNode, testCondition);
         if (!authorImageAnchor) {
             throw new Error(`Failed finding tweet authors image tag: @${screenName}`);
