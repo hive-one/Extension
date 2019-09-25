@@ -81,6 +81,11 @@ async function fetchURL(url, options, callback) {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case GA_TYPES.TRACK_EVENT:
+            if (!request.action || !request.category) {
+                throw new Error(
+                    `Missing props on request object: action: ${request.action} category: ${request.category}`,
+                );
+            }
             ga('send', 'event', request.category, request.action);
             break;
         case GA_TYPES.FETCH:
