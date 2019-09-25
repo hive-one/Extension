@@ -70,7 +70,13 @@ export default class {
                 // Tweet authors screen name
                 const screenName = match[1];
                 const tweetId = match[2];
-                await this.injectOntoTweet(tweetNode, screenName, tweetId);
+                let uniqueId = tweetId;
+                // INFO: A user can retweet their own tweets and this will appear on their profile timeline
+                // Appending -retweeted to the hive elem ID allows us to differentiate from the retweet and the original tweet
+                if (tweetNode.innerHTML.match(/ Retweeted/)) {
+                    uniqueId += '-retweeted';
+                }
+                await this.injectOntoTweet(tweetNode, screenName, uniqueId);
             } catch (error) {
                 console.log('Error: ', error);
             }
