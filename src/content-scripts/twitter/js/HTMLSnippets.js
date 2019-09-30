@@ -4,9 +4,17 @@ import moment from 'moment';
 
 const POPUP_CLASS = 'HiveExtension-Twitter_popup-profile';
 
+const CLUSTER_IMAGES = {
+    Crypto: 'https://hive.one/static/assets/icons/Crypto_100.png',
+    Bitcoin: 'https://hive.one/static/assets/icons/BTC_100.png',
+    Ethereum: 'https://hive.one/static/assets/icons/ETH_100.png',
+    Ripple: 'https://hive.one/static/assets/icons/XRP_100.png',
+};
+
 const createScoreRow = (clusterName, displayScore, scoreAsPercentage) => `
 <div class="${POPUP_CLASS}_cluster-score">
     <div class="${POPUP_CLASS}_cluster-score_left">
+        <img class="${POPUP_CLASS}_cluster-score_image" src='${CLUSTER_IMAGES[clusterName]}' />
         ${clusterName}
     </div>
     <div class="${POPUP_CLASS}_cluster-score_right">
@@ -87,19 +95,44 @@ export const createPopupHTML = (screenName, scores, followers, podcasts) => {
     }
 
     return `
-        <div class="${POPUP_CLASS}_content">
-            ${SCORES_HTML}
+        <div>
+            <div class="${POPUP_CLASS}_user_info_avatar">
+                <img src='https://pbs.twimg.com/profile_images/1021187085909209088/rdyeTi5d_reasonably_small.jpg' />
+            </div>
+            <a href="https://twitter.com/${screenName}/" class="${POPUP_CLASS}_user_info">
+                <span class="${POPUP_CLASS}_user_info_name">Person Name</span>
+                <span class="${POPUP_CLASS}_user_info_screen-name">${screenName}</span>
+            </a>
         </div>
         <br/>
-        ${FOLLOWERS_HTML}
+        <div class="${POPUP_CLASS}_tabs">
+            <div id="scores_tab_btn" class="${POPUP_CLASS}_tab">
+                <span>Scores</span>
+            </div>
+            <div id="followers_tab_btn" class="${POPUP_CLASS}_tab">
+                <span>Top Followers</span>
+            </div>
+        </div>
         <br/>
-        ${PODCASTS_HTML}
+        <div id='popup_scores' class="${POPUP_CLASS}_content">
+            ${SCORES_HTML}
+            <br/>
+        </div>
+        <div id='popup_followers'>
+            ${FOLLOWERS_HTML}
+            <br/>
+        </div>
+        <div id='popup_podcasts'>   
+            ${PODCASTS_HTML}
+        </div>
         <br/>
-        <a href="https://hive.one/p/${screenName}/" class="${POPUP_CLASS}_credit">
-            Learn more about this profile at hive.one
+        <div class="${POPUP_CLASS}_credit">
             <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
-            <use xlink:href="#hive-icon" />
+                <use xlink:href="#HiveExtension-icon-bee" />
             </svg>
-        </a>
+            <a href="https://hive.one/p/${screenName}/">
+                Learn more about this profile at hive.one
+            </a>
+        </div>
     `;
 };

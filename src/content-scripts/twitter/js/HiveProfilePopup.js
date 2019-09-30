@@ -30,6 +30,34 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
         }
         popupNode.innerHTML = createPopupHTML(screenName, scores, followers, podcasts);
+
+        const displayScoresTab = () => {
+            popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
+            popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
+
+            popupNode
+                .querySelector('#' + 'scores_tab_btn')
+                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
+            popupNode
+                .querySelector('#' + 'followers_tab_btn')
+                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+        };
+
+        const displayFollowersTab = () => {
+            popupNode.querySelector('#' + 'popup_followers').style.display = 'block';
+            popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
+
+            popupNode
+                .querySelector('#' + 'followers_tab_btn')
+                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
+            popupNode
+                .querySelector('#' + 'scores_tab_btn')
+                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+        };
+
+        popupNode.querySelector('#' + 'scores_tab_btn').addEventListener('click', displayScoresTab, false);
+        popupNode.querySelector('#' + 'followers_tab_btn').addEventListener('click', displayFollowersTab, false);
+        displayScoresTab();
         appendableNode.appendChild(popupNode);
 
         setTimeout(() => {
