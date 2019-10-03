@@ -40,7 +40,7 @@ const createScoreSection = clusters =>
 
 const createFollower = ({ node }) => `
 <div class="${POPUP_CLASS}_followers_follower">
-    <span>${1}</span>
+    <span class="${POPUP_CLASS}_followers_follower_score">${node.scores.node.rank}</span>
     <div class="${POPUP_CLASS}_followers_follower_user">
         <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${node.imageUrl}' />
         <div class="${POPUP_CLASS}_followers_follower_user_info">
@@ -48,7 +48,7 @@ const createFollower = ({ node }) => `
             <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${node.screenName}</span>
         </div>
     </div>
-    <span>${1}</span>
+    <span class="${POPUP_CLASS}_followers_follower_rank">${node.scores.node.score.toFixed(0)}</span>
 </div>
 `;
 
@@ -103,12 +103,12 @@ export const createPopupHTML = (screenName, scores, followers, podcasts, avatarI
 
     let FOLLOWERS_HTML = '';
     if (followers) {
+        console.log(followers);
         FOLLOWERS_HTML = createFollowersSection(followers);
     }
 
     let PODCASTS_HTML = '';
     if (podcasts && podcasts.length) {
-        console.log(podcasts);
         PODCASTS_HTML = createPodcastsSection(podcasts);
     }
 

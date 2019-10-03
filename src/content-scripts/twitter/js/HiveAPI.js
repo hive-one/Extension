@@ -136,7 +136,17 @@ class HiveAPI {
             followers = selectedCluster.followers.edges;
         }
 
-        // followers = await this.getFollowersInfo(followers.map((item) => item.node.id), screenName);
+        let followersData = await this.getFollowersInfo(followers, followers.map(item => item.node.id), screenName);
+
+        followers.forEach(follower => {
+            let followerData = followersData.find(item => {
+                return follower.node.id === item.twitter_id;
+            });
+
+            follower.node.scores = followerData.scores.find(item => {
+                return item.node.name === clusterName;
+            });
+        });
 
         podcasts =
             data.podcasts.edges && data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
@@ -152,7 +162,6 @@ class HiveAPI {
             var cachedFollowers = await this.cache.get(key);
 
             if (!cachedFollowers || !cachedFollowers.data || !cachedFollowers.data.success) {
-                console.log('NO CACHED TING for ', screenName);
                 const res = await this.fetchInBackgroundContext(`${this.host}/api/influencers/scores/batch/`, {
                     method: 'POST',
                     body: JSON.stringify({ ids: followersIds }),

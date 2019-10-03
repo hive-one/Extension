@@ -450,6 +450,15 @@
                     background-color: white;
                     font-family: $twitter_font-family;
 
+                    &_score, &_rank {
+                        font-weight: 600;
+                        font-size: 15px;
+                        line-height: 18px;
+                        text-align: center;
+
+                        color: #545454;
+                    }
+
                     &_user {
                         display: grid;
                         grid-template-columns: 30% 70%;
