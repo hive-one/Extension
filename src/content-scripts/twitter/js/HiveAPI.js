@@ -7,6 +7,7 @@ const RESPONSE_TYPES = Object.freeze({
 
 const AVAILABLE_SCREEN_NAMES_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_SCREEN_NAMES';
 const AVAILABLE_IDS_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_IDS';
+const FOLLOWERS_KEY = 'HiveAPI::TWITTER_FOLLOWERS';
 
 class HiveAPI {
     cache;
@@ -135,12 +136,41 @@ class HiveAPI {
             followers = selectedCluster.followers.edges;
         }
 
+        // followers = await this.getFollowersInfo(followers.map((item) => item.node.id), screenName);
+
         podcasts =
             data.podcasts.edges && data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
 
         indexed = true;
 
         return { id, screenName, clusterName: name, score, scores, rank, indexed, followers, podcasts };
+    }
+
+    async getFollowersInfo(followers, followersIds, screenName) {
+        let key = `${FOLLOWERS_KEY}_${screenName}`;
+        try {
+            var cachedFollowers = await this.cache.get(key);
+
+            if (!cachedFollowers || !cachedFollowers.data || !cachedFollowers.data.success) {
+                console.log('NO CACHED TING for ', screenName);
+                const res = await this.fetchInBackgroundContext(`${this.host}/api/influencers/scores/batch/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: followersIds }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (res.error) {
+                    throw new Error(res.error);
+                }
+                cachedFollowers = res;
+                this.cache.save(key, cachedFollowers);
+            }
+            followers = cachedFollowers.data.success;
+        } catch (err) {
+            console.error('Failed to get follower data\n', err);
+        }
+        return followers;
     }
 
     async getTwitterUserScores(idOrScreenName) {
@@ -222,12 +252,13 @@ class HiveAPI {
         return this._acceptableIds.includes(idOrScreenName);
     }
 
-    fetchInBackgroundContext(url) {
+    fetchInBackgroundContext(url, options = {}) {
         return new Promise((resolve, reject) => {
             chrome.runtime.sendMessage(
                 {
                     type: GA_TYPES.FETCH,
                     url,
+                    options,
                 },
                 ({ type, data, error }) => {
                     if (type === GA_TYPES.FETCH_SUCCESS) {

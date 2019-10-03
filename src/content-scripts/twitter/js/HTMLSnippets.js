@@ -40,48 +40,65 @@ const createScoreSection = clusters =>
 
 const createFollower = ({ node }) => `
 <div class="${POPUP_CLASS}_followers_follower">
-    <img class="${POPUP_CLASS}_followers_follower_image" src="${node.imageUrl}" />
-    <div class="${POPUP_CLASS}_followers_follower_name">@${node.screenName}</div>
+    <span>${1}</span>
+    <div class="${POPUP_CLASS}_followers_follower_user">
+        <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${node.imageUrl}' />
+        <div class="${POPUP_CLASS}_followers_follower_user_info">
+            <span class="${POPUP_CLASS}_followers_follower_user_info_name">${node.name}</span>
+            <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${node.screenName}</span>
+        </div>
+    </div>
+    <span>${1}</span>
 </div>
 `;
 
+// <img class="${POPUP_CLASS}_followers_follower_image" src="${node.imageUrl}" />
+// <div class="${POPUP_CLASS}_followers_follower_name">@${node.screenName}</div>
+
 const createFollowersSection = followers => `
-    <h3 class="${POPUP_CLASS}_title">Top Followers</h3>
+    <div class="${POPUP_CLASS}_followers_title">
+        <span>Rank</span>
+        <span>Name</span>
+        <span>Score</span>
+    </div>
     <div class="${POPUP_CLASS}_followers">
         ${followers.map(createFollower).join('')}
     </div>
 `;
 
 const createPodcastsSection = podcasts => {
-    const currentYear = moment().format('YYYY');
     const createPodcast = ({ node }) => {
-        const { name, episodeUrl, published } = node;
+        const { name, episodeUrl, published, episodeName } = node;
         const safePodcastName = escapeHTML(name);
+        const safeEpisodeName = escapeHTML(episodeName);
+
+        const truncateText = input => (input.length > 5 ? `${input.substring(0, 30)}...` : input);
 
         let date = moment.unix(published);
 
-        if (date.format('YYYY') === currentYear) {
-            date = date.format('D MMMM');
-        } else {
-            date = date.format('D MMMM YYYY');
-        }
+        date = date.format('D MMMM YYYY');
 
         return `
-            <a class="${POPUP_CLASS}_podcasts_podcast" rel="noopener noreferrer" href="${episodeUrl}">
-                - ${safePodcastName}
-                <span class="${POPUP_CLASS}_podcasts_podcast_meta">- ${date}</span>
+            <a class="${POPUP_CLASS}_podcasts_podcast" rel="noopener noreferrer" href="${episodeUrl}" target='__blank'>
+                <span>${truncateText(safePodcastName)}</span>
+                <span class="${POPUP_CLASS}_podcasts_podcast_episode_name">${truncateText(safeEpisodeName)}</span>
+                <span>${date}</span>
             </a>
         `;
     };
     return `
-        <h3 class="${POPUP_CLASS}_title">Recent Podcasts</h3>
+        <div class="${POPUP_CLASS}_podcasts_title">
+            <span>Podcast</span>
+            <span>Episode Name</span>
+            <span>Date</span>
+        </div>
         <div class="${POPUP_CLASS}_podcasts">
             ${podcasts.map(createPodcast).join('')}
         </div>
     `;
 };
 
-export const createPopupHTML = (screenName, scores, followers, podcasts) => {
+export const createPopupHTML = (screenName, scores, followers, podcasts, avatarImage, name) => {
     let SCORES_HTML = createScoreSection(scores);
 
     let FOLLOWERS_HTML = '';
@@ -91,17 +108,18 @@ export const createPopupHTML = (screenName, scores, followers, podcasts) => {
 
     let PODCASTS_HTML = '';
     if (podcasts && podcasts.length) {
+        console.log(podcasts);
         PODCASTS_HTML = createPodcastsSection(podcasts);
     }
 
     return `
         <div>
             <div class="${POPUP_CLASS}_user_info_avatar">
-                <img src='https://pbs.twimg.com/profile_images/1021187085909209088/rdyeTi5d_reasonably_small.jpg' />
+                <img src='${avatarImage}' />
             </div>
             <a href="https://twitter.com/${screenName}/" class="${POPUP_CLASS}_user_info">
-                <span class="${POPUP_CLASS}_user_info_name">Person Name</span>
-                <span class="${POPUP_CLASS}_user_info_screen-name">${screenName}</span>
+                <span class="${POPUP_CLASS}_user_info_name">${name}</span>
+                <span class="${POPUP_CLASS}_user_info_screen-name">@${screenName}</span>
             </a>
         </div>
         <br/>
@@ -111,6 +129,9 @@ export const createPopupHTML = (screenName, scores, followers, podcasts) => {
             </div>
             <div id="followers_tab_btn" class="${POPUP_CLASS}_tab">
                 <span>Top Followers</span>
+            </div>
+            <div id="podcasts_tab_btn" class="${POPUP_CLASS}_tab">
+                <span>Podcasts</span>
             </div>
         </div>
         <br/>
@@ -130,7 +151,7 @@ export const createPopupHTML = (screenName, scores, followers, podcasts) => {
             <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
                 <use xlink:href="#HiveExtension-icon-bee" />
             </svg>
-            <a href="https://hive.one/p/${screenName}/">
+            <a href="https://hive.one/p/${screenName}/" target='__blank'>
                 Learn more about this profile at hive.one
             </a>
         </div>
