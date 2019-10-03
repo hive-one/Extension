@@ -1,21 +1,5 @@
-import createHiveProfilePopup from '../HiveProfilePopup';
-import { depthFirstNodeSearch, displayRank, displayScore, stringToHash } from './utils';
-import { TOOLTIP_CLASSNAMES } from '../../../../config';
-
-const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
-
-const createPreviewScoreIcon = ({ display = '', tooltipText = '' }) => `
-<div class="${USER_PREVIEW_SCORE_CLASS} ${TOOLTIP_CLASSNAMES.TOOLTIP}">
-    <span class="${USER_PREVIEW_SCORE_CLASS}-text">${display}</span>
-    <span class="${TOOLTIP_CLASSNAMES.TEXT}">${tooltipText}</span>
-</div>
-`;
-
-const BEE_ICON = `
-    <svg viewBox="0 0 36 36" class="${USER_PREVIEW_SCORE_CLASS}-icon">
-        <use xlink:href="#HiveExtension-icon-bee" />
-    </svg>
-`;
+import createHiveHoverInjectedProfile from '../HiveProfileHoverInjector';
+import { depthFirstNodeSearch, stringToHash } from './utils';
 
 export default class {
     settings;
@@ -56,59 +40,18 @@ export default class {
             throw new Error(`Failed getting user data for user @${screenName}`);
         }
 
-        const injectableIcon = this.createIcon(userData, ICON_ID);
-        if (!injectableIcon) return;
-
         // Create popup
         const POPUP_ID = `HiveExtension-Twitter_UserPreview_Popup_${uniqueID}`;
         const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
-        const popupStyles = this.createPopupStyles(previewNode, authorImageAnchor);
 
-        injectableIcon.style.width = `${authorImageAnchor.getBoundingClientRect().width}px`;
+        // Inject some content at the end of the popup
 
-        await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
-
-        if (document.getElementById(ICON_ID)) return;
-        const authorImageContainer = authorImageAnchor.parentNode;
-        authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
-    }
-
-    createIcon(userData, nodeId) {
-        const { rank, score, clusterName } = userData;
-        if (!rank && this.settings.shouldDisplayRank) {
-            return;
-        }
-
-        const userScoreDisplay = document.createElement('div');
-        userScoreDisplay.id = nodeId;
-        userScoreDisplay.classList.add(`${USER_PREVIEW_SCORE_CLASS}-container`);
-
-        let iconContent;
-        if (rank && this.settings.shouldDisplayRank) {
-            iconContent = `#${displayRank(rank)}`;
-        } else if (this.settings.shouldDisplayScore) {
-            iconContent = `[ ${displayScore(score)} ]`;
-        } else if (this.settings.shouldDisplayIcon) {
-            iconContent = BEE_ICON;
-        } else {
-            throw new Error(`Unrecognised displaySetting: "${this.settings.displaySetting}"`);
-        }
-
-        userScoreDisplay.innerHTML = createPreviewScoreIcon({ display: iconContent, tooltipText: `In ${clusterName}` });
-        return userScoreDisplay;
-    }
-
-    createPopupStyles(preivewNode, authorImageAnchor) {
-        // Twitters new design contains numerous instances of z-index: 0 not
-        // only on every element, but several children nodes within the element.
-        // This constant creation of new stacking contexts requires ugly hacky
-        // solutions to display our popup.
-        const authorImageRect = authorImageAnchor.getBoundingClientRect();
-
-        const previewRect = preivewNode.getBoundingClientRect();
-        const left = previewRect.left + 'px';
-        const top = authorImageRect.top + window.pageYOffset + 80 + 'px';
-        return { top, left };
+        await createHiveHoverInjectedProfile(
+            this.settings,
+            userData,
+            authorImageAnchor.parentNode.parentNode,
+            POPUP_ID,
+        );
     }
 
     getAuthorImageAnchor(previewNode, screenName) {

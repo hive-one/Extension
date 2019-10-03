@@ -159,3 +159,56 @@ export const createPopupHTML = (screenName, scores, followers, podcasts, avatarI
         </div>
     `;
 };
+
+export const createHoverInjectedHTML = (screenName, scores, followers, podcasts) => {
+    let SCORES_HTML = createScoreSection(scores);
+    let FOLLOWERS_HTML = '';
+    let PODCASTS_HTML = '';
+    let PODCASTS_TAB_HTML = '';
+
+    if (followers) {
+        console.log(followers);
+        FOLLOWERS_HTML = createFollowersSection(followers);
+    }
+
+    if (podcasts && podcasts.length) {
+        PODCASTS_HTML = createPodcastsSection(podcasts);
+        PODCASTS_TAB_HTML = `<div id="podcasts_tab_btn" class="${POPUP_CLASS}_tab">
+            <span>Podcasts</span>
+        </div>`;
+    }
+
+    return `
+        <br />
+        <div class="${POPUP_CLASS}_tabs">
+            <div id="scores_tab_btn" class="${POPUP_CLASS}_tab">
+                <span>Scores</span>
+            </div>
+            <div id="followers_tab_btn" class="${POPUP_CLASS}_tab">
+                <span>Top Followers</span>
+            </div>
+            ${PODCASTS_TAB_HTML}
+        </div>
+        <br/>
+        <div id='popup_scores' class="${POPUP_CLASS}_content">
+            ${SCORES_HTML}
+            <br/>
+        </div>
+        <div id='popup_followers'>
+            ${FOLLOWERS_HTML}
+            <br/>
+        </div>
+        <div id='popup_podcasts'>   
+            ${PODCASTS_HTML}
+        </div>
+        <br/>
+        <div class="${POPUP_CLASS}_credit">
+            <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
+                <use xlink:href="#HiveExtension-icon-bee" />
+            </svg>
+            <a href="https://hive.one/p/${screenName}/" target='__blank'>
+                Learn more about this profile at hive.one
+            </a>
+        </div>
+    `;
+};
