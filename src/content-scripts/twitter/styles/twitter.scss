@@ -482,7 +482,6 @@
                                 font-size: 15px;
                                 font-weight: 400;
                                 color: #6C6C6C;
-                                white-space: nowrap;
                             }
             
                             &_name {
@@ -491,7 +490,6 @@
                                 font-size: 15px;
                                 font-weight: bold;
                                 color: rgb(20, 23, 26);
-                                white-space: nowrap;
                             }
                         }
                     }
@@ -525,11 +523,14 @@
                     display: grid;
                     grid-template-columns: 20% 60% 20%;
                     justify-items: center;
-                    font-weight: 600;
                     background-color: white;
-                    color: $twitter_blue;
-                    font-size: 10px;
                     transition: all .33s ease;
+                    font-weight: 600;
+                    font-size: 12px;
+                    line-height: 18px;
+                    text-align: center;
+
+                    color: #545454;
 
                     &_meta {
                         color: black;

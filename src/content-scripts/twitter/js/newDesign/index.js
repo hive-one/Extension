@@ -6,8 +6,8 @@ import { initialiseIcons } from './utils';
 
 // TODO: Handle popup showing who retweeted and who liked
 
-const skippableRoutes = /^\/(messages|compose|settings)/;
-const homeRoutes = /^\/(home|explore|i+\/+interactions|(^i\/related_users+\/)|[A-Za-z0-9_]+\/with_replies|[A-Za-z0-9_]+\/media|[A-Za-z0-9_]+\/likes)/;
+const skippableRoutes = /^\/(messages|compose|settings|i+\/events+\/[A-Za-z0-9_])/;
+const homeRoutes = /^\/(home|explore|i+\/+interactions|(^i\/related_users+\/)|[A-Za-z0-9_]+\/with_replies|[A-Za-z0-9_]+\/media|[A-Za-z0-9_]+\/likes|[A-Za-z0-9_]+\/lists+\/[A-Za-z0-9_])/;
 const profilePreviewRoutes = /^\/([A-Za-z0-9_]+\/followers|[A-Za-z0-9_]+\/following|[A-Za-z0-9_]+\/followers_you_follow|i\/related_users+\/)/;
 
 const run = async (settings, api) => {

@@ -112,7 +112,7 @@ export default class {
                 return item !== authorImageAnchor;
             }
         });
-        const name = nameNode.text.replace(`@${screenName}`, '');
+        const name = nameNode.textContent.replace(`@${screenName}`, '');
 
         userData.avatarImage = authorImageURL;
         userData.name = name;
