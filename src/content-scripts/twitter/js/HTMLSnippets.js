@@ -100,16 +100,20 @@ const createPodcastsSection = podcasts => {
 
 export const createPopupHTML = (screenName, scores, followers, podcasts, avatarImage, name) => {
     let SCORES_HTML = createScoreSection(scores);
-
     let FOLLOWERS_HTML = '';
+    let PODCASTS_HTML = '';
+    let PODCASTS_TAB_HTML = '';
+
     if (followers) {
         console.log(followers);
         FOLLOWERS_HTML = createFollowersSection(followers);
     }
 
-    let PODCASTS_HTML = '';
     if (podcasts && podcasts.length) {
         PODCASTS_HTML = createPodcastsSection(podcasts);
+        PODCASTS_TAB_HTML = `<div id="podcasts_tab_btn" class="${POPUP_CLASS}_tab">
+            <span>Podcasts</span>
+        </div>`;
     }
 
     return `
@@ -130,9 +134,7 @@ export const createPopupHTML = (screenName, scores, followers, podcasts, avatarI
             <div id="followers_tab_btn" class="${POPUP_CLASS}_tab">
                 <span>Top Followers</span>
             </div>
-            <div id="podcasts_tab_btn" class="${POPUP_CLASS}_tab">
-                <span>Podcasts</span>
-            </div>
+            ${PODCASTS_TAB_HTML}
         </div>
         <br/>
         <div id='popup_scores' class="${POPUP_CLASS}_content">

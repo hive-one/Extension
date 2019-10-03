@@ -42,9 +42,11 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             popupNode
                 .querySelector('#' + 'followers_tab_btn')
                 .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'podcasts_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+                popupNode
+                    .querySelector('#' + 'podcasts_tab_btn')
+                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            }
         };
 
         const displayFollowersTab = () => {
@@ -58,9 +60,11 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             popupNode
                 .querySelector('#' + 'scores_tab_btn')
                 .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'podcasts_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+                popupNode
+                    .querySelector('#' + 'podcasts_tab_btn')
+                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            }
         };
 
         const displayPodcastsTab = () => {
@@ -74,14 +78,18 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             popupNode
                 .querySelector('#' + 'followers_tab_btn')
                 .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'scores_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+                popupNode
+                    .querySelector('#' + 'podcasts_tab_btn')
+                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            }
         };
 
         popupNode.querySelector('#' + 'scores_tab_btn').addEventListener('click', displayScoresTab, false);
         popupNode.querySelector('#' + 'followers_tab_btn').addEventListener('click', displayFollowersTab, false);
-        popupNode.querySelector('#' + 'podcasts_tab_btn').addEventListener('click', displayPodcastsTab, false);
+        if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+            popupNode.querySelector('#' + 'podcasts_tab_btn').addEventListener('click', displayPodcastsTab, false);
+        }
         displayScoresTab();
         appendableNode.appendChild(popupNode);
 
