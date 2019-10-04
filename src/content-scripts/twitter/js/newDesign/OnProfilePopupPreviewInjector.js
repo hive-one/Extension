@@ -1,4 +1,4 @@
-import createHiveHoverInjectedProfile from '../HiveProfileHoverInjector';
+import createHiveHoverPopupProfile from '../HiveHoverPopupProfile';
 import { depthFirstNodeSearch, stringToHash } from './utils';
 
 export default class {
@@ -46,12 +46,7 @@ export default class {
 
         // Inject some content at the end of the popup
 
-        await createHiveHoverInjectedProfile(
-            this.settings,
-            userData,
-            authorImageAnchor.parentNode.parentNode,
-            POPUP_ID,
-        );
+        await createHiveHoverPopupProfile(this.settings, userData, authorImageAnchor.parentNode.parentNode, POPUP_ID);
     }
 
     getAuthorImageAnchor(previewNode, screenName) {

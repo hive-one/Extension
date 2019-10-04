@@ -1,7 +1,7 @@
 // import { GA_TYPES } from '../../../config';
 import { createHoverInjectedHTML } from './HTMLSnippets';
 
-const createHiveHoverInjectedProfile = async (settings, userData, appendableNode, popupId) => {
+const createHiveHoverPopupProfile = async (settings, userData, appendableNode, popupId) => {
     // appendableNode = node that popup is injected to
 
     const { screenName, podcasts, followers, scores, avatarImage, name } = userData;
@@ -93,4 +93,4 @@ const createHiveHoverInjectedProfile = async (settings, userData, appendableNode
     displayPopup();
 };
 
-export default createHiveHoverInjectedProfile;
+export default createHiveHoverPopupProfile;
