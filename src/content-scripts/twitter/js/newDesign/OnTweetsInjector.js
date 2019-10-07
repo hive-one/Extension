@@ -7,7 +7,7 @@ const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 const createTweetScoreIcon = ({ display = '', tooltipText = '' }) => `
 <div class="${TWEET_AUTHOR_SCORE_CLASS} ${TOOLTIP_CLASSNAMES.TOOLTIP}">
     <span class="${TWEET_AUTHOR_SCORE_CLASS}-text">${display}</span>
-    <span class="${TOOLTIP_CLASSNAMES.TEXT}">${tooltipText}</span>
+    <span class="${TOOLTIP_CLASSNAMES.TEXT} ${TOOLTIP_CLASSNAMES.TEXT}_tweet">${tooltipText}</span>
 </div>
 `;
 

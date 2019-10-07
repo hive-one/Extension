@@ -9,7 +9,7 @@ const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 const createNavIconHTML = ({ display = '', tooltipText = '' }) => `
     <div class="${TOOLTIP_CLASSNAMES.TOOLTIP} ${PROILE_NAV_ICON_ID}-container">
         <span class="${PROILE_NAV_ICON_ID}-display">${display}</span>
-        <span class="${TOOLTIP_CLASSNAMES.TEXT}">${tooltipText}</span>
+        <span class="${TOOLTIP_CLASSNAMES.TEXT} ${TOOLTIP_CLASSNAMES.TEXT}_profile">${tooltipText}</span>
     <div>
 `;
 
