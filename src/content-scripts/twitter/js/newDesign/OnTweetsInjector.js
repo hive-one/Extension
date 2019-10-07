@@ -120,11 +120,19 @@ export default class {
         await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
 
         if (document.getElementById(ICON_ID)) return;
-        const authorImageContainer = authorImageAnchor.parentNode.parentNode;
-        authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
 
-        // If inside a thread, this will make sure the "main tweet" looks right.
-        authorImageContainer.parentNode.parentNode.style.alignItems = 'flex-start';
+        let authorImageContainer = undefined;
+        // The element that hold '@{screeName}' is consistent for both timeline and detailed tweet pages, but requires a different parentElement to append to
+        if (location.pathname === `/${screenName}/status/${tweetId}`) {
+            authorImageContainer = this.getAuthorNameAnchor(tweetNode, screenName, tweetId).parentNode.parentNode
+                .parentNode.parentNode.parentNode;
+            authorImageContainer.style.flexDirection = 'row';
+        } else {
+            authorImageContainer = this.getAuthorNameAnchor(tweetNode, screenName, tweetId).parentNode.parentNode
+                .parentNode.parentNode.parentNode.parentNode;
+        }
+
+        authorImageContainer.appendChild(injectableIcon);
     }
 
     createIcon(userData, nodeId, tweetId) {
@@ -175,6 +183,18 @@ export default class {
         const HREF = `https://twitter.com/${screenName}`;
         const testCondition = node =>
             node.tagName === 'A' && node.href === HREF && node.getAttribute('aria-haspopup') === 'false';
+        const authorImageAnchor = depthFirstNodeSearch(tweetNode, testCondition);
+        if (!authorImageAnchor) {
+            throw new Error(`Failed finding tweet authors image tag: @${screenName}`);
+        }
+
+        return authorImageAnchor;
+    }
+
+    getAuthorNameAnchor(tweetNode, screenName) {
+        // crawls the children nodes of the tweet for the anchor tag that
+        // wraps the tweet authors profile image
+        const testCondition = node => node.tagName === 'SPAN' && node.textContent === `@${screenName}`;
         const authorImageAnchor = depthFirstNodeSearch(tweetNode, testCondition);
         if (!authorImageAnchor) {
             throw new Error(`Failed finding tweet authors image tag: @${screenName}`);

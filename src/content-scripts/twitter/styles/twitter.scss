@@ -49,12 +49,12 @@
 }
 
 .HiveExtension_Twitter_TweetAuthor-container {
-    padding: 12px;
+    padding: 0 12px;
 }
 .HiveExtension_Twitter_TweetAuthor-text, .HiveExtension_Twitter_ProfilePreview-text {
     color: $twitter_grey;
     font-family: $twitter_font-family;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 300;
 
     &:hover {
@@ -96,7 +96,7 @@
     position: absolute;
     bottom: 125%;
     left: 50%;
-    opacity: 0;
+    // opacity: 0;
     transition: opacity 0.2s;
     font-size: 12px;
     line-height: 16px;
@@ -116,7 +116,6 @@
 
 .HiveExtension_Tooltip:hover .HiveExtension_Tooltip-text {
     visibility: visible;
-    opacity: 1;
 }
 
 .HiveExtension-Twitter {
