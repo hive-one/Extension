@@ -528,23 +528,11 @@
                 margin-top: 10px;
                 font-family: $twitter_font-family;
 
-                &_title {
-                    font-family: $twitter_font-family;
-                    display: grid;
-                    grid-template-columns: 20% 60% 20%;
-                    justify-items: center;
-                    font-size: 12px;
-                    line-height: 13px;
-                    text-transform: uppercase;
-
-                    color: #8D8D8D;
-                }
-
                 &_podcast {
                     margin-bottom: 15px;
                     padding: 5px;
                     display: grid;
-                    grid-template-columns: 20% 60% 20%;
+                    grid-template-columns: 60% 40%;
                     justify-items: center;
                     background-color: white;
                     transition: all .33s ease;
@@ -555,12 +543,14 @@
 
                     color: #545454;
 
-                    &_meta {
-                        color: black;
+                    &_info {
+                        display: flex;
+                        flex-direction: column;
+                        text-align: left;
                     }
 
-                    &_episode_name {
-                        max-width: 90%;
+                    &_meta {
+                        color: black;
                     }
 
                     &:hover {

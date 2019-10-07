@@ -68,9 +68,11 @@ const createFollowersSection = followers => `
 
 const createPodcastsSection = podcasts => {
     const createPodcast = ({ node }) => {
-        const { name, episodeUrl, published, episodeName } = node;
+        console.log(node);
+        const { name, episodeUrl, published, episodeName, hosts } = node;
         const safePodcastName = escapeHTML(name);
         const safeEpisodeName = escapeHTML(episodeName);
+        const hostsList = hosts.edges.map(item => item.node.name).join(', ');
 
         const truncateText = input => (input.length > 5 ? `${input.substring(0, 30)}...` : input);
 
@@ -80,18 +82,16 @@ const createPodcastsSection = podcasts => {
 
         return `
             <a class="${POPUP_CLASS}_podcasts_podcast" rel="noopener noreferrer" href="${episodeUrl}" target='__blank'>
-                <span>${truncateText(safePodcastName)}</span>
-                <span class="${POPUP_CLASS}_podcasts_podcast_episode_name">${truncateText(safeEpisodeName)}</span>
+                <div class="${POPUP_CLASS}_podcasts_podcast_info">
+                    <span>${safePodcastName}</span>
+                    <span>${truncateText(safeEpisodeName)}</span>
+                    <span>${hostsList}<span>
+                </div>
                 <span>${date}</span>
             </a>
         `;
     };
     return `
-        <div class="${POPUP_CLASS}_podcasts_title">
-            <span>Podcast</span>
-            <span>Episode Name</span>
-            <span>Date</span>
-        </div>
         <div class="${POPUP_CLASS}_podcasts">
             ${podcasts.map(createPodcast).join('')}
         </div>
