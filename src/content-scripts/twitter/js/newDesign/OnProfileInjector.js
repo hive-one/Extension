@@ -1,7 +1,7 @@
 // This component renders a rank/score on a users profile
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
 import createHiveProfilePopup from '../HiveProfilePopup';
-import { waitUntilResult, getProfileImage, displayRank, displayScore } from './utils';
+import { waitUntilResult, getProfileImage, displayRank, displayScore, errorHandle } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
@@ -34,7 +34,7 @@ export default class {
     async run() {
         const profileImageAnchor = await waitUntilResult(() => getProfileImage(this.screenName));
         if (!profileImageAnchor) {
-            throw new Error(`Failed finding profile image for ${this.screenName}`);
+            return errorHandle(`Failed finding profile image for ${this.screenName}`);
         }
 
         // Check to see if the hive profile element already exists

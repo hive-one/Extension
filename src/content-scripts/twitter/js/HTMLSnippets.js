@@ -105,7 +105,6 @@ export const createPopupHTML = (screenName, scores, followers, podcasts, avatarI
     let PODCASTS_TAB_HTML = '';
 
     if (followers) {
-        console.log(followers);
         FOLLOWERS_HTML = createFollowersSection(followers);
     }
 

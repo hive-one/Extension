@@ -1,5 +1,5 @@
 import createHiveHoverPopupProfile from '../HiveHoverPopupProfile';
-import { depthFirstNodeSearch, stringToHash } from './utils';
+import { depthFirstNodeSearch, stringToHash, errorHandle } from './utils';
 
 export default class {
     settings;
@@ -13,7 +13,7 @@ export default class {
         let profilePopups = document.querySelectorAll('div[style*="will-change: opacity, height"]');
 
         if (!profilePopups || !profilePopups.length) {
-            throw new Error('Failed finding profile previews');
+            return errorHandle('Failed finding profile previews');
         }
 
         for (let i = 0; i < profilePopups.length; i++) {

@@ -31,7 +31,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         }
         popupNode.innerHTML = createPopupHTML(screenName, scores, followers, podcasts, avatarImage, name);
 
-        const displayScoresTab = () => {
+        const displayScoresTab = (ignoreAnalyticsEvent = false) => {
             popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
             popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
             popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
@@ -46,6 +46,15 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
                 popupNode
                     .querySelector('#' + 'podcasts_tab_btn')
                     .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+            }
+
+            if (!ignoreAnalyticsEvent) {
+                const ACTION_NAME = 'popup-clicked-scores-tab';
+                chrome.runtime.sendMessage({
+                    type: GA_TYPES.TRACK_EVENT,
+                    category: 'plugin-interactions',
+                    action: ACTION_NAME,
+                });
             }
         };
 
@@ -65,6 +74,12 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
                     .querySelector('#' + 'podcasts_tab_btn')
                     .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
             }
+            const ACTION_NAME = 'popup-clicked-followers-tab';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
         };
 
         const displayPodcastsTab = () => {
@@ -83,6 +98,12 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
                     .querySelector('#' + 'podcasts_tab_btn')
                     .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
             }
+            const ACTION_NAME = 'popup-clicked-podcasts-tab';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
         };
 
         popupNode.querySelector('#' + 'scores_tab_btn').addEventListener('click', displayScoresTab, false);
@@ -90,7 +111,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
             popupNode.querySelector('#' + 'podcasts_tab_btn').addEventListener('click', displayPodcastsTab, false);
         }
-        displayScoresTab();
+        displayScoresTab(true);
         appendableNode.appendChild(popupNode);
 
         setTimeout(() => {
@@ -109,7 +130,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         chrome.runtime.sendMessage({
             type: GA_TYPES.TRACK_EVENT,
             category: 'plugin-interactions',
-            ACTION_NAME,
+            action: ACTION_NAME,
         });
     };
 

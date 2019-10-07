@@ -1,5 +1,5 @@
 import createHiveProfilePopup from '../HiveProfilePopup';
-import { depthFirstNodeSearch, displayRank, displayScore, stringToHash } from './utils';
+import { depthFirstNodeSearch, displayRank, displayScore, stringToHash, errorHandle } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
@@ -29,7 +29,7 @@ export default class {
         let profilePreviews = document.querySelectorAll('[data-testid=UserCell]');
 
         if (!profilePreviews || !profilePreviews.length) {
-            throw new Error('Failed finding profile previews');
+            return errorHandle('Failed finding profile previews');
         }
 
         for (let i = 0; i < profilePreviews.length; i++) {

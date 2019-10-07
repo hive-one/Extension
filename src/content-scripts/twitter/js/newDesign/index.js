@@ -2,7 +2,7 @@ import runProfile from './runProfile';
 import runHome from './runHome';
 import runProfilePreview from './runProfilePreview';
 import runNotifications from './runNotifications';
-import { initialiseIcons } from './utils';
+import { initialiseIcons, errorHandle } from './utils';
 
 // TODO: Handle popup showing who retweeted and who liked
 
@@ -35,7 +35,7 @@ const run = async (settings, api) => {
         await runProfile(settings, api, screenName);
         await runProfilePreview(settings, api);
     } else {
-        throw new Error(`Unhandled route: ${pathname}`);
+        return errorHandle(`Unhandled route: ${pathname}`);
     }
 };
 

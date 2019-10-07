@@ -113,3 +113,11 @@ export const stringToHash = str => {
     }
     return hash;
 };
+
+export const errorHandle = err => {
+    if (process.env.NODE_ENV === 'development') {
+        throw new Error(err);
+    } else {
+        return;
+    }
+};

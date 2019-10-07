@@ -1,5 +1,5 @@
 import createHiveProfilePopup from '../HiveProfilePopup';
-import { waitUntilResult, getTweets, depthFirstNodeSearch, displayRank, displayScore } from './utils';
+import { waitUntilResult, getTweets, depthFirstNodeSearch, displayRank, displayScore, errorHandle } from './utils';
 import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
@@ -36,7 +36,7 @@ export default class {
         }
 
         if (!tweets || !tweets.length) {
-            throw new Error('Failed finding tweets');
+            return errorHandle('Failed finding tweets');
         }
 
         // All statuses (tweets) have a url in which they link too, including some promoted tweets
