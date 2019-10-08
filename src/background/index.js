@@ -93,7 +93,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             return true;
         case 'SET_COOKIE':
             chrome.cookies.get({ url: 'https:twitter.com/', name: 'night_mode' }, cookie => {
-                console.log('gets this far?', cookie);
                 sendResponse({ type: 'nightModeCookie', value: cookie ? cookie.value : 0 });
             });
             return true;

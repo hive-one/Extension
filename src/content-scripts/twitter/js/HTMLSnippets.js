@@ -68,7 +68,6 @@ const createFollowersSection = followers => `
 
 const createPodcastsSection = podcasts => {
     const createPodcast = ({ node }) => {
-        console.log(node);
         const { name, episodeUrl, published, episodeName, hosts } = node;
         const safePodcastName = escapeHTML(name);
         const safeEpisodeName = escapeHTML(episodeName);
@@ -169,7 +168,6 @@ export const createHoverInjectedHTML = (screenName, scores, followers, podcasts)
     let PODCASTS_TAB_HTML = '';
 
     if (followers) {
-        console.log(followers);
         FOLLOWERS_HTML = createFollowersSection(followers);
     }
 
