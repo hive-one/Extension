@@ -74,20 +74,23 @@ const createPodcastsSection = podcasts => {
         const safeEpisodeName = escapeHTML(episodeName);
         const hostsList = hosts.edges.map(item => item.node.name).join(', ');
 
-        const truncateText = input => (input.length > 5 ? `${input.substring(0, 30)}...` : input);
+        const truncateText = input => (input.length > 50 ? `${input.substring(0, 50)}...` : input);
 
         let date = moment.unix(published);
-
-        date = date.format('D MMMM YYYY');
 
         return `
             <a class="${POPUP_CLASS}_podcasts_podcast" rel="noopener noreferrer" href="${episodeUrl}" target='__blank'>
                 <div class="${POPUP_CLASS}_podcasts_podcast_info">
-                    <span>${safePodcastName}</span>
-                    <span>${truncateText(safeEpisodeName)}</span>
-                    <span>${hostsList}<span>
+                    <span class="${POPUP_CLASS}_podcasts_podcast_info_podcast_name">${safePodcastName}</span>
+                    <span class="${POPUP_CLASS}_podcasts_podcast_info_episode_name">${truncateText(
+            safeEpisodeName,
+        )}</span>
+                    <span class="${POPUP_CLASS}_podcasts_podcast_info_host_list">${hostsList}<span>
                 </div>
-                <span>${date}</span>
+                <div class="${POPUP_CLASS}_podcasts_podcast_info_date">
+                    <span class="${POPUP_CLASS}_podcasts_podcast_info_date_day">${date.format('D')}</span>
+                    <span class="${POPUP_CLASS}_podcasts_podcast_info_date_month_year">${date.format('MMM YY')}</span>
+                </div>
             </a>
         `;
     };

@@ -82,11 +82,6 @@ const createHiveHoverPopupProfile = async (settings, userData, appendableNode, p
             popupNode
                 .querySelector('#' + 'followers_tab_btn')
                 .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-                popupNode
-                    .querySelector('#' + 'podcasts_tab_btn')
-                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            }
             const ACTION_NAME = 'popup-clicked-podcasts-tab';
             chrome.runtime.sendMessage({
                 type: GA_TYPES.TRACK_EVENT,
