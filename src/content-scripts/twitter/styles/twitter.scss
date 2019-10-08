@@ -470,8 +470,11 @@
                     height: 60px;
                     display: grid;
                     grid-template-columns: 10% 80% 10%;
+                    align-items: center;
                     background-color: white;
                     font-family: $twitter_font-family;
+                    text-decoration: none;
+                    transition: all .33s ease;
 
                     &_score, &_rank {
                         font-weight: 600;
@@ -499,7 +502,7 @@
                             flex-direction: column;
                             justify-self: flex-start;
                             text-align: left;
-                            &_screen-name {
+                            &_screen_name {
                                 font-family: $twitter_font-family;
                                 overflow-wrap: break-word;
                                 font-size: 15px;
@@ -515,6 +518,10 @@
                                 color: rgb(20, 23, 26);
                             }
                         }
+                    }
+
+                    &:hover {
+                        background: #F5F7FA;
                     }
                 }
             }
@@ -555,7 +562,7 @@
                         }
 
                         &_episode_name {
-                            color: #574dff;
+                            color: $purple_one;
                         }
 
                         &_host_list {
