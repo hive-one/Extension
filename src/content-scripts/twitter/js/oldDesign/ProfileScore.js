@@ -7,7 +7,7 @@ const PROCESSED_INDICATOR_CLASS = 'HiveExtension-Twitter_profile-score-processed
 
 const BEE_ICON = `
     <svg style='height: 17px' viewBox="0 0 36 36">
-        <use xlink:href="#hive-icon" />
+        <use xlink:href="#HiveExtension-icon-bee" />
     </svg>
 `;
 
@@ -81,7 +81,10 @@ export class TwitterProfileScoreExtension {
         `;
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${screenName}`;
-        await createHiveProfilePopup(this.settings, userData, displayElement, displayElement, POPUP_ID, {});
+        await createHiveProfilePopup(this.settings, userData, displayElement, displayElement, POPUP_ID, {
+            top: 'auto',
+            right: 'auto',
+        });
 
         document.querySelector('.ProfileNav-item:nth-of-type(4)').insertAdjacentElement('afterend', displayElement);
     }

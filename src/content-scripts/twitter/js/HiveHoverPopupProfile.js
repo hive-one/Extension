@@ -1,7 +1,7 @@
 import { GA_TYPES } from '../../../config';
 import { createHoverInjectedHTML } from './HTMLSnippets';
 
-const createHiveHoverPopupProfile = async (settings, userData, appendableNode, popupId) => {
+const createHiveHoverPopupProfile = async (settings, userData, appendableNode, popupId, popupStyles = {}) => {
     // appendableNode = node that popup is injected to
 
     const { screenName, podcasts, followers, scores, avatarImage, name } = userData;
@@ -18,6 +18,9 @@ const createHiveHoverPopupProfile = async (settings, userData, appendableNode, p
         // if (settings.isDarkTheme) {
         //     popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
         // }
+        for (const key in popupStyles) {
+            popupNode.style[key] = popupStyles[key];
+        }
         popupNode.innerHTML = createHoverInjectedHTML(screenName, scores, followers, podcasts, avatarImage, name);
 
         const displayScoresTab = (ignoreAnalyticsEvent = false) => {

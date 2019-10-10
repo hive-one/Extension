@@ -7,7 +7,7 @@ const TWEETS_SELECTOR = '.tweet';
 
 const BEE_ICON = `
     <svg style='height: 17px' viewBox="0 0 36 36">
-        <use xlink:href="#hive-icon" />
+        <use xlink:href="#HiveExtension-icon-bee" />
     </svg>
 `;
 
@@ -92,7 +92,7 @@ export class TwitterTweetsAuthorScoreExtension {
             `;
 
             const POPUP_ID = `HiveExtension_Twitter_Popup_Tweet_${tweetId}`;
-            const popupStyles = { zIndex: 30 };
+            const popupStyles = { zIndex: 30, top: 'auto', right: 'auto' };
             await createHiveProfilePopup(
                 this.settings,
                 userData,
