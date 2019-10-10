@@ -33,27 +33,15 @@ class HiveAPI {
     }
 
     get userDataUrl() {
-        if (this.settings.isNewTwitterDesign) {
-            return `${this.host}/api/influencers/scores/people/screen_name`;
-        } else {
-            return `${this.host}/api/influencers/scores/people/id`;
-        }
+        return `${this.host}/api/influencers/scores/people/screen_name`;
     }
 
     get availableIdsKey() {
-        if (this.settings.isNewTwitterDesign) {
-            return AVAILABLE_SCREEN_NAMES_KEY;
-        } else {
-            return AVAILABLE_IDS_KEY;
-        }
+        return AVAILABLE_SCREEN_NAMES_KEY;
     }
 
     get availableIdsUrl() {
-        if (this.settings.isNewTwitterDesign) {
-            return `${this.host}/api/influencers/scores/people/available/screen_names/`;
-        } else {
-            return `${this.host}/api/influencers/scores/people/available/ids/`;
-        }
+        return `${this.host}/api/influencers/scores/people/available/screen_names/`;
     }
 
     async _initialize() {
@@ -258,7 +246,6 @@ class HiveAPI {
         if (idOrScreenName.toString) {
             idOrScreenName = idOrScreenName.toString();
         }
-
         return this._acceptableIds.includes(idOrScreenName);
     }
 

@@ -3,7 +3,6 @@ import { displayScore } from '../newDesign/utils';
 
 const PROFILE_SCORE_EXTENSION_CLASS_NAME = 'HiveExtension-Twitter_profile-score';
 const PROFILE_SIDEBAR_SELECTOR = '.ProfileSidebar';
-const PROFILE_NAV_SELECTOR = '.ProfileNav';
 const PROCESSED_INDICATOR_CLASS = 'HiveExtension-Twitter_profile-score-processed';
 
 const BEE_ICON = `
@@ -21,12 +20,10 @@ export class TwitterProfileScoreExtension {
         this.settings = settings;
     }
 
-    getUserId() {
-        const profileNav = document.querySelector(PROFILE_NAV_SELECTOR);
-
-        if (profileNav) {
-            return profileNav.getAttribute('data-user-id');
-        }
+    getUserScreenName() {
+        const { pathname } = window.location;
+        const screenName = pathname.slice(1);
+        return screenName;
     }
 
     async start() {
@@ -45,7 +42,7 @@ export class TwitterProfileScoreExtension {
 
         profileNav.classList.add(PROCESSED_INDICATOR_CLASS);
 
-        const userTwitterId = this.getUserId();
+        const userTwitterId = this.getUserScreenName();
         if (!this.api.isIdentifierIndexed(userTwitterId)) return;
 
         const userData = await this.api.getFilteredTwitterUserData(userTwitterId);

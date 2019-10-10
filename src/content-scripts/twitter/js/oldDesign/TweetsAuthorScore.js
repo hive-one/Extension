@@ -34,16 +34,16 @@ export class TwitterTweetsAuthorScoreExtension {
 
             tweet.classList.add(processedClassName);
 
-            const authorId = tweet.getAttribute('data-user-id');
-            if (!this.api.isIdentifierIndexed(authorId)) return;
+            const authorScreenName = tweet.getAttribute('data-screen-name');
+            if (!this.api.isIdentifierIndexed(authorScreenName)) return;
 
             const tweetId = tweet.getAttribute('data-item-id');
 
-            if (!authorId) {
+            if (!authorScreenName) {
                 return;
             }
 
-            const userData = await this.api.getFilteredTwitterUserData(authorId);
+            const userData = await this.api.getFilteredTwitterUserData(authorScreenName);
             if (!userData) return;
 
             const { clusterName, score, rank } = userData;

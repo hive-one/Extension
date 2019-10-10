@@ -19,11 +19,11 @@ export class TwitterProfileHoverPopupScoreExtension {
         this.settings = _settings;
     }
 
-    getUserId() {
+    getUserScreenName() {
         const container = document.querySelector(PROFILE_HOVER_CONTAINER);
 
         if (container) {
-            return container.getAttribute('data-user-id');
+            return container.getAttribute('data-screen-name');
         }
     }
 
@@ -40,12 +40,12 @@ export class TwitterProfileHoverPopupScoreExtension {
             return;
         }
 
-        const userTwitterId = this.getUserId();
+        const userScreenName = this.getUserScreenName();
 
-        if (!userTwitterId) return;
-        if (!this.api.isIdentifierIndexed(userTwitterId)) return;
+        if (!userScreenName) return;
+        if (!this.api.isIdentifierIndexed(userScreenName)) return;
 
-        const userData = await this.api.getFilteredTwitterUserData(userTwitterId);
+        const userData = await this.api.getFilteredTwitterUserData(userScreenName);
         if (!userData) return;
 
         const { screenName, score, clusterName, rank } = userData;
