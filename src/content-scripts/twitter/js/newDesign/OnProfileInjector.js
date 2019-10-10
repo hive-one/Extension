@@ -83,15 +83,6 @@ export default class {
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.screenName}`;
 
-        // TODO: Replace this with attrs from the API once it gets added
-        const authorImageURL = profileImageAnchor.getElementsByTagName('img')[0].src;
-
-        const nameNode = document.getElementsByTagName('h2')[1];
-        const name = nameNode.textContent;
-
-        userData.avatarImage = authorImageURL;
-        userData.name = name;
-
         await createHiveProfilePopup(
             this.settings,
             userData,

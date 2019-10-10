@@ -64,21 +64,6 @@ export default class {
         const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
         const popupStyles = this.createPopupStyles(previewNode, authorImageAnchor);
 
-        // TODO: Replace this with attrs from the API once it gets added
-        const authorImageURL = authorImageAnchor.getElementsByTagName('img')[0].src;
-
-        let nameNode = [
-            ...authorImageAnchor.parentElement.parentElement.parentElement.parentElement.getElementsByTagName('a'),
-        ].find(item => {
-            if (item.href == `https://twitter.com/${screenName}`) {
-                return item !== authorImageAnchor;
-            }
-        });
-        const name = nameNode.textContent.replace(`@${screenName}`, '');
-
-        userData.avatarImage = authorImageURL;
-        userData.name = name;
-
         await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
 
         if (document.getElementById(ICON_ID)) return;

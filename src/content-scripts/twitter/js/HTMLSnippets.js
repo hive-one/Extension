@@ -93,7 +93,7 @@ const createPodcastsSection = podcasts => {
     `;
 };
 
-export const createPopupHTML = (screenName, scores, followers, podcasts, avatarImage, name) => {
+export const createPopupHTML = (screenName, userName, imageURL, scores, followers, podcasts) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
@@ -113,10 +113,10 @@ export const createPopupHTML = (screenName, scores, followers, podcasts, avatarI
     return `
         <div>
             <div class="${POPUP_CLASS}_user_info_avatar">
-                <img src='${avatarImage}' />
+                <img src='${imageURL}' />
             </div>
             <a href="https://twitter.com/${screenName}/" class="${POPUP_CLASS}_user_info">
-                <span class="${POPUP_CLASS}_user_info_name">${name}</span>
+                <span class="${POPUP_CLASS}_user_info_name">${userName}</span>
                 <span class="${POPUP_CLASS}_user_info_screen-name">@${screenName}</span>
             </a>
         </div>

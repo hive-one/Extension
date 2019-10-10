@@ -33,7 +33,7 @@ class HiveAPI {
     }
 
     get userDataUrl() {
-        return `${this.host}/api/influencers/scores/people/screen_name`;
+        return `${this.host}/api/influencers/profile/screen_name`;
     }
 
     get availableIdsKey() {
@@ -92,7 +92,7 @@ class HiveAPI {
             throw new Error(`Could not find ${idOrScreenName} within this._acceptableIds`);
         }
 
-        let id, screenName, rank;
+        let id, screenName, rank, userName, imageUrl, description, website;
         let score = 0;
         let name = clusterName;
         let indexed = false;
@@ -106,22 +106,29 @@ class HiveAPI {
             throw new Error(`Failed getting data for for: ${idOrScreenName}`);
         }
 
-        id = data.twitter_id;
-        screenName = data.screen_name;
-        scores = data.scores;
+        const { profile } = data;
+
+        id = profile.id;
+        screenName = profile.screenName;
+        userName = profile.name;
+        imageUrl = profile.imageUrl;
+        description = profile.description;
+        website = profile.website;
+        scores = profile.clusters.edges;
+        followers = profile.followers.edges;
 
         if (clusterName === CLUSTER_TYPES.HIGHEST) {
-            const highestScoreCluster = data.scores.slice().sort((a, b) => b.score - a.score)[0];
+            const highestScoreCluster = scores.slice().sort((a, b) => b.score - a.score)[0];
 
             name = highestScoreCluster.abbr;
             score = highestScoreCluster.score;
-            rank = highestScoreCluster.rank;
-            followers = highestScoreCluster.followers.edges;
+            rank = highestScoreCluster.history.edges[0].node.rank;
+            // followers = highestScoreCluster.followers.edges;
         } else {
-            const { node: selectedCluster } = data.scores.find(c => c.node.abbr === clusterName);
+            const { node: selectedCluster } = scores.find(c => c.node.abbr === clusterName);
             score = selectedCluster.score;
-            rank = selectedCluster.rank;
-            followers = selectedCluster.followers.edges;
+            rank = selectedCluster.history.edges[0].node.rank;
+            // followers = selectedCluster.followers.edges;
         }
 
         // TODO: Reimplment this once follower score/rank is merged into the one API
@@ -138,11 +145,26 @@ class HiveAPI {
         // });
 
         podcasts =
-            data.podcasts.edges && data.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+            profile.podcasts.edges &&
+            profile.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
 
         indexed = true;
 
-        return { id, screenName, clusterName: name, score, scores, rank, indexed, followers, podcasts };
+        return {
+            id,
+            screenName,
+            userName,
+            imageUrl,
+            description,
+            website,
+            clusterName: name,
+            score,
+            scores,
+            rank,
+            indexed,
+            followers,
+            podcasts,
+        };
     }
 
     async getFollowersInfo(followers, followersIds, screenName) {

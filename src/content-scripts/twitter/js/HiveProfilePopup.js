@@ -5,7 +5,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
     // clickableNode = node that triggers the popup being created
     // appendableNode = node that popup is injected to
 
-    const { screenName, podcasts, followers, scores, avatarImage, name } = userData;
+    const { screenName, userName, imageUrl, podcasts, followers, scores } = userData;
 
     const popUpExists = () => !!document.getElementById(popupId);
 
@@ -29,7 +29,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         if (settings.isDarkTheme) {
             popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
         }
-        popupNode.innerHTML = createPopupHTML(screenName, scores, followers, podcasts, avatarImage, name);
+        popupNode.innerHTML = createPopupHTML(screenName, userName, imageUrl, scores, followers, podcasts);
 
         const displayScoresTab = (ignoreAnalyticsEvent = false) => {
             popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
