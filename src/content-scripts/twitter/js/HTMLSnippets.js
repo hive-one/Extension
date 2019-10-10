@@ -40,7 +40,6 @@ const createScoreSection = clusters =>
 
 const createFollower = ({ node }) => `
 <a href="https://twitter.com/${node.screenName}" class="${POPUP_CLASS}_followers_follower">
-    <span class="${POPUP_CLASS}_followers_follower_score">${node.scores.node.rank}</span>
     <div class="${POPUP_CLASS}_followers_follower_user">
         <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${node.imageUrl}' />
         <div class="${POPUP_CLASS}_followers_follower_user_info">
@@ -48,7 +47,6 @@ const createFollower = ({ node }) => `
             <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${node.screenName}</span>
         </div>
     </div>
-    <span class="${POPUP_CLASS}_followers_follower_rank">${node.scores.node.score.toFixed(0)}</span>
 </a>
 `;
 
@@ -56,11 +54,6 @@ const createFollower = ({ node }) => `
 // <div class="${POPUP_CLASS}_followers_follower_name">@${node.screenName}</div>
 
 const createFollowersSection = followers => `
-    <div class="${POPUP_CLASS}_followers_title">
-        <span>Rank</span>
-        <span>Name</span>
-        <span>Score</span>
-    </div>
     <div class="${POPUP_CLASS}_followers">
         ${followers.map(createFollower).join('')}
     </div>
