@@ -311,21 +311,52 @@
                     color: white;
                 }
 
-                #{$root}_content {
-                    background-color: #15202b;
-                    border-color: #38444d;
+                #{$root}_user_info {
+                    &_name {
+                        color: white;
+                    }
+
+                    &_screen_name {
+                        color: rgb(136, 153, 166);
+                    }
                 }
+                
                 #{$root}_followers_follower {
-                    background-color: #15202b;
-                    border-color: #38444d;
+                    background-color: #10171e;
+
+                    &_user_info {
+                        &_name {
+                            color: white;
+                        }
+    
+                        &_screen_name {
+                            color: rgb(136, 153, 166);
+                        }
+                    }
+
+                    &:hover {
+                        background: rgba(107, 125, 140, 0.1);
+                    }
                 }
 
                 #{$root}_podcasts_podcast {
-                    background-color: #15202b;
-                    border-color: #38444d;
+                    background-color: #10171e;
 
-                    &_meta {
-                        color: white;
+                    &_info {
+                        &_podcast_name {
+                            color: rgb(136, 153, 166);
+                        }
+
+                        &_date {
+                            background: #10171e;
+                            color: white;
+                        }
+                    }
+
+            
+
+                    &:hover {
+                        background: rgba(107, 125, 140, 0.1);
                     }
                 }
 
@@ -338,6 +369,15 @@
                         border-color: black;
                     }
                 }
+
+                #{$root}_tab {
+                    background: #10171e;
+                    border-color: rgb(56, 68, 77);
+
+                    &_active {
+                        background: rgba(107, 125, 140, 0.1);
+                    }
+                }
             }
 
             &_user_info {
@@ -348,7 +388,7 @@
                 cursor: pointer;
 
 
-                &_screen-name {
+                &_screen_name {
                     font-family: $twitter_font-family;
                     overflow-wrap: break-word;
                     font-size: 15px;
@@ -503,6 +543,7 @@
                             flex-direction: column;
                             justify-self: flex-start;
                             text-align: left;
+                            margin-left: 10px;
                             &_screen_name {
                                 font-family: $twitter_font-family;
                                 overflow-wrap: break-word;

@@ -117,7 +117,7 @@ export const createPopupHTML = (screenName, userName, imageURL, scores, follower
             </div>
             <a href="https://twitter.com/${screenName}/" class="${POPUP_CLASS}_user_info">
                 <span class="${POPUP_CLASS}_user_info_name">${userName}</span>
-                <span class="${POPUP_CLASS}_user_info_screen-name">@${screenName}</span>
+                <span class="${POPUP_CLASS}_user_info_screen_name">@${screenName}</span>
             </a>
         </div>
         <br/>
