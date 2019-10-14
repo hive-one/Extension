@@ -3,12 +3,11 @@ const TEST_DATA = {
     DannyAziz97: {
         profile: {
             id: '1469101279',
-            name: 'Andreas ☮ 🌈 ⚛ ⚖ 🌐 📡 📹 🔑 🛩',
-            screenName: 'aantonop',
-            description:
-                'Bitcoin & open blockchain\nAuthor: Mastering Bitcoin, The Internet of Money 1 & 2, Mastering Ethereum. Now writing Mastering Lightning Network. He/Him.',
-            website: 'https://patreon.com/aantonop',
-            imageUrl: 'https://pbs.twimg.com/profile_images/1021187085909209088/rdyeTi5d.jpg',
+            name: 'Danny Aziz',
+            screenName: 'DannyAziz97',
+            description: 'I make things',
+            website: 'dannyaziz.com',
+            imageUrl: 'https://pbs.twimg.com/profile_images/1163396570424991749/SALOcuL7_400x400.jpg',
             clusters: {
                 edges: [
                     {
