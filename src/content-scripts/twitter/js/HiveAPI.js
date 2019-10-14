@@ -1,5 +1,7 @@
 import { GA_TYPES, CLUSTER_TYPES } from '../../../config';
 
+import { TEST_SCREEN_NAMES, TEST_DATA } from './testData';
+
 const RESPONSE_TYPES = Object.freeze({
     SUCCESS: 'success',
     ERROR: 'error',
@@ -75,6 +77,11 @@ class HiveAPI {
                     available: cachedIds.available,
                 });
             }
+
+            if (process.env.NODE_ENV === 'development') {
+                cachedIds.available = cachedIds.available.concat(TEST_SCREEN_NAMES);
+            }
+
             this._acceptableIds = cachedIds.available;
         } catch (err) {
             console.error('Failed initializing HiveAPI\n', err);
@@ -205,6 +212,13 @@ class HiveAPI {
     }
 
     async _getTwitterUserData(idOrScreenName) {
+        // During dev, if the user is a test user return the test info instead.
+        if (process.env.NODE_ENV === 'development') {
+            if (TEST_DATA.hasOwnProperty(idOrScreenName)) {
+                return { data: TEST_DATA[idOrScreenName], status: RESPONSE_TYPES.SUCCESS };
+            }
+        }
+
         // Tries pulling data from cache
         // if not requests data from the API and caches it
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
@@ -268,6 +282,7 @@ class HiveAPI {
         if (idOrScreenName.toString) {
             idOrScreenName = idOrScreenName.toString();
         }
+
         return this._acceptableIds.includes(idOrScreenName);
     }
 
