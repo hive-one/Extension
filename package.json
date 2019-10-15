@@ -1,6 +1,6 @@
 {
     "name": "hive-ext",
-    "version": "1.1.1",
+    "version": "1.1.11",
     "description": "",
     "main": "gulpfile.js",
     "scripts": {
@@ -8,7 +8,8 @@
         "build-dev": "cross-env NODE_ENV=development webpack",
         "dev": "cross-env NODE_ENV=development webpack --watch",
         "lint": "eslint .",
-        "lint-fix": "eslint . --fix"
+        "lint-fix": "eslint . --fix",
+        "upload-chrome-store": "node uploadChromeWebStore.js"
     },
     "author": "Daniel Kmak",
     "license": "MIT",
@@ -21,6 +22,7 @@
         "@babel/register": "7.0.0",
         "babel-eslint": "^10.0.1",
         "babel-loader": "8.0.5",
+        "chrome-webstore-upload": "^0.2.2",
         "copy-webpack-plugin": "5.0.1",
         "cross-env": "5.2.0",
         "css-loader": "2.1.1",
