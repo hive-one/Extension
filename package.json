@@ -8,8 +8,7 @@
         "build-dev": "cross-env NODE_ENV=development webpack",
         "dev": "cross-env NODE_ENV=development webpack --watch",
         "lint": "eslint .",
-        "lint-fix": "eslint . --fix",
-        "upload-chrome-store": "node uploadChromeWebStore.js"
+        "lint-fix": "eslint . --fix"
     },
     "author": "Daniel Kmak",
     "license": "MIT",
