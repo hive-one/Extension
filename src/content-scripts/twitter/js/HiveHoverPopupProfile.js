@@ -1,10 +1,17 @@
 import { GA_TYPES } from '../../../config';
 import { createHoverInjectedHTML } from './HTMLSnippets';
 
-const createHiveHoverPopupProfile = async (settings, userData, appendableNode, popupId, popupStyles = {}) => {
+const createHiveHoverPopupProfile = async (
+    settings,
+    userData,
+    appendableNode,
+    popupId,
+    popupStyles = {},
+    ownProfile = false,
+) => {
     // appendableNode = node that popup is injected to
 
-    const { screenName, podcasts, followers, scores, avatarImage, name } = userData;
+    const { screenName, podcasts, followers, scores } = userData;
 
     const popUpExists = () => !!document.getElementById(popupId);
 
@@ -21,7 +28,7 @@ const createHiveHoverPopupProfile = async (settings, userData, appendableNode, p
         for (const key in popupStyles) {
             popupNode.style[key] = popupStyles[key];
         }
-        popupNode.innerHTML = createHoverInjectedHTML(screenName, scores, followers, podcasts, avatarImage, name);
+        popupNode.innerHTML = createHoverInjectedHTML(screenName, scores, followers, podcasts, ownProfile);
 
         const displayScoresTab = (ignoreAnalyticsEvent = false) => {
             popupNode.querySelector('#' + 'popup_scores').style.display = 'block';

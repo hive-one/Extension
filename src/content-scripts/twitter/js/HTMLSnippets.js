@@ -154,7 +154,7 @@ export const createPopupHTML = (screenName, userName, imageURL, scores, follower
     `;
 };
 
-export const createHoverInjectedHTML = (screenName, scores, followers, podcasts) => {
+export const createHoverInjectedHTML = (screenName, scores, followers, podcasts, ownProfile = false) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
@@ -200,7 +200,7 @@ export const createHoverInjectedHTML = (screenName, scores, followers, podcasts)
                 <use xlink:href="#HiveExtension-icon-bee" />
             </svg>
             <a href="https://hive.one/p/${screenName}/" target='__blank'>
-                Learn more about this profile at hive.one
+                Learn more about ${ownProfile ? 'your' : 'this'} profile at hive.one
             </a>
         </div>
     `;

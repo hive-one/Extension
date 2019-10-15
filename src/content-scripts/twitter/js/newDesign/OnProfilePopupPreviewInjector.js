@@ -43,20 +43,23 @@ export default class {
         // Create popup
         const POPUP_ID = `HiveExtension-Twitter_UserPreview_Popup_${uniqueID}`;
         const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
+        let parentNode = authorImageAnchor.parentNode.parentNode;
+        const styles = {};
+        let ownProfile = false;
 
         // Check to see if the popup is the "more" popup
-        // TODO: Different styling if on the "more" popup
         if (
             authorImageAnchor.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute(
                 'role',
             ) === 'menu'
         ) {
-            return;
+            parentNode = authorImageAnchor.parentNode.parentNode.parentNode;
+            styles.padding = '10px';
+            ownProfile = true;
         }
 
         // Inject some content at the end of the popup
-
-        await createHiveHoverPopupProfile(this.settings, userData, authorImageAnchor.parentNode.parentNode, POPUP_ID);
+        await createHiveHoverPopupProfile(this.settings, userData, parentNode, POPUP_ID, styles, ownProfile);
     }
 
     getAuthorImageAnchor(previewNode, screenName) {
