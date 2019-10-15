@@ -427,7 +427,6 @@
                 background: #FFFFFF;
                 border: 1px solid #EEEDFF;
                 box-sizing: border-box;
-                border-radius: 4px 0px 0px 4px;
                 cursor: pointer;
 
                 display: flex;
@@ -441,6 +440,14 @@
                 
                 &_active {
                     background:#F5F7FA;
+                }
+
+                &:first-child {
+                    border-radius: 4px 0px 0px 4px;
+                }
+
+                &:last-child {
+                    border-radius: 0px 4px 4px 0px;
                 }
             }
 
