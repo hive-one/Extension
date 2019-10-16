@@ -16,6 +16,14 @@ chrome.runtime.onInstalled.addListener(function() {
         });
     });
 
+    chrome.storage.sync.get('acceptedPermissions', result => {
+        if (typeof result.acceptedPermissions === 'undefined') {
+            chrome.storage.sync.set({
+                acceptedPermissions: false,
+            });
+        }
+    });
+
     if (chrome.declarativeContent) {
         chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
             chrome.declarativeContent.onPageChanged.addRules([

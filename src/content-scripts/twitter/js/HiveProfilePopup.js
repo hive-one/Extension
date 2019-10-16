@@ -10,15 +10,137 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
     const popUpExists = () => !!document.getElementById(popupId);
 
     let popupNode, closePopup;
-    const displayPopup = event => {
-        event.stopPropagation();
+    const displayPopup = async event => {
+        if (event) {
+            event.stopPropagation();
+        }
 
-        if (popUpExists()) return;
+        let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
 
         const removePopupElement = () => {
             document.removeEventListener('click', closePopup);
             document.getElementById(popupId).remove();
         };
+
+        const renderPopupElement = popupNode => {
+            popupNode.innerHTML = createPopupHTML(
+                screenName,
+                userName,
+                imageUrl,
+                scores,
+                followers,
+                podcasts,
+                acceptedPermissions,
+            );
+
+            if (popupNode.querySelector('#hive-accept-permissions')) {
+                popupNode.querySelector('#hive-accept-permissions').addEventListener(
+                    'click',
+                    () => {
+                        chrome.storage.sync.set({
+                            acceptedPermissions: true,
+                        });
+                        displayPopup();
+                    },
+                    false,
+                );
+            }
+
+            const displayScoresTab = (ignoreAnalyticsEvent = false) => {
+                popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
+                popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
+                popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
+
+                popupNode
+                    .querySelector('#' + 'scores_tab_btn')
+                    .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
+                popupNode
+                    .querySelector('#' + 'followers_tab_btn')
+                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+                if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+                    popupNode
+                        .querySelector('#' + 'podcasts_tab_btn')
+                        .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+                }
+
+                if (!ignoreAnalyticsEvent) {
+                    const ACTION_NAME = 'popup-clicked-scores-tab';
+                    chrome.runtime.sendMessage({
+                        type: GA_TYPES.TRACK_EVENT,
+                        category: 'plugin-interactions',
+                        action: ACTION_NAME,
+                    });
+                }
+            };
+
+            const displayFollowersTab = () => {
+                popupNode.querySelector('#' + 'popup_followers').style.display = 'block';
+                popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
+                popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
+
+                popupNode
+                    .querySelector('#' + 'followers_tab_btn')
+                    .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
+                popupNode
+                    .querySelector('#' + 'scores_tab_btn')
+                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+                if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+                    popupNode
+                        .querySelector('#' + 'podcasts_tab_btn')
+                        .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+                }
+                const ACTION_NAME = 'popup-clicked-followers-tab';
+                chrome.runtime.sendMessage({
+                    type: GA_TYPES.TRACK_EVENT,
+                    category: 'plugin-interactions',
+                    action: ACTION_NAME,
+                });
+            };
+
+            const displayPodcastsTab = () => {
+                popupNode.querySelector('#' + 'popup_podcasts').style.display = 'block';
+                popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
+                popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
+
+                popupNode
+                    .querySelector('#' + 'podcasts_tab_btn')
+                    .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
+                popupNode
+                    .querySelector('#' + 'followers_tab_btn')
+                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
+                const ACTION_NAME = 'popup-clicked-podcasts-tab';
+                chrome.runtime.sendMessage({
+                    type: GA_TYPES.TRACK_EVENT,
+                    category: 'plugin-interactions',
+                    action: ACTION_NAME,
+                });
+            };
+
+            popupNode.querySelector('#' + 'scores_tab_btn').addEventListener('click', displayScoresTab, false);
+            popupNode.querySelector('#' + 'followers_tab_btn').addEventListener('click', displayFollowersTab, false);
+            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
+                popupNode.querySelector('#' + 'podcasts_tab_btn').addEventListener('click', displayPodcastsTab, false);
+            }
+            displayScoresTab(true);
+            appendableNode.appendChild(popupNode);
+
+            setTimeout(() => {
+                closePopup = e => {
+                    if (e.target === popupNode || popupNode.contains(e.target)) {
+                        return;
+                    }
+                    e.stopPropagation();
+                    removePopupElement();
+                };
+
+                document.addEventListener('click', closePopup);
+            }, 0);
+        };
+
+        if (popUpExists()) {
+            renderPopupElement(document.getElementById(popupId));
+            return;
+        }
 
         popupNode = document.createElement('div');
         popupNode.id = popupId;
@@ -29,97 +151,8 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         if (settings.isDarkTheme) {
             popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
         }
-        popupNode.innerHTML = createPopupHTML(screenName, userName, imageUrl, scores, followers, podcasts);
 
-        const displayScoresTab = (ignoreAnalyticsEvent = false) => {
-            popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
-            popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
-            popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
-
-            popupNode
-                .querySelector('#' + 'scores_tab_btn')
-                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'followers_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-                popupNode
-                    .querySelector('#' + 'podcasts_tab_btn')
-                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            }
-
-            if (!ignoreAnalyticsEvent) {
-                const ACTION_NAME = 'popup-clicked-scores-tab';
-                chrome.runtime.sendMessage({
-                    type: GA_TYPES.TRACK_EVENT,
-                    category: 'plugin-interactions',
-                    action: ACTION_NAME,
-                });
-            }
-        };
-
-        const displayFollowersTab = () => {
-            popupNode.querySelector('#' + 'popup_followers').style.display = 'block';
-            popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
-            popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
-
-            popupNode
-                .querySelector('#' + 'followers_tab_btn')
-                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'scores_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-                popupNode
-                    .querySelector('#' + 'podcasts_tab_btn')
-                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            }
-            const ACTION_NAME = 'popup-clicked-followers-tab';
-            chrome.runtime.sendMessage({
-                type: GA_TYPES.TRACK_EVENT,
-                category: 'plugin-interactions',
-                action: ACTION_NAME,
-            });
-        };
-
-        const displayPodcastsTab = () => {
-            popupNode.querySelector('#' + 'popup_podcasts').style.display = 'block';
-            popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
-            popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
-
-            popupNode
-                .querySelector('#' + 'podcasts_tab_btn')
-                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'followers_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            const ACTION_NAME = 'popup-clicked-podcasts-tab';
-            chrome.runtime.sendMessage({
-                type: GA_TYPES.TRACK_EVENT,
-                category: 'plugin-interactions',
-                action: ACTION_NAME,
-            });
-        };
-
-        popupNode.querySelector('#' + 'scores_tab_btn').addEventListener('click', displayScoresTab, false);
-        popupNode.querySelector('#' + 'followers_tab_btn').addEventListener('click', displayFollowersTab, false);
-        if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-            popupNode.querySelector('#' + 'podcasts_tab_btn').addEventListener('click', displayPodcastsTab, false);
-        }
-        displayScoresTab(true);
-        appendableNode.appendChild(popupNode);
-
-        setTimeout(() => {
-            closePopup = e => {
-                if (e.target === popupNode || popupNode.contains(e.target)) {
-                    return;
-                }
-                e.stopPropagation();
-                removePopupElement();
-            };
-
-            document.addEventListener('click', closePopup);
-        }, 0);
+        renderPopupElement(popupNode);
 
         const ACTION_NAME = 'popup-opened-in-profile-header';
         chrome.runtime.sendMessage({

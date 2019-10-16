@@ -93,11 +93,20 @@ const createPodcastsSection = podcasts => {
     `;
 };
 
-export const createPopupHTML = (screenName, userName, imageURL, scores, followers, podcasts) => {
+export const createPopupHTML = (
+    screenName,
+    userName,
+    imageURL,
+    scores,
+    followers,
+    podcasts,
+    settingsAcceptedPermissions = true,
+) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
     let PODCASTS_TAB_HTML = '';
+    let acceptedPermissions = settingsAcceptedPermissions;
 
     if (followers) {
         FOLLOWERS_HTML = createFollowersSection(followers);
@@ -111,6 +120,8 @@ export const createPopupHTML = (screenName, userName, imageURL, scores, follower
     }
 
     return `
+        ${acceptedPermissions ? 'Accepted Permissions' : 'Not accepted permissions'}
+        ${!acceptedPermissions ? `<button id='hive-accept-permissions'>Click me</button>` : ``}
         <div>
             <div class="${POPUP_CLASS}_user_info_avatar">
                 <img src='${imageURL}' />
