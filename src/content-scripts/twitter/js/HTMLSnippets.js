@@ -93,6 +93,58 @@ const createPodcastsSection = podcasts => {
     `;
 };
 
+const createPermissionsOverlay = () => {
+    return `
+    <div class="${POPUP_CLASS}_permissions_overlay">
+        <div>
+            <h3 class="${POPUP_CLASS}_permissions_overlay_heading">Hey, we <strong>anonymously</strong> track usage data as well as send error logs for diagnostics.</h3>
+            <h3 class="${POPUP_CLASS}_permissions_overlay_heading">Is this cool?</h3>
+        </div>
+        <ul class="${POPUP_CLASS}_permissions_overlay_permissions_list">
+            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item">
+                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
+                    <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Google Analytics</h4>
+                    <span>(Usage Data)</span>
+                </div>
+                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_right">
+                    <label class="toggle">
+                        <input class="toggle-checkbox" type="checkbox" checked>
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </li>
+            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item">
+                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
+                    <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Amplitude</h4>
+                    <span>(Usage Data)</span>
+                </div>
+                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_right">
+                    <label class="toggle">
+                        <input class="toggle-checkbox" type="checkbox" checked>
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </li>
+            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item">
+                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
+                    <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Rollbar</h4>
+                    <span>(Error Logging)</span>
+                </div>
+                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_right">
+                    <label class="toggle">
+                        <input class="toggle-checkbox" type="checkbox" checked>
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </li>
+        </ul>
+        <button class="${POPUP_CLASS}_permissions_overlay_submit_btn" id='permissions-submit-btn'>
+            Accept
+        </button>
+    </div>
+    `;
+};
+
 export const createPopupHTML = (
     screenName,
     userName,
@@ -100,13 +152,13 @@ export const createPopupHTML = (
     scores,
     followers,
     podcasts,
-    settingsAcceptedPermissions = true,
+    acceptedPermissions = true,
 ) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
     let PODCASTS_TAB_HTML = '';
-    let acceptedPermissions = settingsAcceptedPermissions;
+    let PERMISSIONS_OVERLAY_HTML = '';
 
     if (followers) {
         FOLLOWERS_HTML = createFollowersSection(followers);
@@ -119,9 +171,12 @@ export const createPopupHTML = (
         </div>`;
     }
 
+    if (!acceptedPermissions) {
+        PERMISSIONS_OVERLAY_HTML = createPermissionsOverlay();
+    }
+
     return `
-        ${acceptedPermissions ? 'Accepted Permissions' : 'Not accepted permissions'}
-        ${!acceptedPermissions ? `<button id='hive-accept-permissions'>Click me</button>` : ``}
+        ${PERMISSIONS_OVERLAY_HTML}
         <div>
             <div class="${POPUP_CLASS}_user_info_avatar">
                 <img src='${imageURL}' />
