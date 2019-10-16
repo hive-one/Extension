@@ -442,7 +442,7 @@
                     width: 211.5px;
                     height: 49px;
 
-                    background: #54D893;
+                    background: hsl(149, 62.9%, 58.8%);
                     border-radius: 100px;
 
                     font-weight: bold;
@@ -450,6 +450,12 @@
                     line-height: 22px;
 
                     color: #FFFFFF;
+
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                        background: hsl(149, 62.9%, 48.8%);
+                    }
                 }
                 
             }
