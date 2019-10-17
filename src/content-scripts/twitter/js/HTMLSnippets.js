@@ -125,7 +125,7 @@ const createPermissionsOverlay = () => {
                     </label>
                 </div>
             </li>
-            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item">
+            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item" style='margin-block-end: 0;'>
                 <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
                     <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Rollbar</h4>
                     <span>(Error Logging)</span>
@@ -136,6 +136,10 @@ const createPermissionsOverlay = () => {
                         <div class="toggle-switch"></div>
                     </label>
                 </div>
+            </li>
+
+            <li>
+                <a class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_link" href='https://hive.one/privacy-policy/' target='__blank'>Privacy Policy</a>
             </li>
         </ul>
         <button class="${POPUP_CLASS}_permissions_overlay_submit_btn" id='permissions-submit-btn'>

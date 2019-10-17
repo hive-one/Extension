@@ -432,6 +432,11 @@
                             margin: 0;
                             text-align: left;
                         }
+
+                        &_link {
+                            text-decoration: none;
+                            color: $purple_one;
+                        }
                     }
                 }
 
