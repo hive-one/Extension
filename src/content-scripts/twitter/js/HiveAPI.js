@@ -113,7 +113,13 @@ class HiveAPI {
             throw new Error(`Failed getting data for for: ${idOrScreenName}`);
         }
 
-        const { profile } = data;
+        let profile;
+
+        if (data.hasOwnProperty('data')) {
+            profile = data.data.profile;
+        } else {
+            profile = data.profile;
+        }
 
         id = profile.id;
         screenName = profile.screenName;
