@@ -38,17 +38,28 @@ const createScoreSection = clusters =>
         })
         .join('');
 
-const createFollower = ({ node }) => `
-<a href="https://twitter.com/${node.screenName}" class="${POPUP_CLASS}_followers_follower">
-    <div class="${POPUP_CLASS}_followers_follower_user">
-        <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${node.imageUrl}' />
-        <div class="${POPUP_CLASS}_followers_follower_user_info">
-            <span class="${POPUP_CLASS}_followers_follower_user_info_name">${node.name}</span>
-            <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${node.screenName}</span>
+const createFollower = ({ node }) => {
+    const rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${
+        node.scores.node.rank ? node.scores.node.rank : ''
+    }</span>`;
+    const scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${node.scores.node.score.toFixed(
+        0,
+    )}</span>`;
+
+    return `
+    <a href="https://twitter.com/${node.screenName}" class="${POPUP_CLASS}_followers_follower">
+        ${rankHTML}
+        <div class="${POPUP_CLASS}_followers_follower_user">
+            <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${node.imageUrl}' />
+            <div class="${POPUP_CLASS}_followers_follower_user_info">
+                <span class="${POPUP_CLASS}_followers_follower_user_info_name">${node.name}</span>
+                <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${node.screenName}</span>
+            </div>
         </div>
-    </div>
-</a>
-`;
+        ${scoreHTML}
+    </a>
+    `;
+};
 
 // <img class="${POPUP_CLASS}_followers_follower_image" src="${node.imageUrl}" />
 // <div class="${POPUP_CLASS}_followers_follower_name">@${node.screenName}</div>
@@ -93,9 +104,11 @@ const createPodcastsSection = podcasts => {
     `;
 };
 
-const createPermissionsOverlay = () => {
+const createPermissionsOverlay = (small = false) => {
     return `
-    <div class="${POPUP_CLASS}_permissions_overlay">
+    <div id='hive-permissions-overlay' class="${POPUP_CLASS}_permissions_overlay ${
+        small ? `${POPUP_CLASS}_permissions_overlay_small` : ''
+    }">
         <div>
             <h3 class="${POPUP_CLASS}_permissions_overlay_heading">Hey, we <strong>anonymously</strong> track usage data as well as send error logs for diagnostics.</h3>
             <h3 class="${POPUP_CLASS}_permissions_overlay_heading">Is this cool?</h3>
@@ -165,6 +178,7 @@ export const createPopupHTML = (
     let PERMISSIONS_OVERLAY_HTML = '';
 
     if (followers) {
+        console.log(followers);
         FOLLOWERS_HTML = createFollowersSection(followers);
     }
 
@@ -224,11 +238,19 @@ export const createPopupHTML = (
     `;
 };
 
-export const createHoverInjectedHTML = (screenName, scores, followers, podcasts, ownProfile = false) => {
+export const createHoverInjectedHTML = (
+    screenName,
+    scores,
+    followers,
+    podcasts,
+    ownProfile = false,
+    acceptedPermissions = true,
+) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
     let PODCASTS_TAB_HTML = '';
+    let PERMISSIONS_OVERLAY_HTML = '';
 
     if (followers) {
         FOLLOWERS_HTML = createFollowersSection(followers);
@@ -240,8 +262,12 @@ export const createHoverInjectedHTML = (screenName, scores, followers, podcasts,
             <span>Podcasts</span>
         </div>`;
     }
+    if (!acceptedPermissions) {
+        PERMISSIONS_OVERLAY_HTML = createPermissionsOverlay(true);
+    }
 
     return `
+        ${PERMISSIONS_OVERLAY_HTML}
         <br />
         <div class="${POPUP_CLASS}_tabs">
             <div id="scores_tab_btn" class="${POPUP_CLASS}_tab">

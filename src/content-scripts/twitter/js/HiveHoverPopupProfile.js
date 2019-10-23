@@ -15,7 +15,11 @@ const createHiveHoverPopupProfile = async (
 
     const popUpExists = () => !!document.getElementById(popupId);
 
+    // let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
+    let acceptedPermissions = true;
+
     let popupNode;
+
     const displayPopup = () => {
         if (popUpExists()) return;
 
@@ -28,7 +32,14 @@ const createHiveHoverPopupProfile = async (
         for (const key in popupStyles) {
             popupNode.style[key] = popupStyles[key];
         }
-        popupNode.innerHTML = createHoverInjectedHTML(screenName, scores, followers, podcasts, ownProfile);
+        popupNode.innerHTML = createHoverInjectedHTML(
+            screenName,
+            scores,
+            followers,
+            podcasts,
+            ownProfile,
+            acceptedPermissions,
+        );
 
         const displayScoresTab = (ignoreAnalyticsEvent = false) => {
             popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
@@ -107,6 +118,13 @@ const createHiveHoverPopupProfile = async (
         }
         displayScoresTab(true);
         appendableNode.appendChild(popupNode);
+
+        // Hijack the permissions overlay
+        popupNode.querySelector('#hive-permissions-overlay').style.height = `${popupNode.getBoundingClientRect()
+            .height - 15}px`;
+        popupNode.querySelector('#hive-permissions-overlay').style.top = `${popupNode.getBoundingClientRect().top}px`;
+        popupNode.querySelector('#hive-permissions-overlay').style.left = `${popupNode.getBoundingClientRect().left -
+            15}px`;
     };
 
     displayPopup();

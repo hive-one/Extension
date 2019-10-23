@@ -15,7 +15,8 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             event.stopPropagation();
         }
 
-        let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
+        // let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
+        let acceptedPermissions = true;
 
         const removePopupElement = () => {
             document.removeEventListener('click', closePopup);

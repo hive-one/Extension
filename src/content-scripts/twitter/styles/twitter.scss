@@ -398,6 +398,13 @@
                 font-family: $twitter_font-family;
                 text-align: center;
 
+                &_small {
+                    position: fixed;
+                    width: 270px;
+                    border-radius: 0px 0px 14px 14px;
+                    // height: 331px;
+                }
+
                 &_heading {
                     font-style: normal;
                     font-weight: 500;
@@ -601,7 +608,7 @@
                 &_follower {
                     height: 60px;
                     display: grid;
-                    grid-template-columns: 100%;
+                    grid-template-columns: 10% 80% 10%;
                     align-items: center;
                     justify-items: flex-start;
                     background-color: white;
