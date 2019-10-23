@@ -119,12 +119,12 @@ const createHiveHoverPopupProfile = async (
         displayScoresTab(true);
         appendableNode.appendChild(popupNode);
 
-        // Hijack the permissions overlay
-        popupNode.querySelector('#hive-permissions-overlay').style.height = `${popupNode.getBoundingClientRect()
-            .height - 15}px`;
-        popupNode.querySelector('#hive-permissions-overlay').style.top = `${popupNode.getBoundingClientRect().top}px`;
-        popupNode.querySelector('#hive-permissions-overlay').style.left = `${popupNode.getBoundingClientRect().left -
-            15}px`;
+        // // Hijack the permissions overlay
+        // popupNode.querySelector('#hive-permissions-overlay').style.height = `${popupNode.getBoundingClientRect()
+        //     .height - 15}px`;
+        // popupNode.querySelector('#hive-permissions-overlay').style.top = `${popupNode.getBoundingClientRect().top}px`;
+        // popupNode.querySelector('#hive-permissions-overlay').style.left = `${popupNode.getBoundingClientRect().left -
+        //     15}px`;
     };
 
     displayPopup();
