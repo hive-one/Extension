@@ -59,7 +59,7 @@ export class TwitterTweetsAuthorScoreExtension {
 
             if (tweetIsThread) {
                 threadClass = TWEET_AUTHOR_SCORE_CLASS + '_display-in-thread';
-                if (this.settings.isDarkTheme) {
+                if (this.settings.isDarkTheme()) {
                     threadClass += '-dark';
                 }
             }

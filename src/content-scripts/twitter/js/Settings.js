@@ -8,7 +8,7 @@ class ExtensionSettings {
             this.clusterToDisplay = await this.getOptionValue('clusterToDisplay');
             this.showScoreOnTweets = await this.getOptionValue('showScoreOnTweets');
             this.displaySetting = await this.getOptionValue('displaySetting');
-            this.isDarkTheme = await this.isDarkTheme();
+            this.isDarkTheme = this.isDarkTheme;
             resolve(this);
         });
     }
@@ -21,11 +21,9 @@ class ExtensionSettings {
         });
     }
 
-    async isDarkTheme() {
+    isDarkTheme() {
         if (this.isNewTwitterDesign) {
-            // The CSS for the new design is a little confusing, using this cookie is a lot easier
-            let cookieValue = await this.getNewDesignNightModeCookie();
-            return cookieValue === '1';
+            return document.body.style.backgroundColor !== 'rgb(255, 255, 255)';
         } else {
             return Boolean(document.querySelector('.js-nightmode-icon.Icon--crescentFilled'));
         }
