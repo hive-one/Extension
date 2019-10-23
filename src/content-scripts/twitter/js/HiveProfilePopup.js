@@ -138,6 +138,10 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             }, 0);
         };
 
+        const getBackgroundColor = () => {
+            return document.body.style.backgroundColor;
+        };
+
         if (popUpExists()) {
             renderPopupElement(document.getElementById(popupId));
             return;
@@ -151,6 +155,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         popupNode.classList.add('HiveExtension-Twitter_popup-profile');
         if (settings.isDarkTheme()) {
             popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
+            popupNode.style.background = getBackgroundColor();
         }
 
         renderPopupElement(popupNode);
