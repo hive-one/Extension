@@ -25,10 +25,10 @@ const createHiveHoverPopupProfile = async (
 
         popupNode = document.createElement('div');
         popupNode.id = popupId;
-        // popupNode.classList.add('HiveExtension-Twitter_popup-profile');
-        // if (settings.isDarkTheme) {
-        //     popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
-        // }
+        popupNode.classList.add('HiveExtension-Twitter_popup-profile-injection');
+        if (settings.isDarkTheme) {
+            popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
+        }
         for (const key in popupStyles) {
             popupNode.style[key] = popupStyles[key];
         }

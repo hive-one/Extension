@@ -284,6 +284,9 @@
     }
 
     &_popup {
+        &-profile-injection {
+            background: transparent !important;
+        }
         &-profile {
             $root: &;
 
@@ -322,7 +325,7 @@
                 }
                 
                 #{$root}_followers_follower {
-                    background-color: #10171e;
+                    background-color: transparent;
 
                     &_user_info {
                         &_name {
@@ -340,7 +343,7 @@
                 }
 
                 #{$root}_podcasts_podcast {
-                    background-color: #10171e;
+                    background-color: transparent;
 
                     &_info {
                         &_podcast_name {
@@ -371,7 +374,7 @@
                 }
 
                 #{$root}_tab {
-                    background: #10171e;
+                    background: transparent;
                     border-color: rgb(56, 68, 77);
 
                     &_active {
