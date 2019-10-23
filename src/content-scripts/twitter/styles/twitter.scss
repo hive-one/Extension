@@ -327,6 +327,10 @@
                 #{$root}_followers_follower {
                     background-color: transparent;
 
+                    &_score, &_rank {
+                        color: rgb(136, 153, 166);
+                    }
+
                     &_user_info {
                         &_name {
                             color: white;
