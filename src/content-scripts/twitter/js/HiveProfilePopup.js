@@ -127,6 +127,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
 
             setTimeout(() => {
                 closePopup = e => {
+                    console.log(e.target);
                     if (e.target === popupNode || popupNode.contains(e.target)) {
                         return;
                     }
@@ -142,8 +143,9 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             return document.body.style.backgroundColor;
         };
 
+        // TODO: Figure out a way to render the popup again ONLY when accepting permissions
         if (popUpExists()) {
-            renderPopupElement(document.getElementById(popupId));
+            // renderPopupElement(document.getElementById(popupId));
             return;
         }
 
