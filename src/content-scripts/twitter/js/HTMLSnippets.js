@@ -4,17 +4,19 @@ import moment from 'moment';
 
 const POPUP_CLASS = 'HiveExtension-Twitter_popup-profile';
 
-const CLUSTER_IMAGES = {
-    Crypto: 'https://hive.one/static/assets/icons/Crypto_100.png',
-    Bitcoin: 'https://hive.one/static/assets/icons/BTC_100.png',
-    Ethereum: 'https://hive.one/static/assets/icons/ETH_100.png',
-    Ripple: 'https://hive.one/static/assets/icons/XRP_100.png',
-};
-
+// const CLUSTER_IMAGES = {
+//     Crypto: 'https://hive.one/static/assets/icons/Crypto_100.png',
+//     Bitcoin: 'https://hive.one/static/assets/icons/BTC_100.png',
+//     Ethereum: 'https://hive.one/static/assets/icons/ETH_100.png',
+//     Ripple: 'https://hive.one/static/assets/icons/XRP_100.png',
+// };
+{
+    /* <img class="${POPUP_CLASS}_cluster-score_image" src='${CLUSTER_IMAGES[clusterName]}' /> */
+}
 const createScoreRow = (clusterName, displayScore, scoreAsPercentage) => `
 <div class="${POPUP_CLASS}_cluster-score">
     <div class="${POPUP_CLASS}_cluster-score_left">
-        <img class="${POPUP_CLASS}_cluster-score_image" src='${CLUSTER_IMAGES[clusterName]}' />
+        
         ${clusterName}
     </div>
     <div class="${POPUP_CLASS}_cluster-score_right">

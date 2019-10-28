@@ -39,6 +39,7 @@ chrome.runtime.onInstalled.addListener(function() {
         });
     } else {
         chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+            console.log(tab);
             if (tab.status === 'complete' && tab.url.match(/twitter.com/)) {
                 chrome.pageAction.show(tabId);
             } else {

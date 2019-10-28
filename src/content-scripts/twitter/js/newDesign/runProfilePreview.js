@@ -2,6 +2,7 @@ import OnProfilePreviewInjector from './OnProfilePreviewInjector';
 import OnProfilePopupPreviewInjector from './OnProfilePopupPreviewInjector';
 
 const runProfilePreview = async (settings, api) => {
+    console.log('Profile Preview being called');
     const profilePreviewInjector = new OnProfilePreviewInjector(settings, api);
     profilePreviewInjector.run();
 

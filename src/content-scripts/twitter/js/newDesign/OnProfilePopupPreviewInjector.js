@@ -10,7 +10,7 @@ export default class {
     }
 
     async run() {
-        let profilePopups = document.querySelectorAll('div[style*="will-change: opacity, height"]');
+        let profilePopups = document.getElementsByClassName('r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-184en5c');
 
         if (!profilePopups || !profilePopups.length) {
             return errorHandle('Failed finding profile previews');
