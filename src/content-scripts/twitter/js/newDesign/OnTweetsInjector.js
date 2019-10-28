@@ -102,7 +102,8 @@ export default class {
         const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, screenName);
         const popupStyles = this.createPopupStyles(tweetNode, authorImageAnchor);
 
-        authorImageAnchor.style.border = '3px solid #574dff';
+        // TODO: Come up with a more friendly way to introduce this feature to users
+        // authorImageAnchor.style.border = '3px solid #574dff';
 
         await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
 
