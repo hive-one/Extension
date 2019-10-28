@@ -30,6 +30,7 @@ export default class {
     }
 
     async injectOntoProfilePreview(previewNode, screenName, uniqueID) {
+        // console.log("get this far");
         if (!this.api.isIdentifierIndexed(screenName)) return;
 
         const ICON_ID = `HiveExtension-Twitter_user_preview-score_${uniqueID}`;
