@@ -17,23 +17,23 @@ const run = async (settings, api) => {
         console.log(`TODO: Handle route: "${pathname}"`);
         return;
     } else if (pathname.match(homeRoutes)) {
-        await runHome(settings, api);
-        await runProfilePreview(settings, api);
+        runHome(settings, api);
+        runProfilePreview(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+\/status/)) {
         // at the moment there is no difference in how
         // the home route is handled and how threads are
         // handled
-        await runHome(settings, api);
-        await runProfilePreview(settings, api);
+        runHome(settings, api);
+        runProfilePreview(settings, api);
     } else if (pathname.match(profilePreviewRoutes)) {
-        await runProfilePreview(settings, api);
+        runProfilePreview(settings, api);
     } else if (pathname == '/notifications' || pathname == '/notifications/mentions') {
-        await runNotifications(settings, api);
-        await runProfilePreview(settings, api);
+        runNotifications(settings, api);
+        runProfilePreview(settings, api);
     } else if (pathname.match(/^\/[A-Za-z0-9_]+$/)) {
         const screenName = pathname.slice(1);
-        await runProfile(settings, api, screenName);
-        await runProfilePreview(settings, api);
+        runProfile(settings, api, screenName);
+        runProfilePreview(settings, api);
     } else {
         return errorHandle(`Unhandled route: ${pathname}`);
     }
