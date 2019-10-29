@@ -233,7 +233,7 @@ export const createPopupHTML = (
             <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
                 <use xlink:href="#HiveExtension-icon-bee" />
             </svg>
-            <a href="https://hive.one/p/${screenName}/" target='__blank'>
+            <a href="https://hive.one/p/${screenName}?ref=hive-extension" target='__blank'>
                 Learn more about this profile at hive.one
             </a>
         </div>
@@ -297,7 +297,7 @@ export const createHoverInjectedHTML = (
             <svg viewBox="0 0 36 36" class="${POPUP_CLASS}_credit_icon">
                 <use xlink:href="#HiveExtension-icon-bee" />
             </svg>
-            <a href="https://hive.one/p/${screenName}/" target='__blank'>
+            <a href="https://hive.one/p/${screenName}?ref=hive-extension" target='__blank'>
                 Learn more about ${ownProfile ? 'your' : 'this'} profile at hive.one
             </a>
         </div>
