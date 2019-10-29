@@ -125,6 +125,11 @@
 
         &_left {
             transform: translate(-125%, -60%);
+
+            &::after {
+                left: 110% !important;
+                transform: rotate(270deg) !important;
+            }
         }
 
         &::after {
