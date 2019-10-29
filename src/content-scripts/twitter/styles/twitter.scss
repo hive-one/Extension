@@ -123,6 +123,10 @@
         top: 50%;
         transform: translate(35%, -60%);
 
+        &_left {
+            transform: translate(-125%, -60%);
+        }
+
         &::after {
             content: '';
             position: absolute;

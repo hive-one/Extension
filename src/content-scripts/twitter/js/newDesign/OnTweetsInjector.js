@@ -4,10 +4,12 @@ import { TOOLTIP_CLASSNAMES } from '../../../../config';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 
-const createTweetScoreIcon = ({ display = '', tooltipText = '' }) => `
+const createTweetScoreIcon = ({ display = '', tooltipText = '', tweetId = '' }) => `
 <div class="${TWEET_AUTHOR_SCORE_CLASS} ${TOOLTIP_CLASSNAMES.TOOLTIP}">
     <span class="${TWEET_AUTHOR_SCORE_CLASS}-text">${display}</span>
-    <span class="${TOOLTIP_CLASSNAMES.TEXT} ${TOOLTIP_CLASSNAMES.TEXT}_tweet">${tooltipText}</span>
+    <span class="${TOOLTIP_CLASSNAMES.TEXT} ${TOOLTIP_CLASSNAMES.TEXT}_tweet ${
+    TOOLTIP_CLASSNAMES.TEXT
+}_${tweetId}">${tooltipText}</span>
 </div>
 `;
 
@@ -121,6 +123,23 @@ export default class {
         }
 
         authorImageContainer.appendChild(injectableIcon);
+
+        function sitsInsideTweet(parentNode, childNode) {
+            var parentRect = parentNode.getBoundingClientRect();
+            var childRect = childNode.getBoundingClientRect();
+
+            return parentRect.width + parentRect.left >= childRect.right;
+        }
+
+        let tooltip = document.querySelector(
+            `span[class="${TOOLTIP_CLASSNAMES.TEXT} ${TOOLTIP_CLASSNAMES.TEXT}_tweet ${
+                TOOLTIP_CLASSNAMES.TEXT
+            }_${tweetId}"]`,
+        );
+
+        if (!sitsInsideTweet(tweetNode, tooltip)) {
+            tooltip.classList.add(`${TOOLTIP_CLASSNAMES.TEXT}_tweet_left`);
+        }
     }
 
     createIcon(userData, nodeId, tweetId) {
@@ -148,7 +167,11 @@ export default class {
             );
         }
 
-        userScoreDisplay.innerHTML = createTweetScoreIcon({ display: iconContent, tooltipText: `In ${clusterName}` });
+        userScoreDisplay.innerHTML = createTweetScoreIcon({
+            display: iconContent,
+            tooltipText: `In ${clusterName}`,
+            tweetId,
+        });
         return userScoreDisplay;
     }
 
