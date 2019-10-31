@@ -41,12 +41,15 @@ const createScoreSection = clusters =>
         .join('');
 
 const createFollower = ({ node }) => {
-    const rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${
-        node.scores.node.rank ? node.scores.node.rank : ''
-    }</span>`;
-    const scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${node.scores.node.score.toFixed(
-        0,
-    )}</span>`;
+    let rankHTML = '';
+    let scoreHTML = '';
+
+    if (node.hasOwnProperty('scores')) {
+        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${
+            node.scores.node.rank ? node.scores.node.rank : ''
+        }</span>`;
+        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${node.scores.node.score.toFixed(0)}</span>`;
+    }
 
     return `
     <a href="https://twitter.com/${node.screenName}" class="${POPUP_CLASS}_followers_follower">

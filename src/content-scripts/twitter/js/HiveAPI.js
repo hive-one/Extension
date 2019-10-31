@@ -145,17 +145,17 @@ class HiveAPI {
         }
 
         // TODO: Reimplment this once follower score/rank is merged into the one API
-        let followersData = await this.getFollowersInfo(followers, followers.map(item => item.node.id), screenName);
+        // let followersData = await this.getFollowersInfo(followers, followers.map(item => item.node.id), screenName);
 
-        followers.forEach(follower => {
-            let followerData = followersData.find(item => {
-                return follower.node.id === item.twitter_id;
-            });
+        // followers.forEach(follower => {
+        //     let followerData = followersData.find(item => {
+        //         return follower.node.id === item.twitter_id;
+        //     });
 
-            follower.node.scores = followerData.scores.find(item => {
-                return item.node.name === clusterName;
-            });
-        });
+        //     follower.node.scores = followerData.scores.find(item => {
+        //         return item.node.name === clusterName;
+        //     });
+        // });
 
         podcasts =
             profile.podcasts.edges &&
