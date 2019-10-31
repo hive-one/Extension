@@ -1,5 +1,0 @@
-diff a/test/sum.test.js b/test/sum.test.js	(rejected hunks)
-@@ -3 +3 @@ test('This is just a test baby', () => {
--})
-\ No newline at end of file
-+});
