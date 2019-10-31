@@ -8,7 +8,8 @@
         "build-dev": "cross-env NODE_ENV=development webpack",
         "dev": "cross-env NODE_ENV=development webpack --watch",
         "lint": "eslint .",
-        "lint-fix": "eslint . --fix"
+        "lint-fix": "eslint . --fix",
+        "test": "jest"
     },
     "author": "Daniel Kmak",
     "license": "MIT",
@@ -31,6 +32,8 @@
         "eslint-plugin-promise": "4.0.1",
         "html-webpack-plugin": "3.2.0",
         "husky": "1.3.1",
+        "jest": "^24.9.0",
+        "jest-environment-selenium": "^2.1.2",
         "lint-staged": "8.1.5",
         "node-sass": "^4.12.0",
         "prettier": "1.16.4",
@@ -43,7 +46,8 @@
     "dependencies": {
         "@babel/runtime": "7.3.4",
         "escape-html": "1.0.3",
-        "moment": "2.24.0"
+        "moment": "2.24.0",
+        "selenium-webdriver": "^4.0.0-alpha.5"
     },
     "lint-staged": {
         "*.js": [
@@ -85,5 +89,9 @@
         "semi": true,
         "tabWidth": 4,
         "trailingComma": "all"
+    },
+    "jest": {
+        "testEnvironment": "jest-environment-selenium",
+        "setupTestFrameworkScriptFile": "jest-environment-selenium/dist/setup.js"
     }
 }
