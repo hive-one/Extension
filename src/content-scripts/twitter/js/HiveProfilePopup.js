@@ -151,7 +151,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             }
 
             if (!sitsInsideWindow(popupNode)) {
-                alert('Does not fit inside window!');
+                popupNode.style.left = 'auto';
             }
         };
 
