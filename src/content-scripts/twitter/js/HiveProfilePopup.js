@@ -15,6 +15,13 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             event.stopPropagation();
         }
 
+        // Check to see if a a twitter profile hover is available
+        let profilePopups = document.getElementsByClassName('r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-184en5c');
+
+        if (profilePopups.length !== 0) {
+            return;
+        }
+
         // let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
         let acceptedPermissions = true;
 
