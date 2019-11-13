@@ -44,11 +44,9 @@ const createFollower = ({ node }) => {
     let rankHTML = '';
     let scoreHTML = '';
 
-    if (node.hasOwnProperty('scores')) {
-        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${
-            node.scores.node.rank ? node.scores.node.rank : ''
-        }</span>`;
-        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${node.scores.node.score.toFixed(0)}</span>`;
+    if (node.hasOwnProperty('score') && node.hasOwnProperty('score')) {
+        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${node.rank ? node.rank : ''}</span>`;
+        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${node.score.toFixed(0)}</span>`;
     }
 
     return `

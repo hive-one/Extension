@@ -76,8 +76,13 @@ export default class {
             throw new Error('Failed finding adjacent classNames in profileActionsList');
         }
 
+        let styles = { top: '254px', right: 0 };
+
         profileNavIcon.id = PROILE_NAV_ICON_ID;
         profileNavIcon.className = adjacentClasses;
+        if (this.settings.isDarkTheme()) {
+            profileNavIcon.classList.add(`HiveExtension_Twitter_ProfileNav_dark`);
+        }
         profileNavIcon.innerHTML = createNavIconHTML({ display: iconContent, tooltipText: `In ${clusterName}` });
         profileNavIcon.dataset.screenName = this.screenName;
 
@@ -89,7 +94,7 @@ export default class {
             profileNavIcon,
             profileImageAnchor.parentNode.parentNode.parentNode.parentNode,
             POPUP_ID,
-            { top: '254px', right: 0 },
+            styles,
         );
 
         profileActionsList.insertBefore(profileNavIcon, profileActionsList.firstChild);
