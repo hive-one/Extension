@@ -102,12 +102,6 @@ export default class {
         // Create popup
         const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${tweetId}`;
         const authorImageAnchor = this.getAuthorImageAnchor(tweetNode, screenName);
-        const popupStyles = this.createPopupStyles(tweetNode, authorImageAnchor);
-
-        // TODO: Come up with a more friendly way to introduce this feature to users
-        // authorImageAnchor.style.border = '3px solid #574dff';
-
-        await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
 
         if (document.getElementById(ICON_ID)) return;
 
@@ -123,6 +117,13 @@ export default class {
         }
 
         authorImageContainer.appendChild(injectableIcon);
+
+        const popupStyles = this.createPopupStyles(injectableIcon, authorImageAnchor);
+
+        // TODO: Come up with a more friendly way to introduce this feature to users
+        // authorImageAnchor.style.border = '3px solid #574dff';
+
+        await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
 
         function sitsInsideTweet(parentNode, childNode) {
             var parentRect = parentNode.getBoundingClientRect();
@@ -184,7 +185,7 @@ export default class {
 
         const tweetRect = tweetNode.getBoundingClientRect();
         const left = tweetRect.left + 'px';
-        const top = authorImageRect.top + window.pageYOffset + 80 + 'px';
+        const top = authorImageRect.top + window.pageYOffset + 40 + 'px';
         return { top, left };
     }
 

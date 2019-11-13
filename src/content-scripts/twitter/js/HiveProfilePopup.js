@@ -4,7 +4,6 @@ import { createPopupHTML } from './HTMLSnippets';
 const createHiveProfilePopup = async (settings, userData, clickableNode, appendableNode, popupId, popupStyles) => {
     // clickableNode = node that triggers the popup being created
     // appendableNode = node that popup is injected to
-
     const { screenName, userName, imageUrl, podcasts, followers, scores } = userData;
 
     const popUpExists = () => !!document.getElementById(popupId);
@@ -144,6 +143,16 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
 
                 document.addEventListener('click', closePopup);
             }, 0);
+
+            function sitsInsideWindow(childNode) {
+                var childRect = childNode.getBoundingClientRect();
+
+                return window.innerWidth >= childRect.right;
+            }
+
+            if (!sitsInsideWindow(popupNode)) {
+                alert('Does not fit inside window!');
+            }
         };
 
         const getBackgroundColor = () => {
