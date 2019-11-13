@@ -67,7 +67,11 @@ class HiveAPI {
             }
 
             if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
-                const res = await this.fetchInBackgroundContext(url);
+                const res = await this.fetchInBackgroundContext(url, {
+                    headers: {
+                        Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
+                    },
+                });
                 if (res.error) {
                     throw new Error(res.error);
                 }
@@ -144,19 +148,6 @@ class HiveAPI {
             // followers = selectedCluster.followers.edges;
         }
 
-        // TODO: Reimplment this once follower score/rank is merged into the one API
-        // let followersData = await this.getFollowersInfo(followers, followers.map(item => item.node.id), screenName);
-
-        // followers.forEach(follower => {
-        //     let followerData = followersData.find(item => {
-        //         return follower.node.id === item.twitter_id;
-        //     });
-
-        //     follower.node.scores = followerData.scores.find(item => {
-        //         return item.node.name === clusterName;
-        //     });
-        // });
-
         podcasts =
             profile.podcasts.edges &&
             profile.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
@@ -191,6 +182,7 @@ class HiveAPI {
                     body: JSON.stringify({ ids: followersIds }),
                     headers: {
                         'Content-Type': 'application/json',
+                        Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
                     },
                 });
                 if (res.error) {
@@ -256,7 +248,11 @@ class HiveAPI {
         // Immediately save requests to state to prevent duplicate requests
         let responsePromise = this._requestsMap[idOrScreenName];
         if (!responsePromise) {
-            responsePromise = this.fetchInBackgroundContext(url);
+            responsePromise = this.fetchInBackgroundContext(url, {
+                headers: {
+                    Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
+                },
+            });
             this._requestsMap[idOrScreenName] = responsePromise;
         }
 
