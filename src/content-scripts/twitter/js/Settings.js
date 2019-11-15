@@ -3,7 +3,7 @@ import { DISPLAY_TYPES } from '../../../config';
 class ExtensionSettings {
     isNewTwitterDesign;
     constructor() {
-        this.isNewTwitterDesign = this.getIsNewTwitterDesign;
+        this.isNewTwitterDesign = this.getIsNewTwitterDesign();
         return new Promise(async resolve => {
             this.clusterToDisplay = await this.getOptionValue('clusterToDisplay');
             this.showScoreOnTweets = await this.getOptionValue('showScoreOnTweets');
