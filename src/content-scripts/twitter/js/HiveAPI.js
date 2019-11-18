@@ -148,9 +148,11 @@ class HiveAPI {
             // followers = selectedCluster.followers.edges;
         }
 
-        podcasts =
-            profile.podcasts.edges &&
-            profile.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+        if (profile.hasOwnProperty('podcasts')) {
+            podcasts =
+                profile.podcasts.edges &&
+                profile.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
+        }
 
         indexed = true;
 
