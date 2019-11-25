@@ -9,7 +9,8 @@
         "cookies",
         "https://twitter.com/*",
         "https://hive.one/*",
-        "https://top.us16.list-manage.com/subscribe/post-json?u=ceb4e009307c8f47c4d2ddfb2&amp;id=dd29d770c2&EMAIL=*"
+        "https://top.us16.list-manage.com/subscribe/post-json?u=ceb4e009307c8f47c4d2ddfb2&amp;id=dd29d770c2&EMAIL=*",
+        "tabs"
     ],
     "browser_specific_settings": {
       "gecko": {

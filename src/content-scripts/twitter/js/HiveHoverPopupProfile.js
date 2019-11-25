@@ -15,8 +15,7 @@ const createHiveHoverPopupProfile = async (
 
     const popUpExists = () => !!document.getElementById(popupId);
 
-    // let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
-    let acceptedPermissions = true;
+    let acceptedPermissions = await settings.getOptionValue('HiveExtension:acceptedPermissions');
 
     let popupNode;
 

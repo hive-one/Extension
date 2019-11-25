@@ -107,78 +107,11 @@ const createPodcastsSection = podcasts => {
     `;
 };
 
-const createPermissionsOverlay = (small = false) => {
-    return `
-    <div id='hive-permissions-overlay' class="${POPUP_CLASS}_permissions_overlay ${
-        small ? `${POPUP_CLASS}_permissions_overlay_small` : ''
-    }">
-        <div>
-            <h3 class="${POPUP_CLASS}_permissions_overlay_heading">Hey, we <strong>anonymously</strong> track usage data as well as send error logs for diagnostics.</h3>
-            <h3 class="${POPUP_CLASS}_permissions_overlay_heading">Is this cool?</h3>
-        </div>
-        <ul class="${POPUP_CLASS}_permissions_overlay_permissions_list">
-            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item">
-                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
-                    <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Google Analytics</h4>
-                    <span>(Usage Data)</span>
-                </div>
-                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_right">
-                    <label class="toggle">
-                        <input class="toggle-checkbox" type="checkbox" checked>
-                        <div class="toggle-switch"></div>
-                    </label>
-                </div>
-            </li>
-            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item">
-                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
-                    <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Amplitude</h4>
-                    <span>(Usage Data)</span>
-                </div>
-                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_right">
-                    <label class="toggle">
-                        <input class="toggle-checkbox" type="checkbox" checked>
-                        <div class="toggle-switch"></div>
-                    </label>
-                </div>
-            </li>
-            <li class="${POPUP_CLASS}_permissions_overlay_permissions_list_item" style='margin-block-end: 0;'>
-                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_left">
-                    <h4 class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_heading">Rollbar</h4>
-                    <span>(Error Logging)</span>
-                </div>
-                <div class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_right">
-                    <label class="toggle">
-                        <input class="toggle-checkbox" type="checkbox" checked>
-                        <div class="toggle-switch"></div>
-                    </label>
-                </div>
-            </li>
-
-            <li>
-                <a class="${POPUP_CLASS}_permissions_overlay_permissions_list_item_link" href='https://hive.one/privacy-policy/' target='__blank'>Privacy Policy</a>
-            </li>
-        </ul>
-        <button class="${POPUP_CLASS}_permissions_overlay_submit_btn" id='permissions-submit-btn'>
-            Accept
-        </button>
-    </div>
-    `;
-};
-
-export const createPopupHTML = (
-    screenName,
-    userName,
-    imageURL,
-    scores,
-    followers,
-    podcasts,
-    acceptedPermissions = true,
-) => {
+export const createPopupHTML = (screenName, userName, imageURL, scores, followers, podcasts) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
     let PODCASTS_TAB_HTML = '';
-    let PERMISSIONS_OVERLAY_HTML = '';
 
     if (followers) {
         console.log(followers);
@@ -192,12 +125,7 @@ export const createPopupHTML = (
         </div>`;
     }
 
-    if (!acceptedPermissions) {
-        PERMISSIONS_OVERLAY_HTML = createPermissionsOverlay();
-    }
-
     return `
-        ${PERMISSIONS_OVERLAY_HTML}
         <div>
             <div class="${POPUP_CLASS}_user_info_avatar">
                 <img src='${imageURL}' />
@@ -241,19 +169,11 @@ export const createPopupHTML = (
     `;
 };
 
-export const createHoverInjectedHTML = (
-    screenName,
-    scores,
-    followers,
-    podcasts,
-    ownProfile = false,
-    acceptedPermissions = true,
-) => {
+export const createHoverInjectedHTML = (screenName, scores, followers, podcasts, ownProfile = false) => {
     let SCORES_HTML = createScoreSection(scores);
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
     let PODCASTS_TAB_HTML = '';
-    let PERMISSIONS_OVERLAY_HTML = '';
 
     if (followers) {
         FOLLOWERS_HTML = createFollowersSection(followers);
@@ -265,12 +185,8 @@ export const createHoverInjectedHTML = (
             <span>Podcasts</span>
         </div>`;
     }
-    if (!acceptedPermissions) {
-        PERMISSIONS_OVERLAY_HTML = createPermissionsOverlay(true);
-    }
 
     return `
-        ${PERMISSIONS_OVERLAY_HTML}
         <br />
         <div class="${POPUP_CLASS}_tabs">
             <div id="scores_tab_btn" class="${POPUP_CLASS}_tab">

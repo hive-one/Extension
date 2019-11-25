@@ -1,4 +1,18 @@
 import { CONFIG, GA_TYPES } from '../config';
+import amplitude from 'amplitude-js/amplitude';
+
+const Rollbar = require('rollbar');
+const rollbar = new Rollbar({
+    accessToken: '3765e03d2f29410f91bf833d67cc2a5c',
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+});
+
+if (process.env.NODE_ENV === 'development') {
+    amplitude.getInstance().init('b9aea2974d2570a3443be6100a01777f');
+} else {
+    amplitude.getInstance().init('284c6c9c6469b7ac797fdf3fc4a83c52');
+}
 
 /* global ga */
 
@@ -16,11 +30,16 @@ chrome.runtime.onInstalled.addListener(function() {
         });
     });
 
-    chrome.storage.sync.get('acceptedPermissions', result => {
-        if (typeof result.acceptedPermissions === 'undefined') {
+    chrome.storage.sync.get('HiveExtension:acceptedPermissions', result => {
+        if (typeof result['HiveExtension:acceptedPermissions'] === 'undefined') {
             chrome.storage.sync.set({
-                acceptedPermissions: false,
+                'HiveExtension:acceptedPermissions': false,
             });
+            chrome.tabs.create({ url: chrome.runtime.getURL('index.html#permissions') });
+        } else {
+            if (result['HiveExtension:acceptedPermissions'] === false) {
+                amplitude.getInstance().setOptOut(true);
+            }
         }
     });
 
@@ -87,6 +106,16 @@ async function fetchURL(url, options, callback) {
     }
 }
 
+function sendAnalyticsEvent(category, action) {
+    chrome.storage.sync.get('HiveExtension:acceptedPermissions', result => {
+        if (result['HiveExtension:acceptedPermissions'] === true) {
+            console.log(category, action);
+            amplitude.getInstance().logEvent(action);
+            ga('send', 'event', category, action);
+        }
+    });
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case GA_TYPES.TRACK_EVENT:
@@ -95,7 +124,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     `Missing props on request object: action: ${request.action} category: ${request.category}`,
                 );
             }
-            ga('send', 'event', request.category, request.action);
+            sendAnalyticsEvent(request.category, request.action);
             break;
         case GA_TYPES.FETCH:
             fetchURL(request.url, request.options, sendResponse);
@@ -105,5 +134,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ type: 'nightModeCookie', value: cookie ? cookie.value : 0 });
             });
             return true;
+        case 'LOG_ERROR':
+            if (request.err) {
+                rollbar.log(request.err);
+            }
     }
 });

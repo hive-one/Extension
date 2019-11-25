@@ -21,8 +21,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
             return;
         }
 
-        // let acceptedPermissions = await settings.getOptionValue('acceptedPermissions');
-        let acceptedPermissions = true;
+        let acceptedPermissions = await settings.getOptionValue('HiveExtension:acceptedPermissions');
 
         const removePopupElement = () => {
             document.removeEventListener('click', closePopup);
@@ -70,7 +69,7 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
                         .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
                 }
 
-                if (!ignoreAnalyticsEvent) {
+                if (typeof ignoreAnalyticsEvent == typeof {}) {
                     const ACTION_NAME = 'popup-clicked-scores-tab';
                     chrome.runtime.sendMessage({
                         type: GA_TYPES.TRACK_EVENT,
@@ -177,13 +176,6 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
         }
 
         renderPopupElement(popupNode);
-
-        const ACTION_NAME = 'popup-opened-in-profile-header';
-        chrome.runtime.sendMessage({
-            type: GA_TYPES.TRACK_EVENT,
-            category: 'plugin-interactions',
-            action: ACTION_NAME,
-        });
     };
 
     clickableNode.addEventListener('click', displayPopup, false);

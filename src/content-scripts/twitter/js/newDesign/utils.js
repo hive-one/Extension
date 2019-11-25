@@ -115,9 +115,11 @@ export const stringToHash = str => {
 };
 
 export const errorHandle = err => {
+    chrome.runtime.sendMessage({
+        type: 'LOG_ERROR',
+        err,
+    });
     if (process.env.NODE_ENV === 'development') {
         throw new Error(err);
-    } else {
-        return;
     }
 };

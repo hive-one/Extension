@@ -1,6 +1,6 @@
 import createHiveProfilePopup from '../HiveProfilePopup';
 import { depthFirstNodeSearch, displayRank, displayScore, stringToHash, errorHandle } from './utils';
-import { TOOLTIP_CLASSNAMES } from '../../../../config';
+import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../config';
 
 const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
 
@@ -69,6 +69,24 @@ export default class {
         if (document.getElementById(ICON_ID)) return;
         const authorImageContainer = authorImageAnchor.parentNode;
         authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
+
+        injectableIcon.addEventListener('click', () => {
+            const ACTION_NAME = 'popup-opened-in-profile-preview';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
+        });
+
+        injectableIcon.addEventListener('mouseenter', () => {
+            const ACTION_NAME = 'rank/score-hovered-in-profile-preview';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
+        });
     }
 
     createIcon(userData, nodeId) {

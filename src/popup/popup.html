@@ -3,49 +3,166 @@
   <head>
   </head>
   <body>
-        <h3>Hive.one</h3>
-        <p>Please reload Twitter page after changing these settings.</p>
-        <div class="HiveExtension-options_option">
-            <div class="HiveExtension-options_option_title">Show Score On Tweets</div>
-            <input class="HiveExtension-options_option_toggle" id="show-score-on-tweets" type="checkbox"/>
-          </div>
-        <div class="HiveExtension-options_option">
-          <div class="HiveExtension-options_option_title">Display Settings</div>
-          <select class="HiveExtension-options_option_select" id="display-settings-select">
-            <option value="showRanksWithScoreFallback">Show ranks with score fallback</option>
-            <option value="showScores">Show users score</option>
-            <option value="showRanks">Show users rank</option>
-            <option value="showIcons">Show icons</option>
-          </select>
+        <div id='popup'>
+            <h3>Hive.one</h3>
+            <p>Please reload Twitter page after changing these settings.</p>
+            <div class="HiveExtension-options_option">
+                <div class="HiveExtension-options_option_title">Show Score On Tweets</div>
+                <input class="HiveExtension-options_option_toggle" id="show-score-on-tweets" type="checkbox"/>
+              </div>
+            <div class="HiveExtension-options_option">
+              <div class="HiveExtension-options_option_title">Display Settings</div>
+              <select class="HiveExtension-options_option_select" id="display-settings-select">
+                <option value="showRanksWithScoreFallback">Show ranks with score fallback</option>
+                <option value="showScores">Show users score</option>
+                <option value="showRanks">Show users rank</option>
+                <option value="showIcons">Show icons</option>
+              </select>
+            </div>
+            <br/>
+            <div class="HiveExtension-options_option">
+              <div class="HiveExtension-options_option_title">Cluster Options</div>
+              <div>Scores & ranks to show on profiles & tweets</div>
+              <select class="HiveExtension-options_option_select" id="cluster-options-select">
+                <option value="Crypto">Show me Crypto</option>
+                <option value="Highest">Show me whichever is highest</option>
+                <option value="BTC">Show me BTC</option>
+                <option value="ETH">Show me ETH</option>
+                <option value="XRP">Show me XRP</option>
+              </select>
+            </div>
+            <br/>
+            <div class="HiveExtension-options_option">
+                <div class="HiveExtension-options_option_title">Top Followers Cluster</div>
+                <select class="HiveExtension-options_option_select" id="top-followers-cluster-select">
+                  <option value="Crypto">Crypto</option>
+                  <option value="BTC">BTC</option>
+                  <option value="ETH">ETH</option>
+                  <option value="XRP">XRP</option>
+                  <option value="Highest">Cluster with the highest values</option>
+                </select>
+              </div>
+              <br/>
+            <div class="HiveExtension-options_option" id="newsletter-option">
+              <div class="HiveExtension-options_option_title">Subscribe To Newsletter</div>
+              <input class="HiveExtension-options_option_input" placeholder="Enter your email" id="newsletter-email" />
+              <button class="HiveExtension-options_option_button" id="newsletter-subscribe">Subscribe</button>
+            </div>
         </div>
-        <br/>
-        <div class="HiveExtension-options_option">
-          <div class="HiveExtension-options_option_title">Cluster Options</div>
-          <div>Scores & ranks to show on profiles & tweets</div>
-          <select class="HiveExtension-options_option_select" id="cluster-options-select">
-            <option value="Crypto">Show me Crypto</option>
-            <option value="Highest">Show me whichever is highest</option>
-            <option value="BTC">Show me BTC</option>
-            <option value="ETH">Show me ETH</option>
-            <option value="XRP">Show me XRP</option>
-          </select>
-        </div>
-        <br/>
-        <div class="HiveExtension-options_option">
-            <div class="HiveExtension-options_option_title">Top Followers Cluster</div>
-            <select class="HiveExtension-options_option_select" id="top-followers-cluster-select">
-              <option value="Crypto">Crypto</option>
-              <option value="BTC">BTC</option>
-              <option value="ETH">ETH</option>
-              <option value="XRP">XRP</option>
-              <option value="Highest">Cluster with the highest values</option>
-            </select>
+
+        <div class="HiveExtension-permissions" id='permissions'>
+          <img class="logo" src='images/logo.png' />
+          <div class="HiveExtension-permissions-window">
+            <div id='permissions-accept-or-deny'>
+                <section class="HiveExtension-permissions-window-info-section">
+                    <h1>Hey &#128075;</h1>
+                    <h2>We <strong>anonymously</strong> track usage data.</h2>
+                    <h2>We <strong>never</strong> track your usage outside of the extension</h2>
+                    <br>
+                    <h2>If you don't want to be tracked, that's okay.</h2>
+                    <h2>Press "Don't track me" below and the extension will still work with tracking disabled &#128077;</h2>
+                  </section>
+                  <section class="HiveExtension-permissions-window-cta-section">
+                    <div class="privacy-policy-link">
+                      <p>Hive.one's <a href='https://hive.one/privacy-policy/' target='__blank'>Privacy Policy</a></p>
+                    </div>
+                    <div class="buttons">
+                        <button id='privacy-policy-cta-deny' class="button-danger">
+                            Don't track me
+                        </button>
+                        <button id='privacy-policy-cta-agree' class="button-success">
+                            I accept
+                        </button>
+                    </div>
+                  </section>
+            </div>
+
+            <div id='permissions-accepted'>
+                <section class="HiveExtension-permissions-window-info-section">
+                    <h1>Great thanks &#128077;</h1>
+                    <h2>Our extension currently overlays our data onto twitter.</h2>
+                    <br>
+                    <h2>To learn more, press below</h2>
+                    <h2>Otherwise go to <a href='https://twitter.com' target='__blank'>twitter</a> and start exploring</h2>
+                  </section>
+                  <section class="HiveExtension-permissions-window-cta-section">
+                      <div class="buttons">
+                          <button data-id='privacy-policy-continue-with-tutorial' class="button-success">
+                              Learn More
+                          </button>
+                      </div>
+                    </section>
+            </div>
+
+            <div id='permissions-denied'>
+                <section class="HiveExtension-permissions-window-info-section">
+                    <h1>No worries &#128077;</h1>
+                    <h2>Everything will still work the same!</h2>
+                    <h2>Our extension currently overlays our data onto twitter.</h2>
+                    <br>
+                    <h2>To learn more, press below</h2>
+                    <h2>Otherwise go to <a href='https://twitter.com' target='__blank'>twitter</a> and start exploring</h2>
+                  </section>
+                  <section class="HiveExtension-permissions-window-cta-section">
+                      <div class="buttons">
+                          <button data-id='privacy-policy-continue-with-tutorial' class="button-success">
+                              Learn More
+                          </button>
+                      </div>
+                    </section>
+            </div>
+
+            <div id='permissions-tutorial-score'>
+                <section class="HiveExtension-permissions-window-info-section">
+                    <img class="tutorial-gif" src="images/score.gif" />
+                    <br>
+                    <h2>Certain tweets and profiles will have a little number attatched to them.
+                        This is their Hive Score/Rank.</h2>
+                        
+                    <h2>You can click this score to get a detailed view</h2>
+                  </section>
+                  <section class="HiveExtension-permissions-window-cta-section">
+                      <div class="buttons">
+                          <button id='privacy-policy-continue-to-profile' class="button-continue">
+                              Continue
+                          </button>
+                      </div>
+                    </section>
+            </div>
+
+            <div id='permissions-tutorial-profile'>
+                <section class="HiveExtension-permissions-window-info-section">
+                    <img class="tutorial-gif" src="images/profile.gif" />
+                    <br>
+                    <h2>When you visit a profile, there is a circle at the very top displaying that profile's rank/score</h2>
+                        
+                    <h2>You can click this score to get a detailed view</h2>
+                  </section>
+                  <section class="HiveExtension-permissions-window-cta-section">
+                      <div class="buttons">
+                          <button id='privacy-policy-continue-to-hover' class="button-continue">
+                              Continue
+                          </button>
+                      </div>
+                    </section>
+            </div>
+
+            <div id='permissions-tutorial-hover'>
+                <section class="HiveExtension-permissions-window-info-section">
+                    <img class="tutorial-gif" src="images/hover.gif" />
+                    <br>
+                    <h2>We also inject our data when you hover over a profile</h2>
+                  </section>
+                  <section class="HiveExtension-permissions-window-cta-section">
+                      <div class="buttons">
+                          <button id='privacy-policy-finish' class="button-success">
+                              Finish
+                          </button>
+                      </div>
+                    </section>
+            </div>
+
           </div>
-          <br/>
-        <div class="HiveExtension-options_option" id="newsletter-option">
-          <div class="HiveExtension-options_option_title">Subscribe To Newsletter</div>
-          <input class="HiveExtension-options_option_input" placeholder="Enter your email" id="newsletter-email" />
-          <button class="HiveExtension-options_option_button" id="newsletter-subscribe">Subscribe</button>
         </div>
   </body>
 </html>

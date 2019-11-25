@@ -2,7 +2,7 @@
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
 import createHiveProfilePopup from '../HiveProfilePopup';
 import { waitUntilResult, getProfileImage, displayRank, displayScore, errorHandle } from './utils';
-import { TOOLTIP_CLASSNAMES } from '../../../../config';
+import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../config';
 
 const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 
@@ -96,6 +96,24 @@ export default class {
             POPUP_ID,
             styles,
         );
+
+        profileNavIcon.addEventListener('click', () => {
+            const ACTION_NAME = 'popup-opened-in-profile-header';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
+        });
+
+        profileNavIcon.addEventListener('mouseenter', () => {
+            const ACTION_NAME = 'rank/score-hovered-in-profile-header';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
+        });
 
         profileActionsList.insertBefore(profileNavIcon, profileActionsList.firstChild);
     }

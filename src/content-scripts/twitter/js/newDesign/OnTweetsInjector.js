@@ -1,6 +1,6 @@
 import createHiveProfilePopup from '../HiveProfilePopup';
 import { waitUntilResult, getTweets, depthFirstNodeSearch, displayRank, displayScore, errorHandle } from './utils';
-import { TOOLTIP_CLASSNAMES } from '../../../../config';
+import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../config';
 
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 
@@ -141,6 +141,24 @@ export default class {
         if (!sitsInsideTweet(tweetNode, tooltip)) {
             tooltip.classList.add(`${TOOLTIP_CLASSNAMES.TEXT}_tweet_left`);
         }
+
+        injectableIcon.addEventListener('click', () => {
+            const ACTION_NAME = 'popup-opened-in-tweet';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
+        });
+
+        injectableIcon.addEventListener('mouseenter', () => {
+            const ACTION_NAME = 'rank/score-hovered-in-tweet';
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: ACTION_NAME,
+            });
+        });
     }
 
     createIcon(userData, nodeId, tweetId) {
