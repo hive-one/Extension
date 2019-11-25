@@ -142,6 +142,7 @@ body {
   min-width: 100vw;
   min-height: 100vh;
   background: linear-gradient(180deg, #817AFF 0%, #574DFF 100%);
+  margin: 0;
 }
 
 #permissions-accept-or-deny, #permissions-accepted, #permissions-denied, #permissions-tutorial-score, #permissions-tutorial-profile, #permissions-tutorial-hover  {
@@ -250,6 +251,7 @@ body {
           width: 182px;
           height: 55px;
           background: #3D88F7;
+          border: none;
           border-radius: 5px;
           font-family: Helvetica Neue;
           font-style: normal;
