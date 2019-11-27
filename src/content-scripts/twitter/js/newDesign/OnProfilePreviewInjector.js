@@ -64,7 +64,15 @@ export default class {
         const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
         const popupStyles = this.createPopupStyles(previewNode, authorImageAnchor);
 
-        await createHiveProfilePopup(this.settings, userData, injectableIcon, document.body, POPUP_ID, popupStyles);
+        await createHiveProfilePopup(
+            this.settings,
+            userData,
+            injectableIcon,
+            document.body,
+            POPUP_ID,
+            popupStyles,
+            true,
+        );
 
         if (document.getElementById(ICON_ID)) return;
         const authorImageContainer = authorImageAnchor.parentNode;

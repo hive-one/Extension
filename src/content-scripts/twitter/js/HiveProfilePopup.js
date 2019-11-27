@@ -1,7 +1,15 @@
 import { GA_TYPES } from '../../../config';
 import { createPopupHTML } from './HTMLSnippets';
 
-const createHiveProfilePopup = async (settings, userData, clickableNode, appendableNode, popupId, popupStyles) => {
+const createHiveProfilePopup = async (
+    settings,
+    userData,
+    clickableNode,
+    appendableNode,
+    popupId,
+    popupStyles,
+    profilePreview = false,
+) => {
     // clickableNode = node that triggers the popup being created
     // appendableNode = node that popup is injected to
     const { screenName, userName, imageUrl, podcasts, followers, scores } = userData;
@@ -143,14 +151,30 @@ const createHiveProfilePopup = async (settings, userData, clickableNode, appenda
                 document.addEventListener('click', closePopup);
             }, 0);
 
-            function sitsInsideWindow(childNode) {
-                var childRect = childNode.getBoundingClientRect();
+            function sitsInsideWindowWidth(childNode) {
+                let childRect = childNode.getBoundingClientRect();
 
                 return window.innerWidth >= childRect.right;
             }
 
-            if (!sitsInsideWindow(popupNode)) {
+            function sitsInsideWindowHeight(childNode) {
+                let childRect = childNode.getBoundingClientRect();
+
+                return window.innerHeight >= childRect.bottom;
+            }
+
+            if (profilePreview) {
+                let { top } = clickableNode.getBoundingClientRect();
+                popupNode.style.top = `${top + window.scrollY}px`;
+            }
+
+            if (!sitsInsideWindowWidth(popupNode)) {
                 popupNode.style.left = 'auto';
+            }
+
+            if (!sitsInsideWindowHeight(popupNode)) {
+                let { height } = popupNode.getBoundingClientRect();
+                popupNode.style.top = `${parseFloat(popupNode.style.top) - height - 40}px`;
             }
         };
 
