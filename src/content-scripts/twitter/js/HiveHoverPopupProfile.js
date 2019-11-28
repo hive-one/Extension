@@ -57,7 +57,7 @@ const createHiveHoverPopupProfile = async (
                     .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
             }
 
-            if (!ignoreAnalyticsEvent) {
+            if (typeof ignoreAnalyticsEvent == typeof {}) {
                 const ACTION_NAME = 'popup-clicked-scores-tab';
                 chrome.runtime.sendMessage({
                     type: GA_TYPES.TRACK_EVENT,
