@@ -3,6 +3,8 @@
 // import { CONFIG } from '../config';
 import './popup.scss';
 
+import { GA_TYPES } from '../config';
+
 const SETTINGS_SELECTS = [
     ['#cluster-options-select', 'clusterToDisplay'],
     ['#display-settings-select', 'displaySetting'],
@@ -68,6 +70,11 @@ SCORE_ON_TWEETS_CHECKBOX.addEventListener('click', event => {
 
                 document.getElementById('permissions-tutorial-score').style.display = 'flex';
                 // document.querySelector('div[class="HiveExtension-permissions-window"]').classList.add('HiveExtension-permissions-window-tutorial');
+                chrome.runtime.sendMessage({
+                    type: GA_TYPES.TRACK_EVENT,
+                    category: 'plugin-interactions',
+                    action: 'tutorial-continued-to-score',
+                });
             });
         });
 
@@ -76,6 +83,11 @@ SCORE_ON_TWEETS_CHECKBOX.addEventListener('click', event => {
 
             document.getElementById('permissions-tutorial-profile').style.display = 'flex';
             // document.querySelector('div[class="HiveExtension-permissions-window"]').classList.add('HiveExtension-permissions-window-tutorial');
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: 'tutorial-continued-to-profile',
+            });
         });
 
         document.getElementById('privacy-policy-continue-to-hover').addEventListener('click', () => {
@@ -83,10 +95,20 @@ SCORE_ON_TWEETS_CHECKBOX.addEventListener('click', event => {
 
             document.getElementById('permissions-tutorial-hover').style.display = 'flex';
             // document.querySelector('div[class="HiveExtension-permissions-window"]').classList.add('HiveExtension-permissions-window-tutorial');
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: 'tutorial-continued-to-hover',
+            });
         });
 
         document.getElementById('privacy-policy-finish').addEventListener('click', () => {
             window.location.replace('https://twitter.com');
+            chrome.runtime.sendMessage({
+                type: GA_TYPES.TRACK_EVENT,
+                category: 'plugin-interactions',
+                action: 'tutorial-finished',
+            });
         });
     } else {
         document.getElementById('popup').style.display = 'block';

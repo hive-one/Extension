@@ -109,7 +109,9 @@ async function fetchURL(url, options, callback) {
 function sendAnalyticsEvent(category, action) {
     chrome.storage.sync.get('HiveExtension:acceptedPermissions', result => {
         if (result['HiveExtension:acceptedPermissions'] === true) {
-            console.log(category, action);
+            if (process.env.NODE_ENV === 'development') {
+                console.log(category, action);
+            }
             amplitude.getInstance().logEvent(action);
             ga('send', 'event', category, action);
         }
