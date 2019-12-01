@@ -35,7 +35,7 @@ class HiveAPI {
     }
 
     get userDataUrl() {
-        return `${this.host}/api/influencers/profile/screen_name`;
+        return `${this.host}/api/influencers/scores/people/screen_name`;
     }
 
     get availableIdsKey() {
@@ -120,32 +120,36 @@ class HiveAPI {
         let profile;
 
         if (data.hasOwnProperty('data')) {
-            profile = data.data.profile;
+            if (data.data.hasOwnProperty('profile')) {
+                profile = data.data.profile;
+            } else {
+                profile = data.data;
+            }
         } else {
-            profile = data.profile;
+            profile = data;
         }
 
-        id = profile.id;
-        screenName = profile.screenName;
+        id = profile.twitter_id || profile.id;
+        screenName = profile.screenName || profile.screen_name;
         userName = profile.name;
         imageUrl = profile.imageUrl;
         description = profile.description;
         website = profile.website;
-        scores = profile.clusters.edges;
-        followers = profile.followers.edges;
+        scores = profile.scores;
+        // followers = profile.followers.edges;
 
         if (clusterName === CLUSTER_TYPES.HIGHEST) {
             const highestScoreCluster = scores.slice().sort((a, b) => b.score - a.score)[0];
 
             name = highestScoreCluster.abbr;
             score = highestScoreCluster.score;
-            rank = highestScoreCluster.history.edges[0].node.rank;
-            // followers = highestScoreCluster.followers.edges;
+            rank = highestScoreCluster.rank;
+            followers = highestScoreCluster.followers.edges;
         } else {
             const { node: selectedCluster } = scores.find(c => c.node.abbr === clusterName);
             score = selectedCluster.score;
-            rank = selectedCluster.history.edges[0].node.rank;
-            // followers = selectedCluster.followers.edges;
+            rank = selectedCluster.rank;
+            followers = selectedCluster.followers.edges;
         }
 
         if (profile.hasOwnProperty('podcasts')) {
