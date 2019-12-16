@@ -1,5 +1,5 @@
 export const CONFIG = Object.freeze({
-    API_HOST: 'https://hive.one',
+    API_HOST: 'http://3.120.237.41',
     DEFAULT_OPTIONS: {
         clusterToDisplay: 'Crypto',
         displaySetting: 'showRanks',

@@ -97,13 +97,23 @@ export default class {
             styles,
         );
 
-        profileNavIcon.addEventListener('click', () => {
+        profileNavIcon.addEventListener('click', async () => {
             const ACTION_NAME = 'popup-opened-in-profile-header';
             chrome.runtime.sendMessage({
                 type: GA_TYPES.TRACK_EVENT,
                 category: 'plugin-interactions',
                 action: ACTION_NAME,
             });
+
+            // Get podcasts data
+            // const podcastData = await this.api._requestUserPodcastData(this.screenName);
+            // console.log('PODCAST DATA', podcastData);
+            // var event = new CustomEvent('customEvent', {
+            //     detail: {
+            //         podcast: podcastData
+            //     }
+            // });
+            // profileNavIcon.dispatchEvent(event);
         });
 
         profileNavIcon.addEventListener('mouseenter', () => {

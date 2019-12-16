@@ -203,6 +203,9 @@ const createHiveProfilePopup = async (
     };
 
     clickableNode.addEventListener('click', displayPopup, false);
+    clickableNode.addEventListener('customEvent', event => {
+        console.log(event);
+    });
 };
 
 export default createHiveProfilePopup;

@@ -1,4 +1,5 @@
 import { GA_TYPES, CLUSTER_TYPES } from '../../../config';
+import { errorHandle } from './newDesign/utils';
 
 import { TEST_SCREEN_NAMES, TEST_DATA } from './testData';
 
@@ -8,7 +9,6 @@ const RESPONSE_TYPES = Object.freeze({
 });
 
 const AVAILABLE_SCREEN_NAMES_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_SCREEN_NAMES';
-const AVAILABLE_IDS_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_IDS';
 const FOLLOWERS_KEY = 'HiveAPI::TWITTER_FOLLOWERS';
 
 class HiveAPI {
@@ -35,7 +35,7 @@ class HiveAPI {
     }
 
     get userDataUrl() {
-        return `${this.host}/api/influencers/scores/people/screen_name`;
+        return `${this.host}/api/v1/influencers/screen_name`;
     }
 
     get availableIdsKey() {
@@ -43,7 +43,7 @@ class HiveAPI {
     }
 
     get availableIdsUrl() {
-        return `${this.host}/api/influencers/scores/people/available/screen_names/`;
+        return `${this.host}/api/v1/influencers/`;
     }
 
     async _initialize() {
@@ -57,10 +57,7 @@ class HiveAPI {
             // If a user accesses another design, that design's `available` array gets cached.
             if (cachedIds) {
                 if (cachedIds.available) {
-                    if (
-                        (key === AVAILABLE_SCREEN_NAMES_KEY && !isNaN(parseInt(cachedIds.available[0], 10))) ||
-                        (key === AVAILABLE_IDS_KEY && isNaN(parseInt(cachedIds.available[0], 10)))
-                    ) {
+                    if (typeof cachedIds.available[0] === 'string') {
                         delete cachedIds.available;
                     }
                 }
@@ -88,7 +85,7 @@ class HiveAPI {
 
             this._acceptableIds = cachedIds.available;
         } catch (err) {
-            console.error('Failed initializing HiveAPI\n', err);
+            errorHandle(`Failed initializing HiveAPI: ${JSON.stringify(err)}`);
         }
     }
 
@@ -114,23 +111,13 @@ class HiveAPI {
         const { data, status } = await this._getTwitterUserData(idOrScreenName);
 
         if (status !== RESPONSE_TYPES.SUCCESS || !data) {
-            throw new Error(`Failed getting data for for: ${idOrScreenName}`);
+            errorHandle(`Failed getting data for for: ${idOrScreenName}`);
         }
 
-        let profile;
+        let profile = data;
 
-        if (data.hasOwnProperty('data')) {
-            if (data.data.hasOwnProperty('profile')) {
-                profile = data.data.profile;
-            } else {
-                profile = data.data;
-            }
-        } else {
-            profile = data;
-        }
-
-        id = profile.twitter_id || profile.id;
-        screenName = profile.screenName || profile.screen_name;
+        id = profile.twitterId;
+        screenName = profile.screenName;
         userName = profile.name;
         imageUrl = profile.imageUrl;
         description = profile.description;
@@ -146,10 +133,10 @@ class HiveAPI {
             rank = highestScoreCluster.rank;
             followers = highestScoreCluster.followers.edges;
         } else {
-            const { node: selectedCluster } = scores.find(c => c.node.abbr === clusterName);
+            const selectedCluster = scores.find(c => c.abbr === clusterName);
             score = selectedCluster.score;
             rank = selectedCluster.rank;
-            followers = selectedCluster.followers.edges;
+            followers = selectedCluster.followers;
         }
 
         if (profile.hasOwnProperty('podcasts')) {
@@ -199,7 +186,7 @@ class HiveAPI {
             }
             followers = cachedFollowers.data.success;
         } catch (err) {
-            console.error('Failed to get follower data\n', err);
+            errorHandle('Failed to get follower data');
         }
         return followers;
     }
@@ -249,8 +236,42 @@ class HiveAPI {
         return resInfo;
     }
 
+    async _getTwitterUserPodcasts(idOrScreenName) {
+        // During dev, if the user is a test user return the test info instead.
+        if (process.env.NODE_ENV === 'development') {
+            if (TEST_DATA.hasOwnProperty(idOrScreenName)) {
+                return { data: TEST_DATA[idOrScreenName], status: RESPONSE_TYPES.SUCCESS };
+            }
+        }
+
+        // Tries pulling data from cache
+        // if not requests data from the API and caches it
+        const cacheKey = this.getUserPodcastsCacheKey(idOrScreenName);
+        const cachedData = await this.cache.get(cacheKey);
+
+        if (typeof cachedData !== 'undefined' && cachedData !== null) {
+            return cachedData;
+        }
+
+        let status;
+        const data = await this._requestUserPodcastData(idOrScreenName);
+        if (data) {
+            status = RESPONSE_TYPES.SUCCESS;
+        } else {
+            status = RESPONSE_TYPES.ERROR;
+        }
+
+        const resInfo = {
+            data,
+            status,
+        };
+        await this.cache.save(cacheKey, resInfo);
+
+        return resInfo;
+    }
+
     async _requestUserData(idOrScreenName) {
-        const url = `${this.userDataUrl}/${idOrScreenName}/`;
+        const url = `${this.userDataUrl}/${idOrScreenName}/?include_followers=1`;
         // Immediately save requests to state to prevent duplicate requests
         let responsePromise = this._requestsMap[idOrScreenName];
         if (!responsePromise) {
@@ -273,10 +294,43 @@ class HiveAPI {
             // pop from state
             delete this._requestsMap[idOrScreenName];
         } catch (err) {
-            console.error(err);
+            errorHandle(err);
         }
         if (!userData) {
-            throw new Error(`Failed requesting user data: ${idOrScreenName}`);
+            errorHandle(`Failed requesting user data: ${idOrScreenName}`);
+        }
+
+        return userData;
+    }
+
+    async _requestUserPodcastData(idOrScreenName) {
+        const url = `${this.userDataUrl}/${idOrScreenName}/podcasts/`;
+        // Immediately save requests to state to prevent duplicate requests
+        let responsePromise = this._requestsMap[idOrScreenName];
+        if (!responsePromise) {
+            responsePromise = this.fetchInBackgroundContext(url, {
+                headers: {
+                    Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
+                },
+            });
+            this._requestsMap[idOrScreenName] = responsePromise;
+        }
+
+        let userData;
+        try {
+            const res = await responsePromise;
+            if (res.error) {
+                throw new Error(res.error);
+            }
+            const { data } = res;
+            userData = data;
+            // pop from state
+            delete this._requestsMap[idOrScreenName];
+        } catch (err) {
+            errorHandle(err);
+        }
+        if (!userData) {
+            errorHandle(`Failed requesting user podcast data: ${idOrScreenName}`);
         }
 
         return userData;
@@ -286,12 +340,16 @@ class HiveAPI {
         return `twitter_user_${idOrScreenName}`;
     }
 
+    getUserPodcastsCacheKey(idOrScreenName) {
+        return `twitter_user_podcasts_${idOrScreenName}`;
+    }
+
     isIdentifierIndexed(idOrScreenName) {
         if (idOrScreenName.toString) {
             idOrScreenName = idOrScreenName.toString();
         }
 
-        return this._acceptableIds.includes(idOrScreenName);
+        return this._acceptableIds.map(item => item[1]).includes(idOrScreenName);
     }
 
     fetchInBackgroundContext(url, options = {}) {

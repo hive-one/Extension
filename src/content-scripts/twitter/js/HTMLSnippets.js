@@ -32,31 +32,31 @@ const createScoreRow = (clusterName, displayScore, scoreAsPercentage) => `
 
 const createScoreSection = clusters =>
     clusters
-        .map(({ node }) => {
-            const roundedScore = Math.round(node.score);
+        .map(item => {
+            const roundedScore = Math.round(item.score);
             const percentage = Math.floor((roundedScore / CONFIG.MAX_SCORE) * 100);
 
-            return createScoreRow(node.name, roundedScore, percentage);
+            return createScoreRow(item.name, roundedScore, percentage);
         })
         .join('');
 
-const createFollower = ({ node }) => {
+const createFollower = item => {
     let rankHTML = '';
     let scoreHTML = '';
 
-    if (node.hasOwnProperty('score') && node.hasOwnProperty('score')) {
-        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${node.rank ? node.rank : ''}</span>`;
-        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${node.score.toFixed(0)}</span>`;
+    if (item.hasOwnProperty('score') && item.hasOwnProperty('score')) {
+        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${item.rank ? item.rank : ''}</span>`;
+        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${item.score.toFixed(0)}</span>`;
     }
 
     return `
-    <a href="https://twitter.com/${node.screenName}" class="${POPUP_CLASS}_followers_follower">
+    <a href="https://twitter.com/${item.screenName}" class="${POPUP_CLASS}_followers_follower">
         ${rankHTML}
         <div class="${POPUP_CLASS}_followers_follower_user">
-            <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${node.imageUrl}' />
+            <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${item.imageUrl}' />
             <div class="${POPUP_CLASS}_followers_follower_user_info">
-                <span class="${POPUP_CLASS}_followers_follower_user_info_name">${node.name}</span>
-                <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${node.screenName}</span>
+                <span class="${POPUP_CLASS}_followers_follower_user_info_name">${item.name}</span>
+                <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${item.screenName}</span>
             </div>
         </div>
         ${scoreHTML}
@@ -112,6 +112,9 @@ export const createPopupHTML = (screenName, userName, imageURL, scores, follower
     let FOLLOWERS_HTML = '';
     let PODCASTS_HTML = '';
     let PODCASTS_TAB_HTML = '';
+    // let PODCASTS_TAB_HTML = `<div id="podcasts_tab_btn" class="${POPUP_CLASS}_tab">
+    //     <span>Podcasts</span>
+    // </div>`;
 
     if (followers) {
         console.log(followers);
@@ -119,10 +122,7 @@ export const createPopupHTML = (screenName, userName, imageURL, scores, follower
     }
 
     if (podcasts && podcasts.length) {
-        PODCASTS_HTML = createPodcastsSection(podcasts);
-        PODCASTS_TAB_HTML = `<div id="podcasts_tab_btn" class="${POPUP_CLASS}_tab">
-            <span>Podcasts</span>
-        </div>`;
+        // PODCASTS_HTML = createPodcastsSection(podcasts);
     }
 
     return `

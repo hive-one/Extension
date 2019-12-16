@@ -1,12 +1,12 @@
 import { CONFIG, GA_TYPES } from '../config';
 import amplitude from 'amplitude-js/amplitude';
 
-const Rollbar = require('rollbar');
-const rollbar = new Rollbar({
-    accessToken: '3765e03d2f29410f91bf833d67cc2a5c',
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-});
+// const Rollbar = require('rollbar');
+// const rollbar = new Rollbar({
+//     accessToken: '3765e03d2f29410f91bf833d67cc2a5c',
+//     captureUncaught: true,
+//     captureUnhandledRejections: true,
+// });
 
 if (process.env.NODE_ENV === 'development') {
     amplitude.getInstance().init('b9aea2974d2570a3443be6100a01777f');
@@ -99,6 +99,9 @@ async function fetchURL(url, options, callback) {
             data,
         });
     } catch (error) {
+        if (error.status == 420) {
+            console.log('being rate limited');
+        }
         callback({
             type: GA_TYPES.FETCH_FAILURE,
             error,
@@ -138,7 +141,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             return true;
         case 'LOG_ERROR':
             if (request.err) {
-                rollbar.log(request.err);
+                console.log(request.err);
             }
     }
 });
