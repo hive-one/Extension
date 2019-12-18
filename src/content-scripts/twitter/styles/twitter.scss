@@ -56,6 +56,7 @@
 .HiveExtension_Twitter_TweetAuthor-container {
     padding: 0 12px;
 }
+
 .HiveExtension_Twitter_TweetAuthor-text, .HiveExtension_Twitter_ProfilePreview-text {
     color: $twitter_grey;
     font-family: $twitter_font-family;
@@ -66,6 +67,13 @@
         color: $purple_one;
         transition-duration: 0.2s;
     }
+}
+
+.HiveExtension_Twitter_TweetAuthor-text {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 6px;
+    line-height: 18px;
 }
 
 .HiveExtension_Twitter_TweetAuthor-icon, .HiveExtension_Twitter_ProfilePreview-icon {

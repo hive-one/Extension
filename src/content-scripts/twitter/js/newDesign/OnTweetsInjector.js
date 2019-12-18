@@ -61,7 +61,7 @@ export default class {
                             throw new Error(`Found unrecognisable <article> ${tweetNode.outerHTML}`);
                         }
                         let pathnameMatch = r.exec(location.pathname);
-                        await this.injectOntoTweet(tweetNode, screenNameMatch[2], pathnameMatch[2]);
+                        this.injectOntoTweet(tweetNode, screenNameMatch[2], pathnameMatch[2]);
                         continue;
                     } else {
                         tweetNode.classList.add('promoted');
@@ -78,7 +78,7 @@ export default class {
                 if (tweetNode.innerHTML.match(/ Retweeted/)) {
                     uniqueId += '-retweeted';
                 }
-                await this.injectOntoTweet(tweetNode, screenName, uniqueId);
+                this.injectOntoTweet(tweetNode, screenName, uniqueId);
             } catch (error) {
                 console.log('Error: ', error);
             }
@@ -89,7 +89,26 @@ export default class {
         // Skip tweets from users who aren't within our available ids
         if (!this.api.isIdentifierIndexed(screenName)) return;
         const ICON_ID = `HiveExtension-Twitter_tweet-author-score_${tweetId}`;
+        const BEE_ICON_ID = `HiveExtension-Twitter_tweet-author-score_bee_${tweetId}`;
         if (document.getElementById(ICON_ID)) return;
+
+        let authorImageContainer = undefined;
+        // The element that hold '@{screeName}' is consistent for both timeline and detailed tweet pages, but requires a different parentElement to append to
+        if (location.pathname === `/${screenName}/status/${tweetId}`) {
+            authorImageContainer = this.getAuthorNameAnchor(tweetNode, screenName, tweetId).parentNode.parentNode
+                .parentNode.parentNode.parentNode;
+            authorImageContainer.style.flexDirection = 'row';
+        } else {
+            authorImageContainer = this.getAuthorNameAnchor(tweetNode, screenName, tweetId).parentNode.parentNode
+                .parentNode.parentNode.parentNode.parentNode;
+        }
+        let beeIcon;
+        if (!document.getElementById(BEE_ICON_ID)) {
+            beeIcon = this.createBEEIcon(BEE_ICON_ID, tweetId);
+            authorImageContainer.appendChild(beeIcon);
+        } else {
+            beeIcon = document.getElementById(BEE_ICON_ID);
+        }
 
         const userData = await this.api.getFilteredTwitterUserData(screenName);
         if (!userData) {
@@ -105,18 +124,7 @@ export default class {
 
         if (document.getElementById(ICON_ID)) return;
 
-        let authorImageContainer = undefined;
-        // The element that hold '@{screeName}' is consistent for both timeline and detailed tweet pages, but requires a different parentElement to append to
-        if (location.pathname === `/${screenName}/status/${tweetId}`) {
-            authorImageContainer = this.getAuthorNameAnchor(tweetNode, screenName, tweetId).parentNode.parentNode
-                .parentNode.parentNode.parentNode;
-            authorImageContainer.style.flexDirection = 'row';
-        } else {
-            authorImageContainer = this.getAuthorNameAnchor(tweetNode, screenName, tweetId).parentNode.parentNode
-                .parentNode.parentNode.parentNode.parentNode;
-        }
-
-        authorImageContainer.appendChild(injectableIcon);
+        authorImageContainer.replaceChild(injectableIcon, beeIcon);
 
         const popupStyles = this.createPopupStyles(injectableIcon, authorImageAnchor);
 
@@ -161,6 +169,19 @@ export default class {
         });
     }
 
+    createBEEIcon(nodeId, tweetId) {
+        const userScoreDisplay = document.createElement('div');
+        userScoreDisplay.id = nodeId;
+        userScoreDisplay.classList.add(`${TWEET_AUTHOR_SCORE_CLASS}-container`);
+
+        userScoreDisplay.innerHTML = createTweetScoreIcon({
+            display: BEE_ICON,
+            tooltipText: `Loading...`,
+            tweetId,
+        });
+        return userScoreDisplay;
+    }
+
     createIcon(userData, nodeId, tweetId) {
         const { screenName, rank, score, clusterName } = userData;
         if (!rank && this.settings.shouldDisplayRank) {
@@ -177,7 +198,7 @@ export default class {
         } else if (this.settings.shouldDisplayScore) {
             iconContent = `[ ${displayScore(score)} ]`;
         } else if (this.settings.shouldDisplayIcon) {
-            iconContent = BEE_ICON;
+            iconContent = '';
         } else {
             throw new Error(
                 `Unrecognised displaySetting: "${
@@ -187,7 +208,7 @@ export default class {
         }
 
         userScoreDisplay.innerHTML = createTweetScoreIcon({
-            display: iconContent,
+            display: BEE_ICON + iconContent,
             tooltipText: `In ${clusterName}`,
             tweetId,
         });

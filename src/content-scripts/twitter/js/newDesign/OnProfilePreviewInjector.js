@@ -40,7 +40,7 @@ export default class {
                 let screenName = imageAnchor.href.slice(20);
                 // Create's a unique ID based on the element as sometimes the same profile might appear on the same page but will have different classnames
                 let hashableString = screenName + profileNode.parentNode.parentNode.className;
-                await this.injectOntoProfilePreview(profileNode, screenName, stringToHash(hashableString));
+                this.injectOntoProfilePreview(profileNode, screenName, stringToHash(hashableString));
             }
         }
     }
@@ -50,6 +50,8 @@ export default class {
 
         const ICON_ID = `HiveExtension-Twitter_user_preview-score_${uniqueID}`;
         if (document.getElementById(ICON_ID)) return;
+
+        const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
 
         const userData = await this.api.getFilteredTwitterUserData(screenName);
         if (!userData) {
@@ -61,7 +63,7 @@ export default class {
 
         // Create popup
         const POPUP_ID = `HiveExtension-Twitter_UserPreview_Popup_${uniqueID}`;
-        const authorImageAnchor = this.getAuthorImageAnchor(previewNode, screenName);
+
         const popupStyles = this.createPopupStyles(previewNode, authorImageAnchor);
 
         await createHiveProfilePopup(

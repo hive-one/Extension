@@ -120,6 +120,6 @@ export const errorHandle = err => {
         err,
     });
     if (process.env.NODE_ENV === 'development') {
-        throw new Error(err);
+        throw new Error(JSON.stringify(err));
     }
 };

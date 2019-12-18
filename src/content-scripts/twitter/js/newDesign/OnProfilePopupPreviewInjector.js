@@ -24,7 +24,7 @@ export default class {
                 let screenName = imageAnchor.href.slice(20);
                 // Create's a unique ID based on the element as sometimes the same profile might appear on the same page but will have different classnames
                 let hashableString = screenName + profilePopupNode.parentNode.parentNode.className;
-                await this.injectOntoProfilePreview(profilePopupNode, screenName, stringToHash(hashableString));
+                this.injectOntoProfilePreview(profilePopupNode, screenName, stringToHash(hashableString));
             }
         }
     }
