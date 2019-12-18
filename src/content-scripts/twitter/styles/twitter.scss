@@ -71,8 +71,8 @@
 
 .HiveExtension_Twitter_TweetAuthor-text {
     display: grid;
-    grid-template-columns: 50% 50%;
-    grid-gap: 6px;
+    grid-template-columns: auto auto;
+    grid-gap: 5px;
     line-height: 18px;
 }
 
@@ -134,10 +134,10 @@
         padding: 2px 0;
         left: 50%;
         top: 50%;
-        transform: translate(35%, -60%);
+        transform: translate(40%, -60%);
 
         &_left {
-            transform: translate(-125%, -60%);
+            transform: translate(-130%, -60%);
 
             &::after {
                 left: 110% !important;
