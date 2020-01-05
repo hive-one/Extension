@@ -33,10 +33,10 @@ const createScoreRow = (clusterName, displayScore, scoreAsPercentage) => `
 const createScoreSection = clusters =>
     clusters
         .map(item => {
-            const roundedScore = Math.round(item.node.score);
+            const roundedScore = Math.round(item.score);
             const percentage = Math.floor((roundedScore / CONFIG.MAX_SCORE) * 100);
 
-            return createScoreRow(item.node.name, roundedScore, percentage);
+            return createScoreRow(item.name, roundedScore, percentage);
         })
         .join('');
 
@@ -44,21 +44,19 @@ const createFollower = item => {
     let rankHTML = '';
     let scoreHTML = '';
 
-    if (item.node.hasOwnProperty('score') && item.node.hasOwnProperty('score')) {
-        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${
-            item.node.rank ? item.node.rank : ''
-        }</span>`;
-        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${item.node.score.toFixed(0)}</span>`;
+    if (item.hasOwnProperty('score') && item.hasOwnProperty('score')) {
+        rankHTML = `<span class="${POPUP_CLASS}_followers_follower_score">${item.rank ? item.rank : ''}</span>`;
+        scoreHTML = `<span class="${POPUP_CLASS}_followers_follower_rank">${item.score.toFixed(0)}</span>`;
     }
 
     return `
-    <a href="https://twitter.com/${item.node.screenName}" class="${POPUP_CLASS}_followers_follower">
+    <a href="https://twitter.com/${item.screenName}" class="${POPUP_CLASS}_followers_follower">
         ${rankHTML}
         <div class="${POPUP_CLASS}_followers_follower_user">
-            <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${item.node.imageUrl}' />
+            <img class="${POPUP_CLASS}_followers_follower_user_avatar" src='${item.imageUrl}' />
             <div class="${POPUP_CLASS}_followers_follower_user_info">
-                <span class="${POPUP_CLASS}_followers_follower_user_info_name">${item.node.name}</span>
-                <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${item.node.screenName}</span>
+                <span class="${POPUP_CLASS}_followers_follower_user_info_name">${item.name}</span>
+                <span class="${POPUP_CLASS}_followers_follower_user_info_screen_name">@${item.screenName}</span>
             </div>
         </div>
         ${scoreHTML}
@@ -66,8 +64,8 @@ const createFollower = item => {
     `;
 };
 
-// <img class="${POPUP_CLASS}_followers_follower_image" src="${node.imageUrl}" />
-// <div class="${POPUP_CLASS}_followers_follower_name">@${node.screenName}</div>
+// <img class="${POPUP_CLASS}_followers_follower_image" src="${imageUrl}" />
+// <div class="${POPUP_CLASS}_followers_follower_name">@${screenName}</div>
 
 const createFollowersSection = followers => `
     <div class="${POPUP_CLASS}_followers">

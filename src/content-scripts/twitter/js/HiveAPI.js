@@ -131,12 +131,12 @@ class HiveAPI {
             name = highestScoreCluster.abbr;
             score = highestScoreCluster.score;
             rank = highestScoreCluster.rank;
-            followers = highestScoreCluster.followers.edges;
+            followers = highestScoreCluster.followers;
         } else {
-            const selectedCluster = scores.find(c => c.node.abbr === clusterName);
-            score = selectedCluster.node.score;
-            rank = selectedCluster.node.rank;
-            followers = selectedCluster.node.followers.edges;
+            const selectedCluster = scores.find(c => c.abbr === clusterName);
+            score = selectedCluster.score;
+            rank = selectedCluster.rank;
+            followers = selectedCluster.followers;
         }
 
         if (profile.hasOwnProperty('podcasts')) {
