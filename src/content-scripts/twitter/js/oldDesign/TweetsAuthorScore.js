@@ -1,4 +1,4 @@
-import createHiveProfilePopup from '../HiveProfilePopup';
+// import createHiveProfilePopup from '../HiveProfilePopup';
 import { displayScore } from '../newDesign/utils';
 import escapeHTML from 'escape-html';
 
@@ -37,7 +37,7 @@ export class TwitterTweetsAuthorScoreExtension {
             const authorScreenName = tweet.getAttribute('data-screen-name');
             if (!this.api.isIdentifierIndexed(authorScreenName)) return;
 
-            const tweetId = tweet.getAttribute('data-item-id');
+            // const tweetId = tweet.getAttribute('data-item-id');
 
             if (!authorScreenName) {
                 return;
@@ -91,16 +91,16 @@ export class TwitterTweetsAuthorScoreExtension {
             </b>
             `;
 
-            const POPUP_ID = `HiveExtension_Twitter_Popup_Tweet_${tweetId}`;
-            const popupStyles = { zIndex: 30, top: 'auto', right: 'auto' };
-            await createHiveProfilePopup(
-                this.settings,
-                userData,
-                userScoreDisplay,
-                userScoreDisplay,
-                POPUP_ID,
-                popupStyles,
-            );
+            // const POPUP_ID = `HiveExtension_Twitter_Popup_Tweet_${tweetId}`;
+            // const popupStyles = { zIndex: 30, top: 'auto', right: 'auto' };
+            // await createHiveProfilePopup(
+            //     this.settings,
+            //     userData,
+            //     userScoreDisplay,
+            //     userScoreDisplay,
+            //     POPUP_ID,
+            //     popupStyles,
+            // );
 
             const accountGroup = tweet.querySelector('.stream-item-header');
 

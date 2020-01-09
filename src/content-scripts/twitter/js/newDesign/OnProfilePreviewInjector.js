@@ -1,21 +1,8 @@
-import createHiveProfilePopup from '../HiveProfilePopup';
-import { depthFirstNodeSearch, displayRank, displayScore, stringToHash, errorHandle } from './utils';
-import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../config';
+import { depthFirstNodeSearch, stringToHash } from './utils';
 
-const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
+import { h, render } from 'preact';
 
-const createPreviewScoreIcon = ({ display = '', tooltipText = '' }) => `
-<div class="${USER_PREVIEW_SCORE_CLASS} ${TOOLTIP_CLASSNAMES.TOOLTIP}">
-    <span class="${USER_PREVIEW_SCORE_CLASS}-text">${display}</span>
-    <span class="${TOOLTIP_CLASSNAMES.TEXT}">${tooltipText}</span>
-</div>
-`;
-
-const BEE_ICON = `
-    <svg viewBox="0 0 36 36" class="${USER_PREVIEW_SCORE_CLASS}-icon">
-        <use xlink:href="#HiveExtension-icon-bee" />
-    </svg>
-`;
+import PreviewIcon from '../components/PreviewIcon';
 
 export default class {
     settings;
@@ -29,7 +16,8 @@ export default class {
         let profilePreviews = document.querySelectorAll('[data-testid=UserCell]');
 
         if (!profilePreviews || !profilePreviews.length) {
-            return errorHandle('Failed finding profile previews');
+            // return errorHandle('Failed finding profile previews');
+            return;
         }
 
         for (let i = 0; i < profilePreviews.length; i++) {
@@ -58,7 +46,9 @@ export default class {
             throw new Error(`Failed getting user data for user @${screenName}`);
         }
 
-        const injectableIcon = this.createIcon(userData, ICON_ID);
+        // const injectableIcon = this.createIcon(userData, ICON_ID);
+        const injectableIcon = document.createElement('div');
+        injectableIcon.id = ICON_ID;
         if (!injectableIcon) return;
 
         // Create popup
@@ -66,62 +56,20 @@ export default class {
 
         const popupStyles = this.createPopupStyles(previewNode, authorImageAnchor);
 
-        await createHiveProfilePopup(
-            this.settings,
-            userData,
-            injectableIcon,
-            document.body,
-            POPUP_ID,
-            popupStyles,
-            true,
-        );
-
         if (document.getElementById(ICON_ID)) return;
         const authorImageContainer = authorImageAnchor.parentNode;
         authorImageContainer.insertAdjacentElement('afterend', injectableIcon);
 
-        injectableIcon.addEventListener('click', () => {
-            const ACTION_NAME = 'popup-opened-in-profile-preview';
-            chrome.runtime.sendMessage({
-                type: GA_TYPES.TRACK_EVENT,
-                category: 'plugin-interactions',
-                action: ACTION_NAME,
-            });
-        });
+        let props = {
+            userData,
+            settings: this.settings,
+            uniqueID,
+            POPUP_ID,
+            popupStyles,
+            clickableNode: injectableIcon,
+        };
 
-        injectableIcon.addEventListener('mouseenter', () => {
-            const ACTION_NAME = 'rank/score-hovered-in-profile-preview';
-            chrome.runtime.sendMessage({
-                type: GA_TYPES.TRACK_EVENT,
-                category: 'plugin-interactions',
-                action: ACTION_NAME,
-            });
-        });
-    }
-
-    createIcon(userData, nodeId) {
-        const { rank, score, clusterName } = userData;
-        if (!rank && this.settings.shouldDisplayRank) {
-            return;
-        }
-
-        const userScoreDisplay = document.createElement('div');
-        userScoreDisplay.id = nodeId;
-        userScoreDisplay.classList.add(`${USER_PREVIEW_SCORE_CLASS}-container`);
-
-        let iconContent;
-        if (rank && this.settings.shouldDisplayRank) {
-            iconContent = `#${displayRank(rank)}`;
-        } else if (this.settings.shouldDisplayScore) {
-            iconContent = `[ ${displayScore(score)} ]`;
-        } else if (this.settings.shouldDisplayIcon) {
-            iconContent = BEE_ICON;
-        } else {
-            throw new Error(`Unrecognised displaySetting: "${this.settings.displaySetting}"`);
-        }
-
-        userScoreDisplay.innerHTML = createPreviewScoreIcon({ display: iconContent, tooltipText: `In ${clusterName}` });
-        return userScoreDisplay;
+        render(<PreviewIcon {...props} />, injectableIcon);
     }
 
     createPopupStyles(preivewNode, authorImageAnchor) {

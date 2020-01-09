@@ -1,4 +1,4 @@
-import createHiveProfilePopup from '../HiveProfilePopup';
+// import createHiveProfilePopup from '../HiveProfilePopup';
 import { displayScore } from '../newDesign/utils';
 
 const PROFILE_SCORE_EXTENSION_CLASS_NAME = 'HiveExtension-Twitter_profile-score';
@@ -48,7 +48,7 @@ export class TwitterProfileScoreExtension {
         const userData = await this.api.getFilteredTwitterUserData(userTwitterId);
         if (!userData) return;
 
-        const { screenName, score, clusterName, rank } = userData;
+        const { score, clusterName, rank } = userData;
 
         let tooltip = '';
         let label = '';
@@ -80,13 +80,21 @@ export class TwitterProfileScoreExtension {
         </li>
         `;
 
-        const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${screenName}`;
-        await createHiveProfilePopup(this.settings, userData, displayElement, displayElement, POPUP_ID, {
-            top: 'auto',
-            right: 'auto',
-        });
-
         document.querySelector('.ProfileNav-item:nth-of-type(4)').insertAdjacentElement('afterend', displayElement);
+
+        // let showPopup = () => {
+        //     const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${screenName}`;
+
+        //     createHiveProfilePopup(
+        //         this.settings,
+        //         userData,
+        //         displayElement,
+        //         POPUP_ID,
+        //         { top: 'auto', left: 'auto' },
+        //     );
+        // };
+
+        // displayElement.addEventListener('click', showPopup);
     }
 
     isOnProfileScreen() {

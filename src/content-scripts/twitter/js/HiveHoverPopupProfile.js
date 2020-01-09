@@ -1,5 +1,6 @@
-import { GA_TYPES } from '../../../config';
-import { createHoverInjectedHTML } from './HTMLSnippets';
+import { HiveInjectedPopup } from './components/Popup';
+
+import { h, render } from 'preact';
 
 const createHiveHoverPopupProfile = async (
     settings,
@@ -9,124 +10,21 @@ const createHiveHoverPopupProfile = async (
     popupStyles = {},
     ownProfile = false,
 ) => {
-    // appendableNode = node that popup is injected to
-
-    const { screenName, podcasts, followers, scores } = userData;
-
     const popUpExists = () => !!document.getElementById(popupId);
+    if (popUpExists()) return;
 
-    let acceptedPermissions = await settings.getOptionValue('HiveExtension:acceptedPermissions');
+    let popupNode = document.createElement('div');
+    popupNode.id = popupId;
 
-    let popupNode;
-
-    const displayPopup = () => {
-        if (popUpExists()) return;
-
-        popupNode = document.createElement('div');
-        popupNode.id = popupId;
-        popupNode.classList.add('HiveExtension-Twitter_popup-profile-injection');
-        if (settings.isDarkTheme()) {
-            popupNode.classList.add(`HiveExtension-Twitter_popup-profile-dark`);
-        }
-        for (const key in popupStyles) {
-            popupNode.style[key] = popupStyles[key];
-        }
-        popupNode.innerHTML = createHoverInjectedHTML(
-            screenName,
-            scores,
-            followers,
-            podcasts,
-            ownProfile,
-            acceptedPermissions,
-        );
-
-        const displayScoresTab = (ignoreAnalyticsEvent = false) => {
-            popupNode.querySelector('#' + 'popup_scores').style.display = 'block';
-            popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
-            popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
-
-            popupNode
-                .querySelector('#' + 'scores_tab_btn')
-                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'followers_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-                popupNode
-                    .querySelector('#' + 'podcasts_tab_btn')
-                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            }
-
-            if (typeof ignoreAnalyticsEvent == typeof {}) {
-                const ACTION_NAME = 'popup-clicked-scores-tab';
-                chrome.runtime.sendMessage({
-                    type: GA_TYPES.TRACK_EVENT,
-                    category: 'plugin-interactions',
-                    action: ACTION_NAME,
-                });
-            }
-        };
-
-        const displayFollowersTab = () => {
-            popupNode.querySelector('#' + 'popup_followers').style.display = 'block';
-            popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
-            popupNode.querySelector('#' + 'popup_podcasts').style.display = 'none';
-
-            popupNode
-                .querySelector('#' + 'followers_tab_btn')
-                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'scores_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-                popupNode
-                    .querySelector('#' + 'podcasts_tab_btn')
-                    .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            }
-            const ACTION_NAME = 'popup-clicked-followers-tab';
-            chrome.runtime.sendMessage({
-                type: GA_TYPES.TRACK_EVENT,
-                category: 'plugin-interactions',
-                action: ACTION_NAME,
-            });
-        };
-
-        const displayPodcastsTab = () => {
-            popupNode.querySelector('#' + 'popup_podcasts').style.display = 'block';
-            popupNode.querySelector('#' + 'popup_followers').style.display = 'none';
-            popupNode.querySelector('#' + 'popup_scores').style.display = 'none';
-
-            popupNode
-                .querySelector('#' + 'podcasts_tab_btn')
-                .classList.add('HiveExtension-Twitter_popup-profile_tab_active');
-            popupNode
-                .querySelector('#' + 'followers_tab_btn')
-                .classList.remove('HiveExtension-Twitter_popup-profile_tab_active');
-            const ACTION_NAME = 'popup-clicked-podcasts-tab';
-            chrome.runtime.sendMessage({
-                type: GA_TYPES.TRACK_EVENT,
-                category: 'plugin-interactions',
-                action: ACTION_NAME,
-            });
-        };
-
-        popupNode.querySelector('#' + 'scores_tab_btn').addEventListener('click', displayScoresTab, false);
-        popupNode.querySelector('#' + 'followers_tab_btn').addEventListener('click', displayFollowersTab, false);
-        if (popupNode.querySelector('#' + 'podcasts_tab_btn')) {
-            popupNode.querySelector('#' + 'podcasts_tab_btn').addEventListener('click', displayPodcastsTab, false);
-        }
-        displayScoresTab(true);
-        appendableNode.appendChild(popupNode);
-
-        // // Hijack the permissions overlay
-        // popupNode.querySelector('#hive-permissions-overlay').style.height = `${popupNode.getBoundingClientRect()
-        //     .height - 15}px`;
-        // popupNode.querySelector('#hive-permissions-overlay').style.top = `${popupNode.getBoundingClientRect().top}px`;
-        // popupNode.querySelector('#hive-permissions-overlay').style.left = `${popupNode.getBoundingClientRect().left -
-        //     15}px`;
+    let props = {
+        settings,
+        userData,
+        popupStyles,
+        ownProfile,
     };
 
-    displayPopup();
+    appendableNode.appendChild(popupNode);
+    render(<HiveInjectedPopup {...props} />, popupNode);
 };
 
 export default createHiveHoverPopupProfile;

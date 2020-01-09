@@ -1,6 +1,6 @@
 @import 'base';
 
-#HiveExtension_Twitter_ProfileNav {
+#HiveExtension_Twitter_ProfileNav div {
     display: table;
     border: 1px solid $purple_one;
     color: $purple_one;
@@ -23,7 +23,6 @@
 .HiveExtension_Twitter_ProfileNav-container {
     display: table;
     height: 100%;
-    width: 100%;
 }
 
 .HiveExtension_Twitter_ProfileNav-display {
@@ -88,7 +87,7 @@
     }
 }
 
-.HiveExtension_Twitter_ProfilePreview-container {
+.HiveExtension_Twitter_ProfilePreview {
     text-align: center;
     padding-top: 12px;
 }

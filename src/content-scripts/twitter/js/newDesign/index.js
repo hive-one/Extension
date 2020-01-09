@@ -26,7 +26,7 @@ const run = async (settings, api) => {
         runHome(settings, api);
         runProfilePreview(settings, api);
     } else if (pathname.match(profilePreviewRoutes)) {
-        runProfilePreview(settings, api);
+        // runProfilePreview(settings, api);
     } else if (pathname == '/notifications' || pathname == '/notifications/mentions') {
         runNotifications(settings, api);
         runProfilePreview(settings, api);

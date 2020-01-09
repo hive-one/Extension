@@ -1,4 +1,4 @@
-import createHiveHoverPopupProfile from '../HiveHoverPopupProfile';
+// import createHiveHoverPopupProfile from '../HiveHoverPopupProfile';
 
 const PROFILE_HOVER_CONTAINER = '#profile-hover-container';
 const ELEMENT_CLASS = 'HiveExtension-Twitter_profile-hover-popup';
@@ -41,16 +41,16 @@ export class TwitterProfileHoverPopupScoreExtension {
         const userData = await this.api.getFilteredTwitterUserData(userScreenName);
         if (!userData) return;
 
-        const { screenName } = userData;
+        // const { screenName } = userData;
 
-        const POPUP_ID = `HiveExtension_Twitter_Popup_YouMayLike_${screenName}`;
+        // const POPUP_ID = `HiveExtension_Twitter_Popup_YouMayLike_${screenName}`;
 
         const statList = document.querySelector(`${PROFILE_HOVER_CONTAINER} .ProfileCardStats-statList`);
 
         if (statList && this.shouldRun()) {
-            await createHiveHoverPopupProfile(this.settings, userData, statList.parentNode.parentNode, POPUP_ID, {
-                padding: '16px',
-            });
+            // await createHiveHoverPopupProfile(this.settings, userData, statList.parentNode.parentNode, POPUP_ID, {
+            //     padding: '16px',
+            // });
         }
     }
 }

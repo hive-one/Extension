@@ -10,7 +10,10 @@ module.exports = {
     es6: true,
     webextensions: true
   },
-  extends: ['eslint:recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended'
+  ],
   // add your custom rules here
   rules: {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
@@ -21,9 +24,16 @@ module.exports = {
     'no-extra-semi': 'error',
     semi: ['error', 'always'],
     quotes: ['error', 'single', { allowTemplateLiterals: true }],
-    'no-console': 0
+    'no-console': 0,
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off'
   },
   globals: {
     chrome: false
+  },
+  settings: {
+    react: {
+      pragma: 'h'
+    }
   }
 };
