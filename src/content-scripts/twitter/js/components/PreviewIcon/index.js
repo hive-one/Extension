@@ -47,12 +47,18 @@ export default class PreviewIcon extends Component {
 
     render() {
         const { rank, score, clusterName } = this.props.userData;
-
         let display;
-        if (rank && this.props.settings.shouldDisplayRank) {
-            display = `#${displayRank(rank)}`;
+
+        if (this.props.settings.shouldDisplayRank) {
+            if (rank) {
+                display = `#${displayRank(rank)}`;
+            } else if (score) {
+                display = `[ ${displayScore(score)} ]`;
+            }
         } else if (this.props.settings.shouldDisplayScore) {
-            display = `[ ${displayScore(score)} ]`;
+            if (score) {
+                display = `[ ${displayScore(score)} ]`;
+            }
         } else if (this.props.settings.shouldDisplayIcon) {
             display = (
                 <svg viewBox="0 0 36 36" className={`${USER_PREVIEW_SCORE_CLASS}-icon`}>
