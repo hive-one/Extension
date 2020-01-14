@@ -1,7 +1,8 @@
 import { h, Component } from 'preact';
 
 import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../../config';
-import { depthFirstNodeSearch, displayRank, displayScore } from '../../newDesign/utils';
+import { depthFirstNodeSearch } from '../../newDesign/utils';
+import { displayRankOrScore } from '../utils';
 
 import createHiveProfilePopup from '../../HiveProfilePopup';
 
@@ -94,25 +95,8 @@ export default class TweetIcon extends Component {
 
     render() {
         const { rank, score, clusterName } = this.props.userData;
-        let iconContent;
 
-        if (this.props.settings.shouldDisplayRank) {
-            if (rank) {
-                iconContent = `#${displayRank(rank)}`;
-            } else if (score) {
-                iconContent = `[ ${displayScore(score)} ]`;
-            }
-        } else if (this.props.settings.shouldDisplayScore) {
-            if (score) {
-                iconContent = `[ ${displayScore(score)} ]`;
-            }
-        } else if (this.props.settings.shouldDisplayIcon) {
-            iconContent = '';
-        } else {
-            throw new Error(`Unrecognised displaySetting: "${this.props.settings.displaySetting}"`);
-        }
-
-        let display = iconContent;
+        let display = displayRankOrScore(rank, score, this.props.settings);
         let tooltipText = clusterName;
 
         return (

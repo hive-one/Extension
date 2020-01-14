@@ -1,16 +1,8 @@
 import { h, Component } from 'preact';
 import createHiveProfilePopup from '../../HiveProfilePopup';
 
-import { displayRank, displayScore } from '../../newDesign/utils';
+import { displayRankOrScore } from '../utils';
 import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../../config';
-
-const BEE_ICON = `
-    <svg viewBox="0 0 36 36" class="${PROILE_NAV_ICON_ID}-icon">
-        <use xlink:href="#HiveExtension-icon-bee" />
-    </svg>
-`;
-
-const PROILE_NAV_ICON_ID = 'HiveExtension_Twitter_ProfileNav';
 
 export default class HeaderIcon extends Component {
     onMouseEnter = e => {
@@ -61,22 +53,7 @@ export default class HeaderIcon extends Component {
 
     render() {
         const { rank, score, clusterName } = this.props.userData;
-        let iconContent;
-
-        if (this.props.settings.shouldDisplayRank) {
-            if (rank) {
-                iconContent = `#${displayRank(rank)}`;
-            } else if (score) {
-                iconContent = `[ ${displayScore(score)} ]`;
-            }
-        } else if (this.props.settings.shouldDisplayScore) {
-            if (score) {
-                iconContent = `[ ${displayScore(score)} ]`;
-            }
-        } else if (this.props.settings.shouldDisplayIcon) {
-            iconContent = BEE_ICON;
-        }
-
+        let content = displayRankOrScore(rank, score, this.props.settings);
         const darkTheme = () => {
             if (this.props.settings.isDarkTheme()) {
                 return 'HiveExtension_Twitter_ProfileNav_dark';
@@ -91,7 +68,7 @@ export default class HeaderIcon extends Component {
                 onMouseEnter={this.onMouseEnter}
                 onClick={this.onClick}
             >
-                <span className={'HiveExtension_Twitter_ProfileNav-display'}>{iconContent}</span>
+                <span className={'HiveExtension_Twitter_ProfileNav-display'}>{content}</span>
                 <span className={`${TOOLTIP_CLASSNAMES.TEXT} ${TOOLTIP_CLASSNAMES.TEXT}_profile`}>
                     in {clusterName}
                 </span>

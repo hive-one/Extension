@@ -3,7 +3,7 @@ import { TOOLTIP_CLASSNAMES, GA_TYPES } from '../../../../../config';
 
 import createHiveProfilePopup from '../../HiveProfilePopup';
 
-import { displayRank, displayScore } from '../../newDesign/utils';
+import { displayRankOrScore } from '../utils';
 
 const USER_PREVIEW_SCORE_CLASS = 'HiveExtension_Twitter_ProfilePreview';
 
@@ -47,27 +47,7 @@ export default class PreviewIcon extends Component {
 
     render() {
         const { rank, score, clusterName } = this.props.userData;
-        let display;
-
-        if (this.props.settings.shouldDisplayRank) {
-            if (rank) {
-                display = `#${displayRank(rank)}`;
-            } else if (score) {
-                display = `[ ${displayScore(score)} ]`;
-            }
-        } else if (this.props.settings.shouldDisplayScore) {
-            if (score) {
-                display = `[ ${displayScore(score)} ]`;
-            }
-        } else if (this.props.settings.shouldDisplayIcon) {
-            display = (
-                <svg viewBox="0 0 36 36" className={`${USER_PREVIEW_SCORE_CLASS}-icon`}>
-                    <use href="#HiveExtension-icon-bee" />
-                </svg>
-            );
-        } else {
-            throw new Error(`Unrecognised displaySetting: "${this.props.settings.displaySetting}"`);
-        }
+        let content = displayRankOrScore(rank, score, this.props.settings);
 
         return (
             <div
@@ -75,7 +55,7 @@ export default class PreviewIcon extends Component {
                 onClick={this.onClick}
                 onMouseEnter={this.onMouseEnter}
             >
-                <span className={`${USER_PREVIEW_SCORE_CLASS}-text`}>{display}</span>
+                <span className={`${USER_PREVIEW_SCORE_CLASS}-text`}>{content}</span>
                 <span className={`${TOOLTIP_CLASSNAMES.TEXT}`}>{clusterName}</span>
             </div>
         );
