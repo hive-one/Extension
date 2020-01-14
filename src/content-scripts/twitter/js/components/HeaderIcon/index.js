@@ -62,18 +62,19 @@ export default class HeaderIcon extends Component {
     render() {
         const { rank, score, clusterName } = this.props.userData;
         let iconContent;
-        if (rank && this.props.settings.shouldDisplayRank) {
-            iconContent = `#${displayRank(rank)}`;
+
+        if (this.props.settings.shouldDisplayRank) {
+            if (rank) {
+                iconContent = `#${displayRank(rank)}`;
+            } else if (score) {
+                iconContent = `[ ${displayScore(score)} ]`;
+            }
         } else if (this.props.settings.shouldDisplayScore) {
-            iconContent = displayScore(score);
+            if (score) {
+                iconContent = `[ ${displayScore(score)} ]`;
+            }
         } else if (this.props.settings.shouldDisplayIcon) {
             iconContent = BEE_ICON;
-        } else {
-            throw new Error(
-                `Unrecognised displaySetting: "${this.props.settings.displaySetting}" on "@${
-                    this.screenName
-                }"'s profile.`,
-            );
         }
 
         const darkTheme = () => {
