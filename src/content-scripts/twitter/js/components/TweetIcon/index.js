@@ -93,21 +93,23 @@ export default class TweetIcon extends Component {
     }
 
     render() {
-        const { screenName, rank, score, clusterName } = this.props.userData;
-
+        const { rank, score, clusterName } = this.props.userData;
         let iconContent;
-        if (rank && this.props.settings.shouldDisplayRank) {
-            iconContent = `#${displayRank(rank)}`;
+
+        if (this.props.settings.shouldDisplayRank) {
+            if (rank) {
+                iconContent = `#${displayRank(rank)}`;
+            } else if (score) {
+                iconContent = `[ ${displayScore(score)} ]`;
+            }
         } else if (this.props.settings.shouldDisplayScore) {
-            iconContent = `[ ${displayScore(score)} ]`;
+            if (score) {
+                iconContent = `[ ${displayScore(score)} ]`;
+            }
         } else if (this.props.settings.shouldDisplayIcon) {
             iconContent = '';
         } else {
-            throw new Error(
-                `Unrecognised displaySetting: "${this.props.settings.displaySetting}" on tweet "${
-                    this.props.tweetId
-                }" by "@${screenName}"`,
-            );
+            throw new Error(`Unrecognised displaySetting: "${this.props.settings.displaySetting}"`);
         }
 
         let display = iconContent;
