@@ -105,7 +105,6 @@ class HiveAPI {
         let name = clusterName;
         let indexed = false;
         let followers = [];
-        let podcasts = [];
         let scores = [];
 
         const { data, status } = await this._getTwitterUserData(idOrScreenName);
@@ -139,12 +138,6 @@ class HiveAPI {
             followers = selectedCluster.followers;
         }
 
-        if (profile.hasOwnProperty('podcasts')) {
-            podcasts =
-                profile.podcasts.edges &&
-                profile.podcasts.edges.sort((a, b) => b.node.published - a.node.published).slice(0, 5);
-        }
-
         indexed = true;
 
         return {
@@ -160,7 +153,7 @@ class HiveAPI {
             rank,
             indexed,
             followers,
-            podcasts,
+            hasPodcasts: profile.hasPodcasts,
         };
     }
 
@@ -202,6 +195,17 @@ class HiveAPI {
         return scores;
     }
 
+    async getTwitterUserPodcasts(idOrScreenName) {
+        const { data, status } = await this._getTwitterUserPodcastsData(idOrScreenName);
+        let podcasts = [];
+
+        if (status === RESPONSE_TYPES.SUCCESS) {
+            podcasts = data.podcasts;
+        }
+
+        return podcasts;
+    }
+
     async _getTwitterUserData(idOrScreenName) {
         // During dev, if the user is a test user return the test info instead.
         if (process.env.NODE_ENV === 'development') {
@@ -236,7 +240,7 @@ class HiveAPI {
         return resInfo;
     }
 
-    async _getTwitterUserPodcasts(idOrScreenName) {
+    async _getTwitterUserPodcastsData(idOrScreenName) {
         // During dev, if the user is a test user return the test info instead.
         if (process.env.NODE_ENV === 'development') {
             if (TEST_DATA.hasOwnProperty(idOrScreenName)) {

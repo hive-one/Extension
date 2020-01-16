@@ -1,7 +1,4 @@
-import ExtensionSettings from './Settings';
-import TimedCache from './TimedCache';
-import HiveAPI from './HiveAPI';
-import { CONFIG } from '../../../config';
+import apiProvider from './apiProvider';
 
 /*
  * Twitter introduced a new desgin on 15 July 2019
@@ -17,9 +14,7 @@ import runNewDesign from './newDesign';
 (async () => {
     // Constructor returns a promise, thus it must be awaited,
     // despite what VSCodes squiggly line says
-    const settings = await new ExtensionSettings();
-    const cache = new TimedCache(CONFIG.USER_DATA_CACHE_LIFETIME);
-    const api = await new HiveAPI(CONFIG.API_HOST, settings, cache);
+    const { settings, api } = await apiProvider();
 
     if (settings.isNewTwitterDesign) {
         console.log('HIVE.ONE EXTENTION: Running for the new design (2019.07.15 and later)');

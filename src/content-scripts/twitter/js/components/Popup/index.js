@@ -1,12 +1,20 @@
 import { h, Component } from 'preact';
-
 import { GA_TYPES } from '../../../../../config';
-
 import { CONFIG } from '../../../../../config';
+
+import escapeHTML from 'escape-html';
+import moment from 'moment';
+
+import apiProvider from '../../apiProvider';
 
 const POPUP_CLASS = 'HiveExtension-Twitter_popup-profile';
 
 class HivePopupContent extends Component {
+    loadPodcasts = async () => {
+        const podcastRes = await this.api.getTwitterUserPodcasts(this.props.userData.screenName);
+        this.setState({ podcasts: podcastRes.edges });
+    };
+
     returnTabActive = tabName => {
         if (tabName === this.state.openTab) {
             return 'HiveExtension-Twitter_popup-profile_tab_active';
@@ -15,7 +23,11 @@ class HivePopupContent extends Component {
     };
 
     changeOpenTab = tabName => {
-        this.setState({ openTab: tabName });
+        this.setState({ openTab: tabName }, () => {
+            if (tabName === 'podcasts') {
+                this.loadPodcasts();
+            }
+        });
         const ACTION_NAME = `popup-clicked-${tabName}-tab`;
         chrome.runtime.sendMessage({
             type: GA_TYPES.TRACK_EVENT,
@@ -24,16 +36,23 @@ class HivePopupContent extends Component {
         });
     };
 
+    initAPI = async () => {
+        let { api } = await apiProvider();
+        this.api = api;
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             openTab: 'scores',
+            podcasts: [],
         };
+        this.api = undefined;
     }
 
-    renderPodcastsTab = () => {
-        return '';
-    };
+    componentDidMount() {
+        this.initAPI();
+    }
 
     renderScores = () => {
         let { scores } = this.props.userData;
@@ -87,18 +106,56 @@ class HivePopupContent extends Component {
     };
 
     renderPodcasts = () => {
-        return '';
+        if (this.state.podcasts.length === 0) {
+            return <p>Loading</p>;
+        }
+
+        let podcasts = [];
+
+        this.state.podcasts.map((item, index) => {
+            const { name, url, publishedAt, hosts, podcast } = item;
+            const safePodcastName = escapeHTML(podcast.name);
+            const safeEpisodeName = escapeHTML(name);
+            const hostsList = hosts.map(item => item.name).join(', ');
+
+            const truncateText = input => (input.length > 50 ? `${input.substring(0, 50)}...` : input);
+
+            let date = moment.unix(publishedAt);
+            podcasts.push(
+                <a
+                    key={index}
+                    className={`${POPUP_CLASS}_podcasts_podcast`}
+                    rel="noopener noreferrer"
+                    href={url}
+                    target="__blank"
+                >
+                    <div className={`${POPUP_CLASS}_podcasts_podcast_info`}>
+                        <span className={`${POPUP_CLASS}_podcasts_podcast_info_podcast_name`}>{safePodcastName}</span>
+                        <span className={`${POPUP_CLASS}_podcasts_podcast_info_episode_name`}>
+                            {truncateText(safeEpisodeName)}
+                        </span>
+                        <span className={`${POPUP_CLASS}_podcasts_podcast_info_host_list`}>{hostsList}</span>
+                    </div>
+                    <div className={`${POPUP_CLASS}_podcasts_podcast_info_date`}>
+                        <span className={`${POPUP_CLASS}_podcasts_podcast_info_date_day`}>{date.format('D')}</span>
+                        <span className={`${POPUP_CLASS}_podcasts_podcast_info_date_month_year`}>
+                            {date.format('MMM YY')}
+                        </span>
+                    </div>
+                </a>,
+            );
+        });
+
+        return <div className={`${POPUP_CLASS}_podcasts`}>{podcasts}</div>;
     };
 
     render() {
         const scoresTabActiveClass = this.returnTabActive('scores');
         const followersTabActiveClass = this.returnTabActive('followers');
-        // eslint-disable-next-line no-unused-vars
         const podcastsTabActiveClass = this.returnTabActive('podcasts');
 
         const activateScoresTab = () => this.changeOpenTab('scores');
         const activateFollowersTab = () => this.changeOpenTab('followers');
-        // eslint-disable-next-line no-unused-vars
         const activatePodcastsTab = () => this.changeOpenTab('podcasts');
 
         return (
@@ -137,7 +194,15 @@ class HivePopupContent extends Component {
                             <span>Top Followers</span>
                         </div>
                     )}
-                    {this.renderPodcastsTab()}
+                    {(this.props.userData.hasPodcasts.guest || this.props.userData.hasPodcasts.host) && (
+                        <div
+                            id="podcasts"
+                            className={`${POPUP_CLASS}_tab ${podcastsTabActiveClass}`}
+                            onClick={activatePodcastsTab}
+                        >
+                            <span>Podcasts</span>
+                        </div>
+                    )}
                 </div>
                 <br />
                 <div
@@ -156,7 +221,13 @@ class HivePopupContent extends Component {
                     {this.renderFollowers()}
                     <br />
                 </div>
-                <div id="popup_podcasts">{this.renderPodcasts()}</div>
+                <div
+                    id="popup_podcasts"
+                    className={`${POPUP_CLASS}_podcasts`}
+                    style={`display:${this.state.openTab === 'podcasts' ? 'block' : 'none'}`}
+                >
+                    {this.renderPodcasts()}
+                </div>
                 <br />
                 <div className={`${POPUP_CLASS}_credit`}>
                     <svg viewBox="0 0 36 36" className={`${POPUP_CLASS}_credit_icon`}>
