@@ -1,5 +1,8 @@
 import { CONFIG, GA_TYPES } from '../config';
 import amplitude from 'amplitude-js/amplitude';
+import * as Sentry from '@sentry/browser';
+
+Sentry.init({ dsn: 'https://4002a4ace3284b8ca195f4d287d215ae@sentry.io/1884106' });
 
 // const Rollbar = require('rollbar');
 // const rollbar = new Rollbar({
@@ -141,7 +144,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             return true;
         case 'LOG_ERROR':
             if (request.err) {
-                console.log(request.err);
+                Sentry.captureException(request.err);
             }
     }
 });

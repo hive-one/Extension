@@ -70,7 +70,7 @@ class HiveAPI {
                     },
                 });
                 if (res.error) {
-                    throw new Error(res.error);
+                    errorHandle(Error(res.error));
                 }
                 const { data } = res;
                 cachedIds = data;
@@ -93,11 +93,11 @@ class HiveAPI {
         // loads cached user reponse & returns scores/ranks based on the selected cluster
 
         if (!idOrScreenName) {
-            throw new Error('Missing arg: idOrScreenName');
+            errorHandle(Error('Missing arg: idOrScreenName'));
         }
 
         if (!this.isIdentifierIndexed(idOrScreenName)) {
-            throw new Error(`Could not find ${idOrScreenName} within this._acceptableIds`);
+            errorHandle(Error(`Could not find ${idOrScreenName} within this._acceptableIds`));
         }
 
         let id, screenName, rank, userName, imageUrl, description, website;
@@ -179,7 +179,7 @@ class HiveAPI {
                     },
                 });
                 if (res.error) {
-                    throw new Error(res.error);
+                    errorHandle(Error(res.error));
                 }
                 cachedFollowers = res;
                 this.cache.save(key, cachedFollowers);
@@ -287,7 +287,7 @@ class HiveAPI {
         try {
             const res = await responsePromise;
             if (res.error) {
-                throw new Error(res.error);
+                errorHandle(Error(res.error));
             }
             const { data } = res;
             userData = data;
@@ -320,7 +320,7 @@ class HiveAPI {
         try {
             const res = await responsePromise;
             if (res.error) {
-                throw new Error(res.error);
+                errorHandle(Error(res.error));
             }
             const { data } = res;
             userData = data;

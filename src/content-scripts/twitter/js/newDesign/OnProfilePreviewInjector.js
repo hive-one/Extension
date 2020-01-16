@@ -1,4 +1,4 @@
-import { depthFirstNodeSearch, stringToHash } from './utils';
+import { depthFirstNodeSearch, stringToHash, errorHandle } from './utils';
 
 import { h, render } from 'preact';
 
@@ -16,8 +16,7 @@ export default class {
         let profilePreviews = document.querySelectorAll('[data-testid=UserCell]');
 
         if (!profilePreviews || !profilePreviews.length) {
-            // return errorHandle('Failed finding profile previews');
-            return;
+            return errorHandle('Failed finding profile previews');
         }
 
         for (let i = 0; i < profilePreviews.length; i++) {
