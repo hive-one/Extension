@@ -20,7 +20,8 @@ export default class {
             const profilePopupNode = profilePopups[i];
             const testCondition = node => node.tagName === 'A';
             const imageAnchor = depthFirstNodeSearch(profilePopupNode, testCondition);
-            if (imageAnchor) {
+            const imageAnchorParentNode = imageAnchor.parentNode.parentNode.parentNode.parentNode;
+            if (imageAnchor && !('testid' in imageAnchorParentNode.dataset)) {
                 let screenName = imageAnchor.href.slice(20);
                 // Create's a unique ID based on the element as sometimes the same profile might appear on the same page but will have different classnames
                 let hashableString = screenName + profilePopupNode.parentNode.parentNode.className;
