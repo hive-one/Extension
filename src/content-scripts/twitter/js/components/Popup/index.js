@@ -109,7 +109,10 @@ class HivePopupContent extends Component {
                     </div>
                 )}
                 {!this.props.disableUserInfo && (
-                    <a href="https://twitter.com/${screenName}" className={`${POPUP_CLASS}_user_info`}>
+                    <a
+                        href={`https://twitter.com/${this.props.userData.screenName}`}
+                        className={`${POPUP_CLASS}_user_info`}
+                    >
                         <span className={`${POPUP_CLASS}_user_info_name`}>{this.props.userData.userName}</span>
                         <span className={`${POPUP_CLASS}_user_info_screen_name`}>
                             @{this.props.userData.screenName}
