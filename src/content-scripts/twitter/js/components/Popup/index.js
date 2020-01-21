@@ -259,15 +259,12 @@ class HivePopup extends Component {
             return window.innerHeight >= childRect.bottom;
         }
 
-        // TODO: Make this work again
-        // if (this.props.profilePreview && this.props.clickableNode) {
-        //     let { top } = this.props.clickableNode.getBoundingClientRect();
-        //     let style = { ...this.state.style };
-        //     console.log(style.top);
-        //     style.top = `${top + window.scrollY}px`;
-        //     console.log(style.top);
-        //     this.setState({ style });
-        // }
+        if (this.props.profilePreview && this.props.clickableNode) {
+            let { top } = this.props.clickableNode.getBoundingClientRect();
+            let style = { ...this.state.style };
+            style.top = `${top + window.scrollY}px`;
+            this.setState({ style });
+        }
 
         if (!sitsInsideWindowWidth(this.popupElem)) {
             let style = { ...this.state.style };
