@@ -9,6 +9,15 @@ import createHiveProfilePopup from '../../HiveProfilePopup';
 const TWEET_AUTHOR_SCORE_CLASS = 'HiveExtension_Twitter_TweetAuthor';
 
 export default class TweetIcon extends Component {
+    togglePopup = () => {
+        const authorImageAnchor = this.getAuthorImageAnchor(this.props.tweetNode, this.props.userData.screenName);
+        const popupStyles = this.createPopupStyles(this.props.elem, authorImageAnchor);
+
+        const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${this.props.tweetId}`;
+
+        createHiveProfilePopup(this.props.settings, this.props.userData, document.body, POPUP_ID, popupStyles);
+    };
+
     onClick = e => {
         e.preventDefault();
         e.stopPropagation();
@@ -20,12 +29,7 @@ export default class TweetIcon extends Component {
             action: ACTION_NAME,
         });
 
-        const authorImageAnchor = this.getAuthorImageAnchor(this.props.tweetNode, this.props.userData.screenName);
-        const popupStyles = this.createPopupStyles(this.props.elem, authorImageAnchor);
-
-        const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${this.props.tweetId}`;
-
-        createHiveProfilePopup(this.props.settings, this.props.userData, document.body, POPUP_ID, popupStyles);
+        this.togglePopup();
     };
 
     onMouseEnter = e => {

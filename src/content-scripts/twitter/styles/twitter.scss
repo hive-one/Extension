@@ -57,7 +57,7 @@
 }
 
 .HiveExtension_Twitter_TweetAuthor-text, .HiveExtension_Twitter_ProfilePreview-text {
-    color: $twitter_grey;
+    color: $purple_two;
     font-family: $twitter_font-family;
     font-size: 13px;
     font-weight: 300;
@@ -77,7 +77,7 @@
 
 .HiveExtension_Twitter_TweetAuthor-icon, .HiveExtension_Twitter_ProfilePreview-icon {
     height: 18px;
-    fill: $twitter_grey;
+    fill: $purple_two;
     margin-bottom: -1px;
 
     &:hover {
