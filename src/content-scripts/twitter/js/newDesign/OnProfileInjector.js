@@ -1,6 +1,6 @@
 // This component renders a rank/score on a users profile
 // eg. twitter.com/aantonop && twitter.com/aantonop/followers
-import { waitUntilResult, getProfileImage, errorHandle } from './utils';
+import { waitUntilResult, getProfileImage } from './utils';
 
 import { h, render } from 'preact';
 
@@ -23,7 +23,7 @@ export default class {
     async run() {
         const profileImageAnchor = await waitUntilResult(() => getProfileImage(this.screenName));
         if (!profileImageAnchor) {
-            return errorHandle(`Failed finding profile image for ${this.screenName}`);
+            return;
         }
 
         // Check to see if the hive profile element already exists

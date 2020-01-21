@@ -1,5 +1,5 @@
 import createHiveHoverPopupProfile from '../HiveHoverPopupProfile';
-import { depthFirstNodeSearch, stringToHash, errorHandle } from './utils';
+import { depthFirstNodeSearch, stringToHash } from './utils';
 
 export default class {
     settings;
@@ -13,7 +13,7 @@ export default class {
         let profilePopups = document.getElementsByClassName('r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-184en5c');
 
         if (!profilePopups || !profilePopups.length) {
-            return errorHandle('Failed finding profile previews');
+            return;
         }
 
         for (let i = 0; i < profilePopups.length; i++) {

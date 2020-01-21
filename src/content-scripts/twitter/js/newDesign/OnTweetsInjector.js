@@ -1,4 +1,4 @@
-import { waitUntilResult, getTweets, depthFirstNodeSearch, errorHandle } from './utils';
+import { waitUntilResult, getTweets, depthFirstNodeSearch } from './utils';
 
 import { h, render } from 'preact';
 
@@ -23,7 +23,7 @@ export default class {
         }
 
         if (!tweets || !tweets.length) {
-            return errorHandle('Failed finding tweets');
+            return;
         }
 
         // All statuses (tweets) have a url in which they link too, including some promoted tweets
