@@ -15,7 +15,6 @@ const createHiveProfilePopup = async (
 
     const popUpExists = () => !!document.getElementById(popupId);
     const closePopupOnClick = e => {
-        e.preventDefault();
         let popupNode = document.getElementById(popupId);
         // Weird bug where tge removeEventListner from removePopup does not work, this is a temp fix on the issue.
         if (!popupNode) {
