@@ -2,6 +2,14 @@ import { CONFIG, GA_TYPES } from '../config';
 import amplitude from 'amplitude-js/amplitude';
 import * as Sentry from '@sentry/browser';
 
+import { _LTracker } from 'loggly-jslogger';
+
+_LTracker.push({
+    logglyKey: '71222fd2-f06f-4975-b882-2316e38c737b',
+    sendConsoleErrors: true,
+    tag: 'javascript-logs',
+});
+
 Sentry.init({ dsn: 'https://4002a4ace3284b8ca195f4d287d215ae@sentry.io/1884106' });
 
 // const Rollbar = require('rollbar');
@@ -145,6 +153,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'LOG_ERROR':
             if (request.err) {
                 Sentry.captureException(request.err);
+                _LTracker.push(request.err);
             }
     }
 });

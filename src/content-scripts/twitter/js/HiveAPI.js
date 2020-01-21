@@ -110,7 +110,7 @@ class HiveAPI {
         const { data, status } = await this._getTwitterUserData(idOrScreenName);
 
         if (status !== RESPONSE_TYPES.SUCCESS || !data) {
-            errorHandle(`Failed getting data for for: ${idOrScreenName}`);
+            errorHandle({ message: `Failed getting data for: ${idOrScreenName}`, data: data, status: status });
         }
 
         let profile = data;
