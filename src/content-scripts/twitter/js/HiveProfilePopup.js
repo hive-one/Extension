@@ -10,6 +10,7 @@ const createHiveProfilePopup = async (
     popupStyles,
     profilePreview = false,
     clickableNode = undefined,
+    getNewStylesFunc = undefined,
 ) => {
     // appendableNode = node that popup is injected to
 
@@ -58,6 +59,7 @@ const createHiveProfilePopup = async (
         popupStyles,
         profilePreview,
         clickableNode,
+        getNewStyles: getNewStylesFunc,
     };
 
     let popupNode = document.createElement('div');

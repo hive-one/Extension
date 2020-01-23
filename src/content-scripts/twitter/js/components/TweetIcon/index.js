@@ -12,10 +12,22 @@ export default class TweetIcon extends Component {
     togglePopup = () => {
         const authorImageAnchor = this.getAuthorImageAnchor(this.props.tweetNode, this.props.userData.screenName);
         const popupStyles = this.createPopupStyles(this.props.elem, authorImageAnchor);
+        const getNewStyles = () => {
+            return this.createPopupStyles(this.props.elem, authorImageAnchor);
+        };
 
         const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${this.props.tweetId}`;
 
-        createHiveProfilePopup(this.props.settings, this.props.userData, document.body, POPUP_ID, popupStyles);
+        createHiveProfilePopup(
+            this.props.settings,
+            this.props.userData,
+            document.body,
+            POPUP_ID,
+            popupStyles,
+            false,
+            undefined,
+            getNewStyles,
+        );
     };
 
     onClick = e => {

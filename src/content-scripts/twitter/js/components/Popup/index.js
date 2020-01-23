@@ -280,6 +280,13 @@ class HivePopup extends Component {
         }
     };
 
+    resizeEventLisener = () => {
+        let style = this.props.getNewStyles();
+        this.setState({ style }, () => {
+            this.checkIfPopupSitsInsideWindow();
+        });
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -289,6 +296,7 @@ class HivePopup extends Component {
 
     componentDidMount() {
         this.checkIfPopupSitsInsideWindow();
+        window.addEventListener('resize', this.resizeEventLisener);
     }
 
     render() {
