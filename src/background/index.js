@@ -102,7 +102,8 @@ async function fetchURL(url, options, callback) {
     try {
         const response = await fetch(url, options);
         if (!response.ok) {
-            throw new Error(`Cannot handle status code "${response.status}" for url "${url}"`);
+            let err = new Error(`Cannot handle status code "${response.status}" for url "${url}"`);
+            _LTracker.push(err);
         }
         const data = await response.json();
         callback({
@@ -112,7 +113,9 @@ async function fetchURL(url, options, callback) {
     } catch (error) {
         if (error.status == 420) {
             console.log('being rate limited');
+            _LTracker.push('being rate limited');
         }
+        _LTracker.push(error);
         callback({
             type: GA_TYPES.FETCH_FAILURE,
             error,

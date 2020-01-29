@@ -1,6 +1,6 @@
 {
     "name": "Hive",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "description": "https://hive.one",
     "manifest_version": 2,
     "permissions": [
