@@ -70,7 +70,7 @@ class HiveAPI {
                     },
                 });
                 if (res.error) {
-                    errorHandle(Error(res.error));
+                    return errorHandle(Error(res.error));
                 }
                 const { data } = res;
                 cachedIds = data;
@@ -85,7 +85,7 @@ class HiveAPI {
 
             this._acceptableIds = cachedIds.available;
         } catch (err) {
-            errorHandle(`Failed initializing HiveAPI: ${JSON.stringify(err)}`);
+            return errorHandle(`Failed initializing HiveAPI: ${JSON.stringify(err)}`);
         }
     }
 
@@ -93,11 +93,11 @@ class HiveAPI {
         // loads cached user reponse & returns scores/ranks based on the selected cluster
 
         if (!idOrScreenName) {
-            errorHandle(Error('Missing arg: idOrScreenName'));
+            return errorHandle(Error('Missing arg: idOrScreenName'));
         }
 
         if (!this.isIdentifierIndexed(idOrScreenName)) {
-            errorHandle(Error(`Could not find ${idOrScreenName} within this._acceptableIds`));
+            return errorHandle(Error(`Could not find ${idOrScreenName} within this._acceptableIds`));
         }
 
         let id, screenName, rank, userName, imageUrl, description, website;
@@ -110,7 +110,7 @@ class HiveAPI {
         const { data, status } = await this._getTwitterUserData(idOrScreenName);
 
         if (status !== RESPONSE_TYPES.SUCCESS || !data) {
-            errorHandle({ message: `Failed getting data for: ${idOrScreenName}`, data: data, status: status });
+            return errorHandle({ message: `Failed getting data for: ${idOrScreenName}`, data: data, status: status });
         }
 
         let profile = data;
@@ -172,14 +172,14 @@ class HiveAPI {
                     },
                 });
                 if (res.error) {
-                    errorHandle(Error(res.error));
+                    return errorHandle(Error(res.error));
                 }
                 cachedFollowers = res;
                 this.cache.save(key, cachedFollowers);
             }
             followers = cachedFollowers.data.success;
         } catch (err) {
-            errorHandle('Failed to get follower data');
+            return errorHandle('Failed to get follower data');
         }
         return followers;
     }
@@ -291,17 +291,17 @@ class HiveAPI {
         try {
             const res = await responsePromise;
             if (res.error) {
-                errorHandle(Error(res.error));
+                return errorHandle(Error(res.error));
             }
             const { data } = res;
             userData = data;
             // pop from state
             delete this._requestsMap[idOrScreenName];
         } catch (err) {
-            errorHandle(err);
+            return errorHandle(err);
         }
         if (!userData) {
-            errorHandle(`Failed requesting user data: ${idOrScreenName}`);
+            return errorHandle(`Failed requesting user data: ${idOrScreenName}`);
         }
 
         return userData;
@@ -324,17 +324,17 @@ class HiveAPI {
         try {
             const res = await responsePromise;
             if (res.error) {
-                errorHandle(Error(res.error));
+                return errorHandle(Error(res.error));
             }
             const { data } = res;
             userData = data;
             // pop from state
             delete this._requestsMap[idOrScreenName];
         } catch (err) {
-            errorHandle(err);
+            return errorHandle(err);
         }
         if (!userData) {
-            errorHandle(`Failed requesting user podcast data: ${idOrScreenName}`);
+            return errorHandle(`Failed requesting user podcast data: ${idOrScreenName}`);
         }
 
         return userData;
