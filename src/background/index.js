@@ -4,6 +4,8 @@ import * as Sentry from '@sentry/browser';
 
 import { _LTracker } from 'loggly-jslogger';
 
+const manifestData = chrome.runtime.getManifest();
+
 _LTracker.push({
     logglyKey: '71222fd2-f06f-4975-b882-2316e38c737b',
     sendConsoleErrors: true,
@@ -113,9 +115,9 @@ async function fetchURL(url, options, callback) {
     } catch (error) {
         if (error.status == 420) {
             console.log('being rate limited');
-            _LTracker.push('being rate limited');
+            sendLogglyEvent('being rate limited');
         }
-        _LTracker.push(error);
+        sendLogglyEvent(error);
         callback({
             type: GA_TYPES.FETCH_FAILURE,
             error,
@@ -133,6 +135,14 @@ function sendAnalyticsEvent(category, action) {
             ga('send', 'event', category, action);
         }
     });
+}
+
+function sendLogglyEvent(data) {
+    const payload = {
+        data,
+        appVersion: manifestData.version,
+    };
+    _LTracker.push(payload);
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -156,7 +166,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'LOG_ERROR':
             if (request.err) {
                 Sentry.captureException(request.err);
-                _LTracker.push(request.err);
+                sendLogglyEvent(request.err);
             }
+            break;
+        case 'LOG':
+            sendLogglyEvent(request.payload);
+            break;
     }
 });

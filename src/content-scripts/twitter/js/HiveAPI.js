@@ -110,7 +110,11 @@ class HiveAPI {
         const { data, status } = await this._getTwitterUserData(idOrScreenName);
 
         if (status !== RESPONSE_TYPES.SUCCESS || !data) {
-            return errorHandle({ message: `Failed getting data for: ${idOrScreenName}`, data: data, status: status });
+            return errorHandle({
+                message: `Failed getting data for: ${idOrScreenName}`,
+                payload: data,
+                status: status,
+            });
         }
 
         let profile = data;
@@ -219,7 +223,11 @@ class HiveAPI {
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
         const cachedData = await this.cache.get(cacheKey);
 
-        if (typeof cachedData !== 'undefined' && cachedData !== null) {
+        if (typeof cachedData !== 'undefined' && cachedData !== null && cachedData.status !== 'error') {
+            chrome.runtime.sendMessage({
+                type: 'LOG',
+                payload: `Returning Cached Data For ${idOrScreenName}`,
+            });
             return cachedData;
         }
 
@@ -235,7 +243,9 @@ class HiveAPI {
             data,
             status,
         };
-        await this.cache.save(cacheKey, resInfo);
+        if (status == RESPONSE_TYPES.SUCCESS) {
+            await this.cache.save(cacheKey, resInfo);
+        }
 
         return resInfo;
     }
