@@ -29,6 +29,8 @@ if (process.env.NODE_ENV === 'development') {
 
 /* global ga */
 
+chrome.runtime.setUninstallURL('https://forms.gle/m4YUEiwWGQHSwj5s5');
+
 chrome.runtime.onInstalled.addListener(function() {
     const defaultOptionsNames = Object.keys(CONFIG.DEFAULT_OPTIONS);
 
