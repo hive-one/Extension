@@ -14,13 +14,6 @@ _LTracker.push({
 
 Sentry.init({ dsn: 'https://4002a4ace3284b8ca195f4d287d215ae@sentry.io/1884106' });
 
-// const Rollbar = require('rollbar');
-// const rollbar = new Rollbar({
-//     accessToken: '3765e03d2f29410f91bf833d67cc2a5c',
-//     captureUncaught: true,
-//     captureUnhandledRejections: true,
-// });
-
 if (process.env.NODE_ENV === 'development') {
     amplitude.getInstance().init('b9aea2974d2570a3443be6100a01777f');
 } else {
