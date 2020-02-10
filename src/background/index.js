@@ -4,6 +4,9 @@ import * as Sentry from '@sentry/browser';
 
 import { _LTracker } from 'loggly-jslogger';
 
+import hive from 'hiveone-js';
+const hiveAPI = hive({ apiKey: '5460ce138ce3d46ae5af00018c576af991e3054a', host: 'http://3.120.237.41/' });
+
 const manifestData = chrome.runtime.getManifest();
 
 _LTracker.push({
@@ -95,31 +98,6 @@ ga('create', CONFIG.GOOGLE_ANALYTICS_ID, 'auto');
 ga('set', 'checkProtocolTask', () => {});
 ga('send', 'pageview', '/');
 
-async function fetchURL(url, options, callback) {
-    try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            let err = new Error(`Cannot handle status code "${response.status}" for url "${url}"`);
-            _LTracker.push(err);
-        }
-        const data = await response.json();
-        callback({
-            type: GA_TYPES.FETCH_SUCCESS,
-            data,
-        });
-    } catch (error) {
-        if (error.status == 420) {
-            console.log('being rate limited');
-            sendLogglyEvent('being rate limited');
-        }
-        sendLogglyEvent(error);
-        callback({
-            type: GA_TYPES.FETCH_FAILURE,
-            error,
-        });
-    }
-}
-
 function sendAnalyticsEvent(category, action) {
     chrome.storage.sync.get('HiveExtension:acceptedPermissions', result => {
         if (result['HiveExtension:acceptedPermissions'] === true) {
@@ -140,6 +118,22 @@ function sendLogglyEvent(data) {
     _LTracker.push(payload);
 }
 
+async function hiveOneCall(funcName, funcArgs, sendResponse) {
+    try {
+        let response = await hiveAPI[funcName](funcArgs);
+        sendResponse({
+            type: GA_TYPES.FETCH_SUCCESS,
+            data: response,
+        });
+    } catch (error) {
+        console.log(error);
+        sendResponse({
+            type: GA_TYPES.FETCH_FAILURE,
+            error,
+        });
+    }
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case GA_TYPES.TRACK_EVENT:
@@ -150,9 +144,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
             sendAnalyticsEvent(request.category, request.action);
             break;
-        case GA_TYPES.FETCH:
-            fetchURL(request.url, request.options, sendResponse);
-            return true;
         case 'SET_COOKIE':
             chrome.cookies.get({ url: 'https:twitter.com/', name: 'night_mode' }, cookie => {
                 sendResponse({ type: 'nightModeCookie', value: cookie ? cookie.value : 0 });
@@ -160,6 +151,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             return true;
         case 'LOG_ERROR':
             if (request.err) {
+                console.log(request.err);
                 Sentry.captureException(request.err);
                 sendLogglyEvent(request.err);
             }
@@ -167,5 +159,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'LOG':
             sendLogglyEvent(request.payload);
             break;
+        case 'hiveOne':
+            hiveOneCall(request.funcName, request.funcArgs, sendResponse);
+            return true;
     }
 });

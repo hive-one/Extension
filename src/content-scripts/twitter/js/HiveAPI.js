@@ -1,7 +1,7 @@
 import { GA_TYPES, CLUSTER_TYPES } from '../../../config';
 import { errorHandle } from './newDesign/utils';
 
-import { TEST_SCREEN_NAMES, TEST_DATA } from './testData';
+import { TEST_DATA } from './testData';
 
 const RESPONSE_TYPES = Object.freeze({
     SUCCESS: 'success',
@@ -9,7 +9,6 @@ const RESPONSE_TYPES = Object.freeze({
 });
 
 const AVAILABLE_SCREEN_NAMES_KEY = 'HiveAPI::TWITTER_INFLUENCERS_AVAILABLE_SCREEN_NAMES';
-const FOLLOWERS_KEY = 'HiveAPI::TWITTER_FOLLOWERS';
 
 class HiveAPI {
     cache;
@@ -42,13 +41,8 @@ class HiveAPI {
         return AVAILABLE_SCREEN_NAMES_KEY;
     }
 
-    get availableIdsUrl() {
-        return `${this.host}/api/v1/influencers/`;
-    }
-
     async _initialize() {
         const key = this.availableIdsKey;
-        const url = this.availableIdsUrl;
 
         try {
             var cachedIds = await this.cache.get(key);
@@ -64,24 +58,19 @@ class HiveAPI {
             }
 
             if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
-                const res = await this.fetchInBackgroundContext(url, {
-                    headers: {
-                        Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
-                    },
-                });
+                const res = await this.apiCallInBackground('availableInfluncers');
                 if (res.error) {
                     return errorHandle(Error(res.error));
                 }
-                const { data } = res;
-                cachedIds = data;
+                cachedIds.available = res;
                 this.cache.save(AVAILABLE_SCREEN_NAMES_KEY, {
-                    available: cachedIds.available,
+                    available: res,
                 });
             }
 
-            if (process.env.NODE_ENV === 'development') {
-                cachedIds.available = cachedIds.available.concat(TEST_SCREEN_NAMES);
-            }
+            // if (process.env.NODE_ENV === 'development') {
+            //     cachedIds.available = cachedIds.available.concat(TEST_SCREEN_NAMES);
+            // }
 
             this._acceptableIds = cachedIds.available;
         } catch (err) {
@@ -159,33 +148,6 @@ class HiveAPI {
             followers,
             hasPodcasts: profile.hasPodcasts,
         };
-    }
-
-    async getFollowersInfo(followers, followersIds, screenName) {
-        let key = `${FOLLOWERS_KEY}_${screenName}`;
-        try {
-            var cachedFollowers = await this.cache.get(key);
-
-            if (!cachedFollowers || !cachedFollowers.data || !cachedFollowers.data.success) {
-                const res = await this.fetchInBackgroundContext(`${this.host}/api/influencers/scores/batch/`, {
-                    method: 'POST',
-                    body: JSON.stringify({ ids: followersIds }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
-                    },
-                });
-                if (res.error) {
-                    return errorHandle(Error(res.error));
-                }
-                cachedFollowers = res;
-                this.cache.save(key, cachedFollowers);
-            }
-            followers = cachedFollowers.data.success;
-        } catch (err) {
-            return errorHandle('Failed to get follower data');
-        }
-        return followers;
     }
 
     async getTwitterUserScores(idOrScreenName) {
@@ -285,28 +247,16 @@ class HiveAPI {
     }
 
     async _requestUserData(idOrScreenName) {
-        const url = `${this.userDataUrl}/${idOrScreenName}/?include_followers=1`;
-        // Immediately save requests to state to prevent duplicate requests
-        let responsePromise = this._requestsMap[idOrScreenName];
-        if (!responsePromise) {
-            responsePromise = this.fetchInBackgroundContext(url, {
-                headers: {
-                    Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
-                },
-            });
-            this._requestsMap[idOrScreenName] = responsePromise;
-        }
-
         let userData;
         try {
-            const res = await responsePromise;
+            const res = await this.apiCallInBackground('influencerDetails', {
+                influencerId: idOrScreenName,
+                includeFollowers: 1,
+            });
             if (res.error) {
                 return errorHandle(Error(res.error));
             }
-            const { data } = res;
-            userData = data;
-            // pop from state
-            delete this._requestsMap[idOrScreenName];
+            userData = res;
         } catch (err) {
             return errorHandle(err);
         }
@@ -318,28 +268,15 @@ class HiveAPI {
     }
 
     async _requestUserPodcastData(idOrScreenName) {
-        const url = `${this.userDataUrl}/${idOrScreenName}/podcasts/`;
-        // Immediately save requests to state to prevent duplicate requests
-        let responsePromise = this._requestsMap[idOrScreenName];
-        if (!responsePromise) {
-            responsePromise = this.fetchInBackgroundContext(url, {
-                headers: {
-                    Authorization: 'Token 5460ce138ce3d46ae5af00018c576af991e3054a',
-                },
-            });
-            this._requestsMap[idOrScreenName] = responsePromise;
-        }
-
         let userData;
         try {
-            const res = await responsePromise;
+            const res = await this.apiCallInBackground('influencerPodcasts', {
+                influencerId: idOrScreenName,
+            });
             if (res.error) {
                 return errorHandle(Error(res.error));
             }
-            const { data } = res;
-            userData = data;
-            // pop from state
-            delete this._requestsMap[idOrScreenName];
+            userData = res;
         } catch (err) {
             return errorHandle(err);
         }
@@ -363,16 +300,16 @@ class HiveAPI {
             idOrScreenName = idOrScreenName.toString();
         }
 
-        return this._acceptableIds.map(item => item[1]).includes(idOrScreenName);
+        return this._acceptableIds.includes(idOrScreenName);
     }
 
-    fetchInBackgroundContext(url, options = {}) {
+    apiCallInBackground(funcName, funcArgs = {}) {
         return new Promise((resolve, reject) => {
             chrome.runtime.sendMessage(
                 {
-                    type: GA_TYPES.FETCH,
-                    url,
-                    options,
+                    type: 'hiveOne',
+                    funcName,
+                    funcArgs,
                 },
                 ({ type, data, error }) => {
                     if (type === GA_TYPES.FETCH_SUCCESS) {
