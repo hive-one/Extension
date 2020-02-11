@@ -151,7 +151,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             return true;
         case 'LOG_ERROR':
             if (request.err) {
-                console.log(request.err);
                 Sentry.captureException(request.err);
                 sendLogglyEvent(request.err);
             }
