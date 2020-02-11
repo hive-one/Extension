@@ -58,9 +58,10 @@ class HiveAPI {
             }
 
             if (!cachedIds || !cachedIds.available || !cachedIds.available.length) {
+                cachedIds = {};
                 const res = await this.apiCallInBackground('availableInfluncers');
                 if (res.error) {
-                    return errorHandle(Error(res.error));
+                    return errorHandle(res.error);
                 }
                 cachedIds.available = res;
                 this.cache.save(AVAILABLE_SCREEN_NAMES_KEY, {
@@ -74,7 +75,7 @@ class HiveAPI {
 
             this._acceptableIds = cachedIds.available;
         } catch (err) {
-            return errorHandle(`Failed initializing HiveAPI: ${JSON.stringify(err)}`);
+            return errorHandle(`Failed initializing HiveAPI: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`);
         }
     }
 
@@ -82,11 +83,11 @@ class HiveAPI {
         // loads cached user reponse & returns scores/ranks based on the selected cluster
 
         if (!idOrScreenName) {
-            return errorHandle(Error('Missing arg: idOrScreenName'));
+            return errorHandle('Missing arg: idOrScreenName');
         }
 
         if (!this.isIdentifierIndexed(idOrScreenName)) {
-            return errorHandle(Error(`Could not find ${idOrScreenName} within this._acceptableIds`));
+            return errorHandle(`Could not find ${idOrScreenName} within this._acceptableIds`);
         }
 
         let id, screenName, rank, userName, imageUrl, description, website;
