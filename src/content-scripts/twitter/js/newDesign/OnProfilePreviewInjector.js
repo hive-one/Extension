@@ -66,6 +66,7 @@ export default class {
             POPUP_ID,
             popupStyles,
             clickableNode: injectableIcon,
+            getNewStylesFunc: () => this.createPopupStyles(previewNode, authorImageAnchor),
         };
 
         render(<PreviewIcon {...props} />, injectableIcon);

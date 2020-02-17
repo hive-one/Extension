@@ -18,16 +18,15 @@ export default class TweetIcon extends Component {
 
         const POPUP_ID = `HiveExtension-Twitter_TweetAuthor_Popup_${this.props.tweetId}`;
 
-        createHiveProfilePopup(
-            this.props.settings,
-            this.props.userData,
-            document.body,
-            POPUP_ID,
-            popupStyles,
-            false,
-            undefined,
-            getNewStyles,
-        );
+        createHiveProfilePopup({
+            settings: this.props.settings,
+            userData: this.props.userData,
+            appendableNode: document.body,
+            popupId: POPUP_ID,
+            popupStyles: popupStyles,
+            profilePreview: false,
+            getNewStylesFunc: getNewStyles,
+        });
     };
 
     onClick = e => {

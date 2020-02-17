@@ -19,15 +19,16 @@ export default class PreviewIcon extends Component {
             action: ACTION_NAME,
         });
 
-        createHiveProfilePopup(
-            this.props.settings,
-            this.props.userData,
-            document.body,
-            this.props.POPUP_ID,
-            this.props.popupStyles,
-            true,
-            this.props.clickableNode,
-        );
+        createHiveProfilePopup({
+            settings: this.props.settings,
+            userData: this.props.userData,
+            appendableNode: document.body,
+            popupId: this.props.POPUP_ID,
+            popupStyles: this.props.popupStyles,
+            profilePreview: true,
+            clickableNode: this.props.clickableNode,
+            getNewStylesFunc: this.props.getNewStylesFunc,
+        });
     };
 
     onMouseEnter = e => {

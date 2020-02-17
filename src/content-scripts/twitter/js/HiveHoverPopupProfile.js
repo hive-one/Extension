@@ -2,14 +2,14 @@ import { HiveInjectedPopup } from './components/Popup';
 
 import { h, render } from 'preact';
 
-const createHiveHoverPopupProfile = async (
+const createHiveHoverPopupProfile = async ({
     settings,
     userData,
     appendableNode,
     popupId,
     popupStyles = {},
     ownProfile = false,
-) => {
+} = {}) => {
     const popUpExists = () => !!document.getElementById(popupId);
     if (popUpExists()) return;
 

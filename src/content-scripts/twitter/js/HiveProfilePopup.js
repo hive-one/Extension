@@ -2,7 +2,7 @@ import { HivePopup } from './components/Popup';
 
 import { h, render } from 'preact';
 
-const createHiveProfilePopup = async (
+const createHiveProfilePopup = async ({
     settings,
     userData,
     appendableNode,
@@ -11,7 +11,7 @@ const createHiveProfilePopup = async (
     profilePreview = false,
     clickableNode = undefined,
     getNewStylesFunc = undefined,
-) => {
+} = {}) => {
     // appendableNode = node that popup is injected to
 
     const popUpExists = () => !!document.getElementById(popupId);

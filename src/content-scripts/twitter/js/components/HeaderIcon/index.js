@@ -38,13 +38,14 @@ export default class HeaderIcon extends Component {
 
         const POPUP_ID = `HiveExtension_Twitter_Popup_Profile_${this.props.screenName}`;
         let styles = { top: '254px', right: 0 };
-        createHiveProfilePopup(
-            this.props.settings,
-            this.props.userData,
-            this.props.popupAppendableNode,
-            POPUP_ID,
-            styles,
-        );
+        createHiveProfilePopup({
+            settings: this.props.settings,
+            userData: this.props.userData,
+            appendableNode: this.props.popupAppendableNode,
+            popupId: POPUP_ID,
+            popupStyles: styles,
+            getNewStylesFunc: () => styles,
+        });
     };
 
     constructor(props) {
