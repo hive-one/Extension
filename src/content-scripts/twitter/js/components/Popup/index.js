@@ -259,25 +259,26 @@ class HivePopup extends Component {
             return window.innerHeight >= childRect.bottom;
         }
 
+        let style = { ...this.state.style };
+
         if (this.props.profilePreview && this.props.clickableNode) {
             let { top } = this.props.clickableNode.getBoundingClientRect();
-            let style = { ...this.state.style };
             style.top = `${top + window.scrollY}px`;
-            this.setState({ style });
         }
 
         if (!sitsInsideWindowWidth(this.popupElem)) {
-            let style = { ...this.state.style };
             style.left = 'auto';
-            this.setState({ style });
         }
 
         if (!sitsInsideWindowHeight(this.popupElem)) {
             let { height } = this.popupElem.getBoundingClientRect();
-            let style = { ...this.state.style };
-            style.top = `${parseFloat(this.popupElem.style.top) - height - 40}px`;
-            this.setState({ style });
+            let topAmount = parseFloat(this.popupElem.style.top) - height - 40;
+            style.top = `${topAmount}px`;
+            if (topAmount < 0 || topAmount - window.scrollY < 0) {
+                style.top = `${window.scrollY}px`;
+            }
         }
+        this.setState({ style });
     };
 
     resizeEventLisener = () => {
