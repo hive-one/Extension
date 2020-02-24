@@ -9,7 +9,7 @@
         "dev": "cross-env NODE_ENV=development webpack --watch",
         "lint": "eslint .",
         "lint-fix": "eslint . --fix",
-        "build-pkg": "npm run build && zip -r dist.zip dist/ && zip -r hive.zip ./ -x '*.git*' -x '*.zip' -x 'dist/*' -x 'node_modules/*' -x 'build/*' -x '.vscode/*' && rm -Rf build dist"
+        "build-pkg": "npm run build && cd dist && zip -r dist.zip ./ && cd .. && zip -r hive.zip ./ -x '*.git*' -x '*.zip' -x 'dist/*' -x 'node_modules/*' -x 'build/*' -x '.vscode/*' && rm -Rf build dist"
     },
     "author": "Daniel Kmak",
     "license": "MIT",
@@ -48,7 +48,7 @@
         "@sentry/browser": "^5.11.1",
         "amplitude-js": "^5.7.0",
         "escape-html": "1.0.3",
-        "hiveone-js": "^1.0.2",
+        "hiveone-js": "^1.0.3",
         "loggly-jslogger": "^2.2.2",
         "moment": "2.24.0",
         "preact": "^10.1.1"
