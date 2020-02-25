@@ -609,9 +609,11 @@
                 justify-content: space-between;
                 flex-direction: column;
                 text-align: center;
-                overflow: scroll;
+                overflow-y: scroll;
+                max-height: 300px;
                 margin-top: 10px;
                 font-family: $twitter_font-family;
+                
 
                 &_podcast {
                     margin-bottom: 15px;
