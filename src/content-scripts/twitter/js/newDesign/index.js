@@ -2,6 +2,7 @@ import runProfile from './runProfile';
 import runHome from './runHome';
 import runProfilePreview from './runProfilePreview';
 import runNotifications from './runNotifications';
+import runTopCrypto from '../components/TopInCrypto';
 import { initialiseIcons, errorHandle } from './utils';
 
 // TODO: Handle popup showing who retweeted and who liked
@@ -19,6 +20,9 @@ const run = async (settings, api) => {
     } else if (pathname.match(homeRoutes)) {
         runHome(settings, api);
         runProfilePreview(settings, api);
+        if (pathname === '/home') {
+            runTopCrypto();
+        }
     } else if (pathname.match(/^\/[A-Za-z0-9_]+\/status/)) {
         // at the moment there is no difference in how
         // the home route is handled and how threads are
