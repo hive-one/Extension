@@ -185,8 +185,45 @@ class HiveAPI {
         // if not requests data from the API and caches it
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
         const cachedData = await this.cache.get(cacheKey);
+        // const cachedData = undefined;
+
+        const saveReturnFreshData = async data => {
+            let status;
+            if (data) {
+                status = RESPONSE_TYPES.SUCCESS;
+            } else {
+                status = RESPONSE_TYPES.ERROR;
+            }
+
+            const resInfo = {
+                data,
+                status,
+            };
+            if (status == RESPONSE_TYPES.SUCCESS) {
+                await this.cache.save(cacheKey, resInfo);
+            }
+
+            return resInfo;
+        };
 
         if (typeof cachedData !== 'undefined' && cachedData !== null && cachedData.status !== 'error') {
+            const {
+                data: { _etag },
+            } = cachedData;
+            if (_etag) {
+                const res = await this.apiCallInBackground('influencerDetails', {
+                    influencerId: idOrScreenName,
+                    includeFollowers: 1,
+                    etag: _etag,
+                });
+                if (typeof res != 'boolean') {
+                    chrome.runtime.sendMessage({
+                        type: 'LOG',
+                        payload: `ETag invalid For ${idOrScreenName}`,
+                    });
+                    return saveReturnFreshData(res);
+                }
+            }
             chrome.runtime.sendMessage({
                 type: 'LOG',
                 payload: `Returning Cached Data For ${idOrScreenName}`,
@@ -194,23 +231,12 @@ class HiveAPI {
             return cachedData;
         }
 
-        let status;
+        chrome.runtime.sendMessage({
+            type: 'LOG',
+            payload: `Fetching New Data For ${idOrScreenName}`,
+        });
         const data = await this._requestUserData(idOrScreenName);
-        if (data) {
-            status = RESPONSE_TYPES.SUCCESS;
-        } else {
-            status = RESPONSE_TYPES.ERROR;
-        }
-
-        const resInfo = {
-            data,
-            status,
-        };
-        if (status == RESPONSE_TYPES.SUCCESS) {
-            await this.cache.save(cacheKey, resInfo);
-        }
-
-        return resInfo;
+        return saveReturnFreshData(data);
     }
 
     async _getTwitterUserPodcastsData(idOrScreenName) {
