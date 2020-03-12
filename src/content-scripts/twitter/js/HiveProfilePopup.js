@@ -39,12 +39,6 @@ const createHiveProfilePopup = async ({
         return;
     }
 
-    let profilePopups = document.getElementsByClassName('r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-184en5c');
-
-    if (profilePopups.length !== 0) {
-        return;
-    }
-
     const getBackgroundColor = () => {
         return document.body.style.backgroundColor;
     };
@@ -65,7 +59,6 @@ const createHiveProfilePopup = async ({
     let popupNode = document.createElement('div');
     popupNode.id = popupId;
     appendableNode.appendChild(popupNode);
-
     render(<HivePopup {...props} />, popupNode);
     document.addEventListener('click', closePopupOnClick, false);
 };

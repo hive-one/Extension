@@ -20,12 +20,14 @@ export default class {
             const profilePopupNode = profilePopups[i];
             const testCondition = node => node.tagName === 'A';
             const imageAnchor = depthFirstNodeSearch(profilePopupNode, testCondition);
-            const imageAnchorParentNode = imageAnchor.parentNode.parentNode.parentNode.parentNode;
-            if (imageAnchor && !('testid' in imageAnchorParentNode.dataset)) {
-                let screenName = imageAnchor.href.slice(20);
-                // Create's a unique ID based on the element as sometimes the same profile might appear on the same page but will have different classnames
-                let hashableString = screenName + profilePopupNode.parentNode.parentNode.className;
-                this.injectOntoProfilePreview(profilePopupNode, screenName, stringToHash(hashableString));
+            if (imageAnchor) {
+                const imageAnchorParentNode = imageAnchor.parentNode.parentNode.parentNode.parentNode;
+                if (imageAnchor && !('testid' in imageAnchorParentNode.dataset)) {
+                    let screenName = imageAnchor.href.slice(20);
+                    // Create's a unique ID based on the element as sometimes the same profile might appear on the same page but will have different classnames
+                    let hashableString = screenName + profilePopupNode.parentNode.parentNode.className;
+                    this.injectOntoProfilePreview(profilePopupNode, screenName, stringToHash(hashableString));
+                }
             }
         }
     }
@@ -61,7 +63,14 @@ export default class {
         }
 
         // Inject some content at the end of the popup
-        await createHiveHoverPopupProfile(this.settings, userData, parentNode, POPUP_ID, styles, ownProfile);
+        await createHiveHoverPopupProfile({
+            settings: this.settings,
+            userData,
+            appendableNode: parentNode,
+            popupId: POPUP_ID,
+            popupStyles: styles,
+            ownProfile,
+        });
     }
 
     getAuthorImageAnchor(previewNode, screenName) {
@@ -71,7 +80,7 @@ export default class {
         const testCondition = node => node.tagName === 'A' && node.href === HREF;
         const authorImageAnchor = depthFirstNodeSearch(previewNode, testCondition);
         if (!authorImageAnchor) {
-            throw new Error(`Failed finding preview image tag: @${screenName}`);
+            // throw new Error(`Failed finding preview image tag: @${screenName}`);
         }
 
         return authorImageAnchor;
