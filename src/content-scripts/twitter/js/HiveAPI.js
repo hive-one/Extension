@@ -183,8 +183,8 @@ class HiveAPI {
         // Tries pulling data from cache
         // if not requests data from the API and caches it
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
-        // const cachedData = await this.cache.get(cacheKey);
-        const cachedData = undefined;
+        const cachedData = await this.cache.get(cacheKey);
+        // const cachedData = undefined;
 
         const saveReturnFreshData = async data => {
             let status;
