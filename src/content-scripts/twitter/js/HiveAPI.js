@@ -15,14 +15,13 @@ class HiveAPI {
     host = '';
 
     _acceptableIds;
-    _requestsMap;
 
     constructor(_host, settings, _cache) {
         this.host = _host;
         this.settings = settings;
         this.cache = _cache;
         this._acceptableIds = [];
-        this._requestsMap = new Map();
+        this._pendingRequestedIds = [];
         return new Promise(async resolve => {
             await this._initialize();
             resolve(this);
@@ -184,8 +183,8 @@ class HiveAPI {
         // Tries pulling data from cache
         // if not requests data from the API and caches it
         const cacheKey = this.getUserDataCacheKey(idOrScreenName);
-        const cachedData = await this.cache.get(cacheKey);
-        // const cachedData = undefined;
+        // const cachedData = await this.cache.get(cacheKey);
+        const cachedData = undefined;
 
         const saveReturnFreshData = async data => {
             let status;
@@ -202,6 +201,9 @@ class HiveAPI {
             if (status == RESPONSE_TYPES.SUCCESS) {
                 await this.cache.save(cacheKey, resInfo);
             }
+
+            var index = this._pendingRequestedIds.indexOf(idOrScreenName);
+            if (index !== -1) this._pendingRequestedIds.splice(index, 1);
 
             return resInfo;
         };
@@ -231,10 +233,15 @@ class HiveAPI {
             return cachedData;
         }
 
+        if (this._pendingRequestedIds.includes(idOrScreenName)) {
+            return { data: { message: 'Already doing this request.' }, status: RESPONSE_TYPES.ERROR };
+        }
+
         chrome.runtime.sendMessage({
             type: 'LOG',
             payload: `Fetching New Data For ${idOrScreenName}`,
         });
+        this._pendingRequestedIds.push(idOrScreenName);
         const data = await this._requestUserData(idOrScreenName);
         return saveReturnFreshData(data);
     }
