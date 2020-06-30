@@ -33,7 +33,7 @@ class HiveAPI {
     }
 
     get userDataUrl() {
-        return `${this.host}/api/v1/influencers/screen_name`;
+        return `${this.host}/v1/influencers/screen_name`;
     }
 
     get availableIdsKey() {
